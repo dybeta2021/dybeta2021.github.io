@@ -28,14 +28,14 @@
 <meta property="og:site_name" content="子非鱼">
 <meta property="og:description" content="强迫症发作，使用QWebEngineViewz装载JupyterLab，去掉多层表头。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//jupyterclient.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/07/09/jupyter-client/jupyterclient.png">
 <meta property="article:published_time" content="2021-07-09T07:56:09.000Z">
 <meta property="article:modified_time" content="2021-07-09T07:56:09.000Z">
 <meta property="article:author" content="观鱼">
 <meta property="article:tag" content="Qt">
 <meta property="article:tag" content="Jupyter">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://dybeta2021.github.io/.io//jupyterclient.png">
+<meta name="twitter:image" content="https://dybeta2021.github.io/2021/07/09/jupyter-client/jupyterclient.png">
 
 <link rel="canonical" href="https://dybeta2021.github.io/2021/07/09/jupyter-client/">
 
@@ -259,7 +259,7 @@
 <p>完整的启动器</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> os <span class="keyword">import</span> sep, getcwd, chdir</span><br><span class="line"><span class="keyword">from</span> subprocess <span class="keyword">import</span> Popen</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> simple_browser <span class="keyword">import</span> run_browser</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    task_list = []</span><br><span class="line">    path = getcwd() + sep + <span class="string">r&quot;notebook&quot;</span></span><br><span class="line">    chdir(path)</span><br><span class="line">    task = Popen(<span class="string">r&quot;jupyter lab&quot;</span>, shell=<span class="literal">True</span>)</span><br><span class="line">    task_list.append(task)</span><br><span class="line"></span><br><span class="line">    browser = run_browser()</span><br><span class="line">    <span class="keyword">if</span> browser:</span><br><span class="line">        task.terminate()</span><br><span class="line">        task.kill()</span><br><span class="line">        sys.exit()</span><br></pre></td></tr></table></figure>
 <p>最终效果，没有多个title标题栏清爽多了
-<img src="/.io//jupyterclient.png" width="100%" height="100%" title="jupyter client" alt="jupyter client"></p>
+<img src="jupyterclient.png" width="100%" height="100%" title="jupyter client" alt="jupyter client"/></p>
 
     </div>
 

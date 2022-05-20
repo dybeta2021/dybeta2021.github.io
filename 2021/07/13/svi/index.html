@@ -28,15 +28,15 @@
 <meta property="og:site_name" content="子非鱼">
 <meta property="og:description" content="The SVI is simply a function (empirically fit to the data) which given a maturity and a strike price \(K\), computes a BS implied volatility \(\sigma\). Once you have that implied volatility you can p">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//fig1.png">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//svi-linear.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/07/13/svi/fig1.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/07/13/svi/svi-linear.png">
 <meta property="article:published_time" content="2021-07-13T06:01:37.000Z">
 <meta property="article:modified_time" content="2021-07-13T06:01:37.000Z">
 <meta property="article:author" content="观鱼">
 <meta property="article:tag" content="ivs">
 <meta property="article:tag" content="svi">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://dybeta2021.github.io/.io//fig1.png">
+<meta name="twitter:image" content="https://dybeta2021.github.io/2021/07/13/svi/fig1.png">
 
 <link rel="canonical" href="https://dybeta2021.github.io/2021/07/13/svi/">
 
@@ -253,7 +253,9 @@
 
       
         <p>The SVI is simply a function (empirically fit to the data) which
-given a maturity and a strike price <span class="math inline">\(K\)</span>, computes a BS implied volatility <span class="math inline">\(\sigma\)</span>. Once you have that implied
+given a maturity and a strike price <span
+class="math inline">\(K\)</span>, computes a BS implied volatility <span
+class="math inline">\(\sigma\)</span>. Once you have that implied
 volatility you can plug it into a Black Scholes routine which can
 compute the BS price and the Black Scholes Greeks. SVI/SVI-JW are used
 to describe <strong>one slice</strong> (single tenor) at the time;
@@ -261,7 +263,8 @@ to describe <strong>one slice</strong> (single tenor) at the time;
 (multiple tenors).</p>
 <span id="more"></span>
 <h2 id="the-svi-parameterization">The SVI parameterization</h2>
-<p>Implied variance is always linear in <span class="math inline">\(k\)</span> as <span class="math inline">\(|k| \to
+<p>Implied variance is always linear in <span
+class="math inline">\(k\)</span> as <span class="math inline">\(|k| \to
 +\infty\)</span>. If we want a parameterization of the implied variance
 surface, it needs to be linear in the wings and it needs to be curved in
 the middle as many conventional parameterizations of the volatility
@@ -272,9 +275,11 @@ surface are quadratic for example.</p>
 \]</span></p>
 <ul>
 <li><span class="math inline">\(a\)</span> gives the overall level of
-variance，<span class="math inline">\(a\)</span>增加时，波动率曲线整体向上平移。</li>
+variance，<span
+class="math inline">\(a\)</span>增加时，波动率曲线整体向上平移。</li>
 <li><span class="math inline">\(b\)</span> gives the angle between the
-left and right asymptotes，<span class="math inline">\(b\)</span>增加时两翼之间的夹角变小 。</li>
+left and right asymptotes，<span
+class="math inline">\(b\)</span>增加时两翼之间的夹角变小 。</li>
 <li><span class="math inline">\(\sigma\)</span> determines how smooth
 the vertex is, reduces ATM curvature of the smile</li>
 <li><span class="math inline">\(\rho\)</span> determines the orientation
@@ -284,22 +289,25 @@ graph，m增加，右移</li>
 <li>SVI线性模型拟合方差，对iv-slice实质上是亚线性模型。</li>
 </ul>
 <h2 id="slopes-and-minimum">Slopes and minimum</h2>
-<p>The left and right asymptotes are respectively <span class="math display">\[\begin{equation}
+<p>The left and right asymptotes are respectively <span
+class="math display">\[\begin{equation}
 \begin{aligned}
 \sigma_{L}^2(x) &amp;= a - b(1-\rho)(x-m)\\
 \sigma_{R}^2 &amp;= a + b(1+\rho)(x-m)
 \end{aligned}
 \end{equation}\]</span></p>
-<p><img src="/.io//fig1.png" width="75%" height="75%" title="fig1" alt="fig1"></p>
+<p><img src="fig1.png" width="75%" height="75%" title="fig1" alt="fig1"/></p>
 <ul>
 <li>Variance increases linearly with |k| for k very positive or very
 negative</li>
 <li>Intuition is that the more out-of-the-money an option is, the more
 volatility convexity it has.</li>
 </ul>
-<p>在实际应用中SVI表达式对极大极小值线性近似几乎没有实际影响，设<span class="math inline">\(S=3\)</span>, <span class="math inline">\(K=range(2, 4,
+<p>在实际应用中SVI表达式对极大极小值线性近似几乎没有实际影响，设<span
+class="math inline">\(S=3\)</span>, <span
+class="math inline">\(K=range(2, 4,
 0.1)\)</span>则moneyness对应的SVI拟合曲线如下图，并未达到极端值区间。其中left和right为左右渐近线。</p>
-<p><img src="/.io//svi-linear.png" width="75%" height="75%" title="svi-linear" alt="svi-linear"></p>
+<p><img src="svi-linear.png" width="75%" height="75%" title="svi-linear" alt="svi-linear"/></p>
 <h2 id="arbitrage-free-conditions">Arbitrage-Free Conditions</h2>
 <h3 id="vertical-spread-arbitrage-free">Vertical Spread
 Arbitrage-Free</h3>
@@ -310,13 +318,16 @@ b(1+|\rho|) \leq \frac{4}{T}
 Arbitrage-Free</h3>
 <p>Keeping the moneyness constant, option prices are non-decreasing in
 time to expiration. Let <span class="math inline">\(\omega_t =
-\sigma_{BS}(k,t)^2t\)</span> for fixed <span class="math inline">\(k\)</span>, we must have the total implied
+\sigma_{BS}(k,t)^2t\)</span> for fixed <span
+class="math inline">\(k\)</span>, we must have the total implied
 variance non-decreasing with respect to time to expiration.</p>
 <h2 id="quasi-explicit-calibration">Quasi-Explicit Calibration</h2>
 <p>Quasi-Explicit
 Calibration通过两步法循环优化将对5个变量损失函数的优化过程降维到2个变量，
-提高了校正的速度和参数稳定性。 使用整体方差<span class="math inline">\({\rm tv} = \sigma_{\rm implied} ^2 T\)</span>
-替换方差<span class="math inline">\({\rm var}\)</span> <span class="math display">\[
+提高了校正的速度和参数稳定性。 使用整体方差<span
+class="math inline">\({\rm tv} = \sigma_{\rm implied} ^2 T\)</span>
+替换方差<span class="math inline">\({\rm var}\)</span> <span
+class="math display">\[
 {\rm var} \cdot T = (a+b(\rho(k-m) + \sqrt{(k-m)^2+\sigma^2})) \cdot T
 \]</span> <span class="math display">\[
 {\rm tv} = a T+b T(\rho(k-m) + \sqrt{(k-m)^2+\sigma^2})
@@ -329,30 +340,48 @@ d = \rho b \sigma T\\
 \widetilde{a} = aT
 \]</span> 则 <span class="math display">\[
 {\rm tv} =\widetilde v(y) =\widetilde{a} + dy+c\sqrt{y^2+1}
-\]</span> 校准的目标函数从5个参数转换为2个参数<span class="math inline">\(m\)</span>和<span class="math inline">\(\sigma\)</span>的损失函数 <span class="math display">\[
+\]</span> 校准的目标函数从5个参数转换为2个参数<span
+class="math inline">\(m\)</span>和<span
+class="math inline">\(\sigma\)</span>的损失函数 <span
+class="math display">\[
 f_{y,{\rm tv} } (c,d,\widetilde{a}) = \sum((\widetilde a + dy +
 c\sqrt{y^2+1}) - \widetilde v(y))^2
 \]</span> 即最优化 <span class="math display">\[
 (P_{m,\sigma}) = {\rm min}_{(c,d,\widetilde{a}) \in D} f_{y,{\rm tv} }
 (c,d,\widetilde{a})
 \]</span> 函数<span class="math inline">\(f_{y,{\rm tv} }
-(c,d,\widetilde{a})\)</span>是固定参数<span class="math inline">\(m\)</span>和<span class="math inline">\(\sigma\)</span>对应<span class="math inline">\(c,d,a\)</span>的损失函数 <span class="math display">\[
+(c,d,\widetilde{a})\)</span>是固定参数<span
+class="math inline">\(m\)</span>和<span
+class="math inline">\(\sigma\)</span>对应<span
+class="math inline">\(c,d,a\)</span>的损失函数 <span
+class="math display">\[
 f_{y,{\rm tv} } (c,d,\widetilde{a})=\sum^{n}_{i=1} (\widetilde{a} + dy_i
 + c\sqrt{y^2+1}- v(y))^2
-\]</span> 约束域<span class="math inline">\(D\)</span>为 <span class="math display">\[
+\]</span> 约束域<span class="math inline">\(D\)</span>为 <span
+class="math display">\[
 0\leq c\leq 4\sigma\\
 \]</span> <span class="math display">\[
 |d|\leq c \ {\rm and} \ |d|\leq 4\sigma - c\\
 \]</span> <span class="math display">\[
 0\leq \widetilde{a} \leq {\rm max } \{ {\widetilde v_i} \}
 \]</span>
-至此，SVI模型的优化过程变成一个两步优化过程，外层循环使用Nelder-Mead估算<span class="math inline">\(m\)</span>和<span class="math inline">\(\sigma\)</span>两个参数，内层使用梯度下降法令梯度算子为0直接获得<span class="math inline">\(a,b,
-\rho\)</span>三个参数。对于超出边界的情况使用凸优化域边界值为三个未知变量<span class="math inline">\(a,d,c\)</span>赋值，计算在边界条件时候的loss函数，选择loss最小的一组<span class="math inline">\(a,d,c\)</span>值作为<span class="math inline">\(m,\sigma\)</span>在网格参数扫描对应参数的loss。</p>
+至此，SVI模型的优化过程变成一个两步优化过程，外层循环使用Nelder-Mead估算<span
+class="math inline">\(m\)</span>和<span
+class="math inline">\(\sigma\)</span>两个参数，内层使用梯度下降法令梯度算子为0直接获得<span
+class="math inline">\(a,b,
+\rho\)</span>三个参数。对于超出边界的情况使用凸优化域边界值为三个未知变量<span
+class="math inline">\(a,d,c\)</span>赋值，计算在边界条件时候的loss函数，选择loss最小的一组<span
+class="math inline">\(a,d,c\)</span>值作为<span
+class="math inline">\(m,\sigma\)</span>在网格参数扫描对应参数的loss。</p>
 <p><strong>优化算法</strong></p>
 <ul>
-<li>step-1 参数<span class="math inline">\(m,\sigma\)</span>对应的<span class="math inline">\(c,d,a\)</span>直接解线性方程组，检测函数<code>acceptable</code>判断是否在域内，如果<span class="math inline">\(c,d,a\)</span>参数取值在域内直接采用。
+<li>step-1 参数<span class="math inline">\(m,\sigma\)</span>对应的<span
+class="math inline">\(c,d,a\)</span>直接解线性方程组，检测函数<code>acceptable</code>判断是否在域内，如果<span
+class="math inline">\(c,d,a\)</span>参数取值在域内直接采用。
 对变量为<span class="math inline">\(a,b,
-\rho\)</span>的方程组使用GBD算法优化的最小值在梯度<span class="math inline">\(\nabla f =0\)</span>的位置，即 <span class="math display">\[
+\rho\)</span>的方程组使用GBD算法优化的最小值在梯度<span
+class="math inline">\(\nabla f =0\)</span>的位置，即 <span
+class="math display">\[
 \frac{1}{2}\nabla f(c,d,\widetilde a) = A \begin{Bmatrix} c \\ d \\a
 \end{Bmatrix} - b = 0
 \]</span></li>
@@ -393,7 +422,10 @@ vega.max()的winsorize方式对loss-function中不同合约添加权重</li>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">vega /= vega.<span class="built_in">max</span>()  <span class="comment"># winsorize</span></span><br><span class="line">w = vega.mean()  <span class="comment"># weight replace n, n = tiv.shape[0]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># scale</span></span><br><span class="line">y = (k - m) / sigma</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2020-04-10 sum -&gt; mean 消除batch-size 数量级对epsilon影响,</span></span><br><span class="line"><span class="comment"># vega adjusted the weight of tail contracts in loss function</span></span><br><span class="line">y1 = (vega * y).mean()</span><br><span class="line">y2 = (vega * y * y).mean()</span><br><span class="line">y3 = (vega * sqrt(y * y + <span class="number">1</span>)).mean()</span><br><span class="line">y4 = (vega * y * sqrt(y * y + <span class="number">1</span>)).mean()</span><br><span class="line">y5 = (vega * (y * y + <span class="number">1</span>)).mean()</span><br><span class="line"></span><br><span class="line">vy2 = (vega * tiv * sqrt(y * y + <span class="number">1</span>)).mean()</span><br><span class="line">vy = (vega * tiv * y).mean()</span><br><span class="line">v = (vega * tiv).mean()</span><br></pre></td></tr></table></figure>
 <ul>
 <li>step-2
-如果不在域内，使用边界条件的极值计算。分别假设一个变量取极值、两个变量取极值的loss-function，选择最小的loss对应的<span class="math inline">\(c,d,a\)</span> 和loss作为<span class="math inline">\(m,\sigma\)</span>对应的最优化。 例如对<span class="math inline">\(a = 0\)</span> 约束域修改对比</li>
+如果不在域内，使用边界条件的极值计算。分别假设一个变量取极值、两个变量取极值的loss-function，选择最小的loss对应的<span
+class="math inline">\(c,d,a\)</span> 和loss作为<span
+class="math inline">\(m,\sigma\)</span>对应的最优化。 例如对<span
+class="math inline">\(a = 0\)</span> 约束域修改对比</li>
 </ul>
 <p><span class="math display">\[\begin{equation}
 \begin{aligned}
@@ -422,7 +454,10 @@ a = 0\\
 \end{Bmatrix}
 \]</span></p>
 <ul>
-<li><strong>注</strong> 对<span class="math inline">\(c,d,a\)</span>取边界条件进行参数扫描的时候 <span class="math inline">\(c = 0, c=4\sigma\)</span> 隐含约束<span class="math inline">\(d = 0\)</span> 。</li>
+<li><strong>注</strong> 对<span
+class="math inline">\(c,d,a\)</span>取边界条件进行参数扫描的时候 <span
+class="math inline">\(c = 0, c=4\sigma\)</span> 隐含约束<span
+class="math inline">\(d = 0\)</span> 。</li>
 </ul>
 <h3 id="梯度下降法展开">梯度下降法展开</h3>
 <p>目标函数 <span class="math display">\[
@@ -432,7 +467,9 @@ f_{y,{\rm tv} } (c,d,\widetilde{a})=\sum^{n}_{i=1} (\widetilde{a} + dy_i
 f (c,d,a)=\sum^{n}_{i=1} (\sqrt{y_i^2+1}\cdot c + y_i\cdot d  +
 \widetilde{a}- \widetilde{v}_i)^2
 \]</span></p>
-<p>梯度下降，凸优化损失函数极值在梯度算子为0的位置<span class="math inline">\(\nabla f =0\)</span> 对参数<span class="math inline">\(c\)</span></p>
+<p>梯度下降，凸优化损失函数极值在梯度算子为0的位置<span
+class="math inline">\(\nabla f =0\)</span> 对参数<span
+class="math inline">\(c\)</span></p>
 <p><span class="math display">\[\begin{equation}
 \begin{aligned}
 \frac{\partial f}{\partial c} &amp;= \sum 2 \sqrt{y_i^2+1}
@@ -447,14 +484,16 @@ f (c,d,a)=\sum^{n}_{i=1} (\sqrt{y_i^2+1}\cdot c + y_i\cdot d  +
 \sum(y_i^2+1) \cdot c + \sum\sqrt{y_i^2+1} y_i \cdot d + \sum
 \sqrt{y_i^2+1} \cdot a - \sum \sqrt{y_i^2+1} \cdot \widetilde{v}_i= 0
 \]</span></p>
-<p>对参数<span class="math inline">\(d\)</span> <span class="math display">\[
+<p>对参数<span class="math inline">\(d\)</span> <span
+class="math display">\[
 \frac{\partial f}{\partial d} = \sum 2 y_i (\sqrt{y_i^2+1}\cdot c +
 y_i\cdot d  + \widetilde{a}- \widetilde{v}_i) = 0
 \]</span> 即 <span class="math display">\[
 \sum y_i \sqrt{y_i^2+1} \cdot c + \sum y_i^2 \cdot d +\sum y_i \cdot a -
 \sum y_i \cdot \widetilde{v}_i = 0
 \]</span></p>
-<p>对参数<span class="math inline">\(a\)</span> <span class="math display">\[
+<p>对参数<span class="math inline">\(a\)</span> <span
+class="math display">\[
 \frac{\partial f}{\partial a} = \sum 2  (\sqrt{y^2+1}\cdot c + y_i\cdot
 d  + \widetilde{a}- \widetilde{v}_i) = 0
 \]</span> 即 <span class="math display">\[
@@ -492,7 +531,9 @@ Moreover, there is no reason to expect these parameters to be
 particularly stable. The SVI-Jump-Wings (SVI-JW) parameterization of the
 implied variance v (rather than the implied total variance w) was
 inspired by a similar parameterization attributed to Tim Klassen, then
-at Goldman Sachs. For a given time to expiry <span class="math inline">\(t &gt;0\)</span> and a parameter set <span class="math inline">\(\xi_J:=\{v_t,\psi_t,p_t,c_t,\tilde{v_t}\}\)</span>
+at Goldman Sachs. For a given time to expiry <span
+class="math inline">\(t &gt;0\)</span> and a parameter set <span
+class="math inline">\(\xi_J:=\{v_t,\psi_t,p_t,c_t,\tilde{v_t}\}\)</span>
 the SVI-JW parametrization is given in raw SVI parameters:</p>
 </blockquote>
 <p><span class="math display">\[\begin{equation}
@@ -522,22 +563,30 @@ implied variance.</li>
 <li><a target="_blank" rel="noopener" href="http://faculty.baruch.cuny.edu/jgatheral/madrid2004.pdf">A
 parsimonious arbitrage-free implied volatility parameterization with
 application to the valuation of volatility derivatives</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/bramjochems/MyExcelLib/blob/master/BJExcelLib/Finance.SVI.fs">MyExcelLib</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/remis-thoughts/svi-zeliade">svi-zeliade</a></li>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/36902908">理解梯度下降法</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pinard/p/5970503.html">梯度下降（Gradient
+<li><a
+target="_blank" rel="noopener" href="https://github.com/bramjochems/MyExcelLib/blob/master/BJExcelLib/Finance.SVI.fs">MyExcelLib</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/remis-thoughts/svi-zeliade">svi-zeliade</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/36902908">理解梯度下降法</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/pinard/p/5970503.html">梯度下降（Gradient
 Descent）小结</a></li>
 <li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/38128785/">最小二乘法（least
 sqaure method）</a></li>
-<li><a target="_blank" rel="noopener" href="https://zeliade.com/wp-content/uploads/whitepapers/zwp-0005-SVICalibration.pdf">Quasi-Explicit
+<li><a
+target="_blank" rel="noopener" href="https://zeliade.com/wp-content/uploads/whitepapers/zwp-0005-SVICalibration.pdf">Quasi-Explicit
 Calibration of Gatheral’s SVI model</a></li>
-<li><a target="_blank" rel="noopener" href="https://mfe.baruch.cuny.edu/wp-content/uploads/2013/01/OsakaSVI2012.pdf">Arbitrage-free
+<li><a
+target="_blank" rel="noopener" href="https://mfe.baruch.cuny.edu/wp-content/uploads/2013/01/OsakaSVI2012.pdf">Arbitrage-free
 SVI volatility surfaces</a></li>
 <li><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1204.0646.pdf">Arbitrage-free SVI
 volatility surfaces</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.math.kth.se/matstat/seminarier/reports/M-exjobb14/140909.pdf">The
+<li><a
+target="_blank" rel="noopener" href="https://www.math.kth.se/matstat/seminarier/reports/M-exjobb14/140909.pdf">The
 SVI implied volatility model and its calibration</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/wangys96/SVI-Volatility-Surface-Calibration/blob/master/svi.py">SVI-Volatility-Surface-Calibration</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/wangys96/SVI-Volatility-Surface-Calibration/blob/master/svi.py">SVI-Volatility-Surface-Calibration</a></li>
 </ul>
 <h2 id="quasi-explicit-calibration-code">Quasi-Explicit Calibration
 Code</h2>

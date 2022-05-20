@@ -280,8 +280,10 @@ volatility of the front month</li>
 <li><span class="math inline">\(\sigma_2\)</span> is the implied
 volatility of the second month</li>
 </ul>
-<p>The volatility attributed to the event, <span class="math inline">\(\sigma_{E}\)</span>, is the difference of the
-front-month volatility and the forward volatility. <span class="math display">\[
+<p>The volatility attributed to the event, <span
+class="math inline">\(\sigma_{E}\)</span>, is the difference of the
+front-month volatility and the forward volatility. <span
+class="math display">\[
 \sigma_{\rm E} = \sqrt{T_1(\sigma_1^2 - \sigma_{12}^2)} =
 \sqrt{(\sigma_1^2 - \sigma_{12}^2)\frac{T_1T_2}{T_2-T_1}}
 \]</span> Now, we find that the expected absolute return (the jump) is
@@ -291,10 +293,11 @@ E(|R|) = \sqrt{\frac{2}{\pi}}\sigma_{\rm E}
 volatilities and compare this to our estimate of the actual move in the
 underlying.</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://www.wiley.com/en-us/Volatility+Trading%2C+%2B+Website%2C+2nd+Edition-p-9781118347133">Volatility
+<li><a
+target="_blank" rel="noopener" href="https://www.wiley.com/en-us/Volatility+Trading%2C+%2B+Website%2C+2nd+Edition-p-9781118347133">Volatility
 Trading, 2nd Edition Euan Sinclair ISBN: 978-1-118-34713-3</a></li>
 </ul>
-<hr>
+<hr />
 <h2 id="附录">附录</h2>
 <h3 id="日波动率">日波动率</h3>
 <p>日波动率 = 收益率的平方求均值后开方</p>
@@ -312,16 +315,27 @@ E(|R_t|) = \sqrt{\frac{2}{\pi}}\sigma
 \]</span>
 书中并没有提供相关的推导，我也困惑了一段时间，受到另一位知乎作者的启发，终于搞清楚了其中关联起来的数学逻辑，有了深刻的理解才能帮助更好地去运用它，这里也做分享。</p>
 <h3 id="正态分布">正态分布</h3>
-<p>若随机变量<span class="math inline">\(X\)</span>服从一个位置参数为<span class="math inline">\(\mu\)</span>、尺度参数为<span class="math inline">\(\sigma\)</span>的正态分布，记为： <span class="math display">\[
+<p>若随机变量<span
+class="math inline">\(X\)</span>服从一个位置参数为<span
+class="math inline">\(\mu\)</span>、尺度参数为<span
+class="math inline">\(\sigma\)</span>的正态分布，记为： <span
+class="math display">\[
 X \sim N(\mu, \sigma^2)
 \]</span> 则其概率密度函数为 <span class="math display">\[
 f(x) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2 \sigma^2}}
-\]</span> 正态分布的数学期望值或期望值<span class="math inline">\(\mu\)</span>等于位置参数，决定了分布的位置；其方差<span class="math inline">\(\sigma^2\)</span>的开平方或标准差<span class="math inline">\(\sigma\)</span>等于尺度参数，决定了分布的幅度。</p>
+\]</span> 正态分布的数学期望值或期望值<span
+class="math inline">\(\mu\)</span>等于位置参数，决定了分布的位置；其方差<span
+class="math inline">\(\sigma^2\)</span>的开平方或标准差<span
+class="math inline">\(\sigma\)</span>等于尺度参数，决定了分布的幅度。</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83">正态分布</a></li>
-<li><a target="_blank" rel="noopener" href="http://hongyitong.github.io/2016/11/13/%E4%BA%8C%E9%A1%B9%E5%88%86%E5%B8%83%E3%80%81%E6%B3%8A%E6%9D%BE%E5%88%86%E5%B8%83%E3%80%81%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83/">二项分布、泊松分布、正态分布的关系</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83">正态分布</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://hongyitong.github.io/2016/11/13/%E4%BA%8C%E9%A1%B9%E5%88%86%E5%B8%83%E3%80%81%E6%B3%8A%E6%9D%BE%E5%88%86%E5%B8%83%E3%80%81%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83/">二项分布、泊松分布、正态分布的关系</a></li>
 </ul>
-<p>根据delta-hedging操作中日终不留敞口的逻辑，假设均值<span class="math inline">\(\mu=0\)</span>，正态分布简化为 <span class="math display">\[
+<p>根据delta-hedging操作中日终不留敞口的逻辑，假设均值<span
+class="math inline">\(\mu=0\)</span>，正态分布简化为 <span
+class="math display">\[
 f(x) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{x^2}{2 \sigma^2}}
 \]</span></p>
 <h3 id="转换推导">转换推导</h3>
@@ -336,7 +350,8 @@ E(|R_t|) &amp;= \int_{-\infty}^{+\infty} \left|x\right| \times
 &amp;=\sqrt{\frac{2}{\pi}}\sigma
 \end{aligned}
 \end{equation}\]</span></p>
-<p>以上<span class="math inline">\(\sigma\)</span>为日波动率，转化为年化波动率，于是
+<p>以上<span
+class="math inline">\(\sigma\)</span>为日波动率，转化为年化波动率，于是
 <span class="math display">\[
 E(|R_t|) = \frac{1}{\sqrt{252}} \sqrt{\frac{2}{\pi}} \sigma_{\rm 年化}
 \approx \frac{\sigma_{\rm 年化}}{19.90}
@@ -346,7 +361,8 @@ E(|R_t|) = \frac{1}{\sqrt{243}} \sqrt{\frac{2}{\pi}} \sigma_{\rm 年化}
 \approx \frac{\sigma_{\rm 年化}}{19.54}
 \]</span></p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/505788151/answer/2271071367">为什么日波动率1%对应年化波动率是20%而不是16%</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.zhihu.com/question/505788151/answer/2271071367">为什么日波动率1%对应年化波动率是20%而不是16%</a></li>
 </ul>
 <h3 id="定积分">定积分</h3>
 <p><span class="math display">\[

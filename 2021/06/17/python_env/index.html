@@ -256,14 +256,18 @@
 <h3 id="使用-pip-freeze-生成requirements.txt">使用 pip freeze
 生成requirements.txt</h3>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pip install pipreqs</span><br><span class="line"></span><br><span class="line">在项目根目录下生成requirements</span><br><span class="line">pipreqs . --encoding=utf-8 --force</span><br><span class="line"></span><br><span class="line">执行requirement.txt</span><br><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-<h3 id="bat快捷方式激活虚拟环境运行python程序">bat快捷方式激活虚拟环境+运行python程序</h3>
+<h3
+id="bat快捷方式激活虚拟环境运行python程序">bat快捷方式激活虚拟环境+运行python程序</h3>
 <p>激活python虚拟环境的workon，activate命令是一个bat文件，在bat文件中激活虚拟环境相当于是一个bat文件调用了另一个bat文件，这会导致第一个bat文件中断。解决的方法很简单，就是在workon或activate前面加call就可以实现激活虚拟环境并继续运行python程序了。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@echo off</span><br><span class="line">chcp 65001</span><br><span class="line">title project x shortcut</span><br><span class="line">call activate py37</span><br><span class="line">python run_update_static_data.py</span><br><span class="line">ping -n 3 127.0.0.1&gt;nul</span><br><span class="line">python run_paste_ctp.py</span><br><span class="line">pause</span><br></pre></td></tr></table></figure>
-<hr>
+<hr />
 <ul>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/94744929">Anaconda-用conda创建python虚拟环境</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/acb3205aea54">Python项目如何生成requirements.txt文件</a></li>
-<li><a target="_blank" rel="noopener" href="http://www.xueshanlinghu.com/excellent-articles/2642.html">python切换虚拟环境（workon或activate）会中断bat的运行的处理方案
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/94744929">Anaconda-用conda创建python虚拟环境</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.jianshu.com/p/acb3205aea54">Python项目如何生成requirements.txt文件</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://www.xueshanlinghu.com/excellent-articles/2642.html">python切换虚拟环境（workon或activate）会中断bat的运行的处理方案
 | 雪山凌狐教程 (xueshanlinghu.com)</a></li>
 </ul>
 

@@ -254,7 +254,12 @@
 <p>Black Scholes(Black73)
 模型认为对冲期权的成本就是期权的合理价格，Merton进一步论证一个期权的到期收益可以通过持有一定数量的该期权标的资产和资金来复制。虽然持有的数量需要根据市场变化不断调整，但是中途没有现金流净流入和流出。因此期权今天的价格必须等于复制组合今天的价值，否则就会出现套利机会。</p>
 <span id="more"></span>
-<p>Black73模型的最常见的推导方式，即假设时间<span class="math inline">\(t\)</span>组合<span class="math inline">\(\Pi\)</span>由一张价格<span class="math inline">\(V\)</span>的看涨期权多头和<span class="math inline">\(\partial V/\partial S\)</span>的股票空头组成 <span class="math display">\[
+<p>Black73模型的最常见的推导方式，即假设时间<span
+class="math inline">\(t\)</span>组合<span
+class="math inline">\(\Pi\)</span>由一张价格<span
+class="math inline">\(V\)</span>的看涨期权多头和<span
+class="math inline">\(\partial V/\partial S\)</span>的股票空头组成 <span
+class="math display">\[
 \Pi = V - S\times \frac{\partial V}{\partial S}
 \]</span> 在一小段时间后 <span class="math inline">\(\mathrm{d}
 t\)</span>之后，期权的损益为（根据伊藤引理）：</p>
@@ -269,17 +274,21 @@ V}{\partial  S^2})\mathrm{d}t + \sigma S
 \frac{1}{2}\sigma^2S^2\frac{\partial^2 V}{\partial  S^2}\mathrm{d}t
 \]</span> 股票的损益为 <span class="math display">\[
 \frac{\partial  V}{\partial  S} \mathrm{d}S
-\]</span> 构建组合<span class="math inline">\(\Pi\)</span>产生现金流的利息为 <span class="math display">\[
+\]</span> 构建组合<span
+class="math inline">\(\Pi\)</span>产生现金流的利息为 <span
+class="math display">\[
 r\Pi \mathrm{d}t = r (V - S\times \frac{\partial  V}{\partial  S})
 \mathrm{d}t
 \]</span> 根据无套利理论假设等式成立 <span class="math display">\[
 \mathrm {d}\Pi = r\Pi \mathrm{d}t \\
 \mathrm{d} V  + \frac{\partial  V}{\partial  S} \mathrm{d}S = r (V -
 S\times \frac{\partial  V}{\partial  S}) \mathrm{d}t
-\]</span> 合并同类项之后得到Black Scholes方程 <span class="math display">\[
+\]</span> 合并同类项之后得到Black Scholes方程 <span
+class="math display">\[
 \frac{\partial  V}{\partial  t} +rS\frac{\partial  V}{\partial  S} +
 \frac{1}{2}\sigma^2S^2\frac{\partial^2{V}}{\partial{S^2}} = rV
-\]</span> 方程的闭式解即为经典的Black73模型 <span class="math display">\[\begin{equation}
+\]</span> 方程的闭式解即为经典的Black73模型 <span
+class="math display">\[\begin{equation}
 \begin{aligned}
 c &amp;= SN(d_1) - Xe^{-rT}N(d_2)\\
 p &amp;= Xe^{-rT}N(-d_2) - SN(-d_2)\\
@@ -287,9 +296,12 @@ d_1 &amp;= \frac{\ln(S/X) + (r+\sigma^2/2)T}{\sigma\sqrt{T}}\\
 d_2 &amp;= d_1 - \sigma\sqrt{T}
 \end{aligned}
 \end{equation}\]</span></p>
-<p>有了这种转换方式期权的价格就可以使用函数表示为<span class="math inline">\(V = f(S, X, T, r,
-\sigma)\)</span>。由于对场内期权的BS模型参数<span class="math inline">\(S, X, T,
-r\)</span>很容易观察到，则可以通过逆向使用BS函数结合市场报价计算一个刚好符合市场价格的波动率参数<span class="math inline">\(\sigma_i\)</span>，这样期权的报价就从价格转换为波动率报价来。通过市场价格逆用模型得到的波动率被称为隐含波动率(Implied
+<p>有了这种转换方式期权的价格就可以使用函数表示为<span
+class="math inline">\(V = f(S, X, T, r,
+\sigma)\)</span>。由于对场内期权的BS模型参数<span
+class="math inline">\(S, X, T,
+r\)</span>很容易观察到，则可以通过逆向使用BS函数结合市场报价计算一个刚好符合市场价格的波动率参数<span
+class="math inline">\(\sigma_i\)</span>，这样期权的报价就从价格转换为波动率报价来。通过市场价格逆用模型得到的波动率被称为隐含波动率(Implied
 Volatility)。</p>
 <p>BS-Model计算的时候使用了泰勒展开进行近似，理论上计算所得数值为近似值，不过实践中相比于其它因素的影响这些近似偏差无足轻重。事实上，“理论定价”与实际应用是完全脱节的，实际交易中，期权的价格由市场决定，BS模型告诉了我们价格对应的波动率是多少，简而言之，BS
 Model只是用来计算implied volatility的报价工具。</p>

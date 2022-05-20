@@ -267,9 +267,10 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> largeNum = <span class="number">5000000</span>;</span><br><span class="line"><span class="keyword">short</span> anotherNum&#123; largeNum &#125;; <span class="comment">// error! Amend types</span></span><br><span class="line"><span class="keyword">int</span> anotherNum&#123; largeNum &#125;; <span class="comment">// OK!</span></span><br><span class="line"><span class="keyword">float</span> someFloat&#123; largeNum &#125;; <span class="comment">// error! An int may be narrowed</span></span><br><span class="line"><span class="keyword">float</span> someFloat&#123; <span class="number">5000000</span> &#125;; <span class="comment">// OK! 5000000 can be accomodated</span></span><br></pre></td></tr></table></figure>
 <p>这种功能的作用虽然不明显，但可避免在执行阶段对数据进行缩窄转换导致的bug：这种bug
 是不合理的初始化导致的，难以发现。</p>
-<hr>
+<hr />
 <ul>
-<li><a target="_blank" rel="noopener" href="https://book.douban.com/subject/27144565/">21天学通C++(第8版)
+<li><a
+target="_blank" rel="noopener" href="https://book.douban.com/subject/27144565/">21天学通C++(第8版)
 3.3.1</a></li>
 </ul>
 

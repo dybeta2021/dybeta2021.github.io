@@ -28,13 +28,13 @@
 <meta property="og:site_name" content="子非鱼">
 <meta property="og:description" content="Docker使用备忘录，docker的安装、开发环境设置、数据库等">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//Navicat.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/docker/Navicat.png">
 <meta property="article:published_time" content="2021-06-19T05:00:37.000Z">
 <meta property="article:modified_time" content="2021-06-19T05:00:37.000Z">
 <meta property="article:author" content="观鱼">
 <meta property="article:tag" content="Docker">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://dybeta2021.github.io/.io//Navicat.png">
+<meta name="twitter:image" content="https://dybeta2021.github.io/2021/06/19/docker/Navicat.png">
 
 <link rel="canonical" href="https://dybeta2021.github.io/2021/06/19/docker/">
 
@@ -252,7 +252,8 @@
 
       
         <h2 id="docker-windows">Docker Windows</h2>
-<h3 id="使用wsl修改docker文件存储位置">使用WSL修改docker文件存储位置</h3>
+<h3
+id="使用wsl修改docker文件存储位置">使用WSL修改docker文件存储位置</h3>
 <p>WSL2模式下docker-desktop-data vm磁盘映像通常位于以下位置：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\XXX\AppData\Local\Docker\wsl\data\ext4.vhdx</span><br></pre></td></tr></table></figure>
 <p>按照以下说明将其重新定位到其他驱动器/目录，并保留所有现有的Docker数据。
@@ -278,10 +279,11 @@ Desktop，可以正常工作了</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 3306:3306 --name mysql -v D:\docker\mysql\conf:/etc/mysql/conf.d -v D:\docker\mysql\logs:/var/log/mysql -v D:\docker\mysql\data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">命令解释说明：</span><br><span class="line">-p 3306:3306：将主机的3306端口映射到docker容器的3306端口。</span><br><span class="line">--name mysql：运行服务名字</span><br><span class="line">-v D:\docker\mysql\conf:/etc/mysql/conf.d ：将主机/mydocker/mysql录下的conf/my.cnf 挂载到容器的 /etc/mysql/conf.d</span><br><span class="line">-v D:\docker\mysql\logs:/var/log/mysql：将主机/mydocker/mysql目录下的 logs 目录挂载到容器的 /logs。</span><br><span class="line">-v D:\docker\mysql\data:/var/lib/mysql ：将主机/mydocker/mysql目录下的data目录挂载到容器的 /var/lib/mysql</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=123456：初始化 root 用户的密码。</span><br><span class="line">-d mysql :后台程序运行mysql5</span><br><span class="line">--character-set-server=utf8mb4 ：设置字符集</span><br><span class="line">--collation-server=utf8mb4_unicode_ci：设置校对集</span><br></pre></td></tr></table></figure>
 <p>在macOS设置为 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 3306:3306 --name mysql -v /Users/dy/docker/mysql/conf:/etc/mysql/conf.d -v /Users/dy/docker/mysql/logs:/var/log/mysql -v /Users/dy/docker/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure></p>
+<p>在Ubuntu设置为 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 3306:3306 --name mysql -v /home/docker/mysql/conf:/etc/mysql/conf.d -v /home/docker/mysql/logs:/var/log/mysql -v /home/docker/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure></p>
 <p>3、查看容器日志</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f -t --tail 100   b02d3de2254a</span><br></pre></td></tr></table></figure>
 <p>4、连接到Navicat Premium</p>
-<p><img src="/.io//Navicat.png" width="100%" height="100%" title="Navicat" alt="Navicat"></p>
+<p><img src="Navicat.png" width="100%" height="100%" title="Navicat" alt="Navicat"/></p>
 <h2 id="mongodb">MongoDB</h2>
 <p>拉取镜像</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker search mongo</span><br><span class="line">docker pull mongo</span><br></pre></td></tr></table></figure>
@@ -314,9 +316,11 @@ Desktop，可以正常工作了</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --link single-clickhouse-server:clickhouse-server yandex/clickhouse-client -uroot --password root --host clickhouse-server</span><br></pre></td></tr></table></figure>
 <h2 id="docker-开发环境">Docker 开发环境</h2>
 <p>SSH开发环境 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">docker pull ubuntu</span><br><span class="line">docker run --name iubuntu -t -i -d -p 3316:22 ubuntu</span><br><span class="line">docker exec -t -i iubuntu /bin/bash</span><br><span class="line"></span><br><span class="line">apt-get update</span><br><span class="line">apt-get install -y vim</span><br><span class="line">vim /etc/apt/sources.list</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 进入文件编辑模式</span></span><br><span class="line">gg # 进入行首</span><br><span class="line">dG # 文件内容将被全部清空</span><br><span class="line"></span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal universe</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates universe</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal multiverse</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates multiverse</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security universe</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security multiverse</span><br><span class="line"></span><br><span class="line">:wq # 保存退出</span><br><span class="line"></span><br><span class="line">apt-get update</span><br><span class="line">apt-get dist-upgrade</span><br><span class="line">apt-get install -y sudo vim git net-tools rsync sudo iputils-ping</span><br><span class="line">apt-get install -y openssh-client openssh-server</span><br><span class="line"></span><br><span class="line">/etc/init.d/ssh start</span><br><span class="line">ps -e|grep ssh</span><br><span class="line">vim /etc/ssh/sshd_config</span><br><span class="line">PermitRootLogin yes</span><br><span class="line">service ssh restart</span><br><span class="line">passwd root</span><br><span class="line">exit</span><br></pre></td></tr></table></figure></p>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31078295">Docker容器中添加中文字符的支持</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31078295">Docker容器中添加中文字符的支持</a></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">locale -a</span><br><span class="line">apt-get update</span><br><span class="line">apt-get install -y locales</span><br><span class="line">apt-get install language-pack-zh-hans</span><br><span class="line">locale-gen zh_CN</span><br><span class="line">locale-gen zh_CN.utf8</span><br><span class="line">locale-gen zh_CN.UTF-8</span><br><span class="line">locale-gen zh_CN.GB18030</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash">看看当前启用的本地支持</span></span><br><span class="line">locale -a</span><br><span class="line">export LANG=zh_CN.UTF-8</span><br><span class="line">export LC_ALL=zh_CN.UTF-8</span><br><span class="line">export LANGUAGE=zh_CN.UTF-8</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash">现在来看看当前的字符集</span></span><br><span class="line">locale</span><br><span class="line"></span><br><span class="line">sudo update-locale LANG=zh_CN.UTF-8 LC_ALL=zh_CN.UTF-8 LANGUAGE=zh_CN.UTF-8</span><br><span class="line">cat /etc/default/locale</span><br></pre></td></tr></table></figure>
-<p>C++开发环境 - <a target="_blank" rel="noopener" href="https://github.com/microsoft/vcpkg/blob/master/README_zh_CN.md#安装-linux-developer-tools">Vcpkg</a></p>
+<p>C++开发环境 - <a
+target="_blank" rel="noopener" href="https://github.com/microsoft/vcpkg/blob/master/README_zh_CN.md#安装-linux-developer-tools">Vcpkg</a></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y build-essential cmake gdb gdbserver</span><br><span class="line">apt-get install -y build-essential tar curl zip unzip</span><br><span class="line">git clone https://github.com/microsoft/vcpkg</span><br><span class="line">./vcpkg/bootstrap-vcpkg.sh</span><br><span class="line">./vcpkg/vcpkg search nng</span><br><span class="line">./vcpkg/vcpkg install nng</span><br></pre></td></tr></table></figure>
 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-DCMAKE_TOOLCHAIN_FILE=[path to vcpkg]/scripts/buildsystems/vcpkg.cmake</span><br><span class="line">-DCMAKE_TOOLCHAIN_FILE=/otslib/vcpkg/scripts/buildsystems/vcpkg.cmake </span><br></pre></td></tr></table></figure>
 <p>Python 开发环境</p>
@@ -349,51 +353,75 @@ Desktop，可以正常工作了</p>
 <li>https://blog.csdn.net/cjbfzxz/article/details/106652867</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker network create testnet</span><br><span class="line">docker network connect --alias db-clickhouse testnet single-clickhouse-server</span><br><span class="line">docker inspect --format &#x27;&#123;&#123; .NetworkSettings.IPAddress &#125;&#125;&#x27; $(docker ps -q)</span><br></pre></td></tr></table></figure>
-<hr>
+<hr />
 <h2 id="参考目录">参考目录</h2>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013948858/article/details/111464534">win10上修改docker的镜像文件存储位置（九）-
-通过WSL2修改</a><br>
-<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/405fe33b9032">Docker中国源</a><br>
-<a target="_blank" rel="noopener" href="https://blog.csdn.net/J080624/article/details/104297654">Docker下安装MySQL</a><br>
-<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41070393/article/details/109765759">docker安装mongodb并挂载_Vick
-C的博客-CSDN博客_docker mongodb 挂载</a><br>
-<a target="_blank" rel="noopener" href="https://www.cnblogs.com/throwable/p/14015092.html">Windows10系统下使用Docker搭建ClickHouse开发环境</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/xiaoxiao133/article/details/82847936">Ubuntu
-休眠设置合上笔记本盖子不休眠的方法</a><br>
-<a target="_blank" rel="noopener" href="https://bbs.huaweicloud.com/blogs/detail/216485">ubuntu如何对外开放端口</a></p>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/422010999">利用Docker搭载C/C++开发环境</a><br>
-<a target="_blank" rel="noopener" href="https://graueneko.com/archives/64/">使用Docker作为C++开发环境：适用于CLion与VSCode的配置</a><br>
-<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000021318326">使用Docker搭建Linuc
-C++编译环境</a><br>
-<a target="_blank" rel="noopener" href="https://www.cnblogs.com/mengw/p/11413461.html">docker安装Ubuntu以及ssh连接</a><br>
-<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45719413/article/details/112728052">Xshell正版免费，再也不用找破解版了</a><br>
-<a target="_blank" rel="noopener" href="https://cloud-atlas.readthedocs.io/zh_CN/latest/docker/admin/docker_ssh.html">Docker容器中运行ssh服务</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8648475b26b3">利用Docker和CLion在Mac优雅地开发和调试Linux
-C++程序</a><br>
-<a target="_blank" rel="noopener" href="https://blog.csdn.net/whatday/article/details/84994416">privileged使用该参数，container内的root拥有真正的root权限</a><br>
-<a target="_blank" rel="noopener" href="https://www.cnblogs.com/eden-libinglin/p/13803729.html">Docker入门教程</a><br>
-<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/405fe33b9032">Docker中国源</a><br>
-<a target="_blank" rel="noopener" href="https://hub.daocloud.io">DaoCloud</a><br>
+<p><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/u013948858/article/details/111464534">win10上修改docker的镜像文件存储位置（九）-
+通过WSL2修改</a><br />
+<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/405fe33b9032">Docker中国源</a><br />
+<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/J080624/article/details/104297654">Docker下安装MySQL</a><br />
+<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41070393/article/details/109765759">docker安装mongodb并挂载_Vick
+C的博客-CSDN博客_docker mongodb 挂载</a><br />
+<a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/throwable/p/14015092.html">Windows10系统下使用Docker搭建ClickHouse开发环境</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/xiaoxiao133/article/details/82847936">Ubuntu
+休眠设置合上笔记本盖子不休眠的方法</a><br />
+<a
+target="_blank" rel="noopener" href="https://bbs.huaweicloud.com/blogs/detail/216485">ubuntu如何对外开放端口</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/422010999">利用Docker搭载C/C++开发环境</a><br />
+<a
+target="_blank" rel="noopener" href="https://graueneko.com/archives/64/">使用Docker作为C++开发环境：适用于CLion与VSCode的配置</a><br />
+<a
+target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000021318326">使用Docker搭建Linuc
+C++编译环境</a><br />
+<a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/mengw/p/11413461.html">docker安装Ubuntu以及ssh连接</a><br />
+<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45719413/article/details/112728052">Xshell正版免费，再也不用找破解版了</a><br />
+<a
+target="_blank" rel="noopener" href="https://cloud-atlas.readthedocs.io/zh_CN/latest/docker/admin/docker_ssh.html">Docker容器中运行ssh服务</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://www.jianshu.com/p/8648475b26b3">利用Docker和CLion在Mac优雅地开发和调试Linux
+C++程序</a><br />
+<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/whatday/article/details/84994416">privileged使用该参数，container内的root拥有真正的root权限</a><br />
+<a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/eden-libinglin/p/13803729.html">Docker入门教程</a><br />
+<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/405fe33b9032">Docker中国源</a><br />
+<a target="_blank" rel="noopener" href="https://hub.daocloud.io">DaoCloud</a><br />
 <a target="_blank" rel="noopener" href="https://www.meiyoubug.com/article/15633.html">docker -
-apt-get更换国内源解决Dockerfile构建速度过慢</a><br>
-<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000021318326">使用Docker搭建Linuc
-C++编译环境</a><br>
-<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8648475b26b3">利用Docker和CLion在Mac优雅地开发和调试Linux
-C++程序</a><br>
-<a target="_blank" rel="noopener" href="https://imhuwq.com/2018/12/02/Clion%20%E4%BD%BF%E7%94%A8%20Docker%20%E4%BD%9C%E4%B8%BA%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">Clion
-如何使用 Docker 作为开发环境</a><br>
-<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43914736/article/details/90608587">Docker
-Ubuntu上安装ssh和连接ssh</a><br>
-<a href="/program/web/Windows10系统下使用Docker搭建ClickHouse开发环境.html" title=":ignore">Windows10系统下使用Docker搭建ClickHouse开发环境</a></p>
-<p><a target="_blank" rel="noopener" href="https://native-authenticator.readthedocs.io/en/latest/quickstart.html#installation">Native
-Authenticator</a><br>
+apt-get更换国内源解决Dockerfile构建速度过慢</a><br />
+<a
+target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000021318326">使用Docker搭建Linuc
+C++编译环境</a><br />
+<a
+target="_blank" rel="noopener" href="https://www.jianshu.com/p/8648475b26b3">利用Docker和CLion在Mac优雅地开发和调试Linux
+C++程序</a><br />
+<a
+target="_blank" rel="noopener" href="https://imhuwq.com/2018/12/02/Clion%20%E4%BD%BF%E7%94%A8%20Docker%20%E4%BD%9C%E4%B8%BA%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">Clion
+如何使用 Docker 作为开发环境</a><br />
+<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43914736/article/details/90608587">Docker
+Ubuntu上安装ssh和连接ssh</a><br />
+<a
+href="/program/web/Windows10系统下使用Docker搭建ClickHouse开发环境.html"
+title=":ignore">Windows10系统下使用Docker搭建ClickHouse开发环境</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://native-authenticator.readthedocs.io/en/latest/quickstart.html#installation">Native
+Authenticator</a><br />
 <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=NuzYSNTBvZU">How to set a
 multiuser Jupyterlab server with Jupyterhub (in Windows with
-Docker)</a><br>
-<a target="_blank" rel="noopener" href="https://hatarilabs.com/ih-en/how-to-set-a-multiuser-jupyterlab-server-with-jupyterhub-in-windows-with-docker">How
+Docker)</a><br />
+<a
+target="_blank" rel="noopener" href="https://hatarilabs.com/ih-en/how-to-set-a-multiuser-jupyterlab-server-with-jupyterhub-in-windows-with-docker">How
 to set a multiuser Jupyterlab server with Jupyterhub (in Windows with
 Docker)</a></p>
-<p><a target="_blank" rel="noopener" href="https://xujinzh.github.io/2021/02/20/jupyterhub/#%E5%AE%89%E8%A3%85-Miniconda">利用
+<p><a
+target="_blank" rel="noopener" href="https://xujinzh.github.io/2021/02/20/jupyterhub/#%E5%AE%89%E8%A3%85-Miniconda">利用
 jupyterhub 搭建多用户 jupyterlab 开发环境</a></p>
 <p><a target="_blank" rel="noopener" href="https://huangwenwei.com/blogs/ubuntu-mount-disk">Ubuntu
 挂载新硬盘并把home目录迁移到新硬盘</a></p>

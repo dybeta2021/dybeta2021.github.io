@@ -267,19 +267,22 @@ pointer)，需要给形参分配存储单元、当传递是对象时，要调用
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">function</span><span class="params">(<span class="keyword">int</span> &amp;param[size])</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        cout &lt;&lt; param[i] &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>使用模板扩展</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T,<span class="keyword">int</span> N&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">function</span><span class="params">(T &amp;params[N])</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        cout &lt;&lt; params[i] &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<hr>
+<hr />
 <p>c++中常用的vector容器作为参数时，有三种传参方式，分别如下（为说明问题，用二维vector）：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">function1</span>(std::vector&lt;std::vector&lt;<span class="keyword">int</span>&gt; &gt; vec); <span class="comment">//传值</span></span><br><span class="line"><span class="built_in">function2</span>(std::vector&lt;std::vector&lt;<span class="keyword">int</span>&gt; &gt;&amp; vec); <span class="comment">//传引用</span></span><br><span class="line"><span class="built_in">function3</span>(std::vector&lt;std::vector&lt;<span class="keyword">int</span>&gt; &gt;* vec); <span class="comment">//传指针</span></span><br></pre></td></tr></table></figure>
 <p>三种方式对应的调用形式分别为：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">function1</span>(vec); <span class="comment">//传入值</span></span><br><span class="line"><span class="built_in">function2</span>(vec); <span class="comment">//传入引用</span></span><br><span class="line"><span class="built_in">function3</span>(&amp;vec); <span class="comment">//传入地址</span></span><br></pre></td></tr></table></figure>
 <p>三种方式的效果分别为</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">会发生拷贝构造</span><br><span class="line">不会发生拷贝构造</span><br><span class="line">不会发生拷贝构造</span><br></pre></td></tr></table></figure>
-<hr>
+<hr />
 <ul>
-<li><a target="_blank" rel="noopener" href="https://www.runoob.com/cplusplus/cpp-passing-arrays-to-functions.html">C++
+<li><a
+target="_blank" rel="noopener" href="https://www.runoob.com/cplusplus/cpp-passing-arrays-to-functions.html">C++
 传递数组给函数</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/flowingwind/p/8446360.html">c++数组的引用</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xiaoxi666/p/6843211.html">vector作为参数的三种传参方式</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/flowingwind/p/8446360.html">c++数组的引用</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/xiaoxi666/p/6843211.html">vector作为参数的三种传参方式</a></li>
 </ul>
 
     </div>

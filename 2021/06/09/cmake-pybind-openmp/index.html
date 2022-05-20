@@ -28,16 +28,16 @@
 <meta property="og:site_name" content="子非鱼">
 <meta property="og:description" content="最近在看美式期权，美式期权上不存在公认的经典闭式解，必须求助于数值计算方式。但是数值方法计算速度偏慢，不适合频繁调用。计算并行化最简单的方式是使用OpenMP，更进一步提升速度可以使用Intel的TBB和MKL，尤其是MKL内置了高性能的期权计算模型代码，不过对于普通程度使用使用OpenMP并行加速一下即可。研究了一下网上的资料发现，PyBind11封装调用OpenMP的文章基本没有，本文简单补充">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//image-20210609085353624.png">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//image-20210609090326379.png">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//image-20210609090326379.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/09/cmake-pybind-openmp/cmake-pybind-openmp/image-20210609085353624.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/09/cmake-pybind-openmp/image-20210609090326379.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/09/cmake-pybind-openmp/image-20210609090326379.png">
 <meta property="article:published_time" content="2021-06-09T00:36:08.000Z">
 <meta property="article:modified_time" content="2021-06-09T13:59:12.000Z">
 <meta property="article:author" content="观鱼">
 <meta property="article:tag" content="Pybind11">
 <meta property="article:tag" content="OpenMP">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://dybeta2021.github.io/.io//image-20210609085353624.png">
+<meta name="twitter:image" content="https://dybeta2021.github.io/2021/06/09/cmake-pybind-openmp/cmake-pybind-openmp/image-20210609085353624.png">
 
 <link rel="canonical" href="https://dybeta2021.github.io/2021/06/09/cmake-pybind-openmp/">
 
@@ -263,7 +263,8 @@ OpenMP</h2>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pybind11/pybind11.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pybind11/numpy.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;bjerk2002.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;calculate.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;pymatrix.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> py = pybind11;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">PYBIND11_MODULE</span>(pybjerk, m) &#123;</span><br><span class="line">    m.<span class="built_in">def</span>(<span class="string">&quot;calc_iv_array&quot;</span>, &amp;calc_iv_array, <span class="string">&quot;get bsm iv delta and vega&quot;</span>, py::<span class="built_in">arg</span>(<span class="string">&quot;is_call&quot;</span>),</span><br><span class="line">          py::<span class="built_in">arg</span>(<span class="string">&quot;premium&quot;</span>), py::<span class="built_in">arg</span>(<span class="string">&quot;S&quot;</span>), py::<span class="built_in">arg</span>(<span class="string">&quot;X&quot;</span>), py::<span class="built_in">arg</span>(<span class="string">&quot;T&quot;</span>), py::<span class="built_in">arg</span>(<span class="string">&quot;b&quot;</span>), py::<span class="built_in">arg</span>(<span class="string">&quot;r&quot;</span>),</span><br><span class="line">          py::<span class="built_in">arg</span>(<span class="string">&quot;iv_lower_limit&quot;</span>) = <span class="number">1e-8</span>, py::<span class="built_in">arg</span>(<span class="string">&quot;iv_upper_limit&quot;</span>) = <span class="number">10</span>, py::<span class="built_in">arg</span>(<span class="string">&quot;ttm_clip&quot;</span>) = <span class="number">1e-6</span>,</span><br><span class="line">          py::<span class="built_in">arg</span>(<span class="string">&quot;vega_clip&quot;</span>) = <span class="number">1e-6</span>, py::<span class="built_in">arg</span>(<span class="string">&quot;num_steps&quot;</span>) = <span class="number">128</span>, py::<span class="built_in">arg</span>(<span class="string">&quot;precision&quot;</span>) = <span class="number">1e-8</span>,</span><br><span class="line">          py::<span class="built_in">arg</span>(<span class="string">&quot;use_newton&quot;</span>) = <span class="literal">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>只需要在配置设置即可，不需要额外的安装openmp库</p>
 <figure>
-<img src="/.io//image-20210609085353624.png" alt="image-20210609085353624">
+<img src="cmake-pybind-openmp/image-20210609085353624.png"
+alt="image-20210609085353624" />
 <figcaption aria-hidden="true">image-20210609085353624</figcaption>
 </figure>
 <h2 id="在macos系统clion下配置-openmp">在MacOS系统Clion下配置
@@ -276,9 +277,9 @@ OpenMP</h2>
 <p>开启多线程并行化之后，计算函数在多核CPU运行速度提升明显</p>
 <p>Windows下加速效果对比 Processor: Intel(R) Core(TM) i9-10900 CPU @
 2.80GHz (20 CPUs), ~2.8GHz
-<img src="/.io//image-20210609090326379.png" width="100%" height="100%" title="test" alt="test"></p>
+<img src="image-20210609090326379.png" width="100%" height="100%" title="test" alt="test"/></p>
 <p>MacOS下加速效果对比 Processor: 2.6 GHz 6-Core Intel Core i7
-<img src="/.io//image-20210609090326379.png" width="100%" height="100%" title="test" alt="test"></p>
+<img src="image-20210609090326379.png" width="100%" height="100%" title="test" alt="test"/></p>
 
     </div>
 

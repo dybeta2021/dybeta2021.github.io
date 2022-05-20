@@ -28,19 +28,19 @@
 <meta property="og:site_name" content="子非鱼">
 <meta property="og:description" content="升级Python环境到3.8导致了一堆麻烦和调整，不过调整完成之后发现微调的代码运行速度倒是加速了50%左右，总算在一堆鸡皮算毛的微调之后来点慰藉。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//image-20210619084955692.png">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//image-20210619085353491.png">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//image-20210619090153049.png">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//image-20210619092509877.png">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//fig20220217.png">
-<meta property="og:image" content="https://dybeta2021.github.io/.io//fig2_20220217.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/pycharm/image-20210619084955692.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/pycharm/image-20210619085353491.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/pycharm/image-20210619090153049.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/pycharm/image-20210619092509877.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/pycharm/fig20220217.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/pycharm/fig2_20220217.png">
 <meta property="article:published_time" content="2021-06-19T00:46:13.000Z">
 <meta property="article:modified_time" content="+022021-06-19T00:46:13.000Z">
 <meta property="article:author" content="观鱼">
 <meta property="article:tag" content="Qt">
 <meta property="article:tag" content="PyQt">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://dybeta2021.github.io/.io//image-20210619084955692.png">
+<meta name="twitter:image" content="https://dybeta2021.github.io/2021/06/19/pycharm/image-20210619084955692.png">
 
 <link rel="canonical" href="https://dybeta2021.github.io/2021/06/19/pycharm/">
 
@@ -267,19 +267,19 @@
         <h2 id="pyqt5">PyQt5</h2>
 <p>最近升级Python版本发现<code>pyqt5-tools==5.15.4.3.2</code>更换了designer的安装位置到</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">XX\Miniconda3\Lib\site-packages\qt5_applications\Qt\bin\designer.exe</span><br></pre></td></tr></table></figure>
-<p><img src="/.io//image-20210619084955692.png" width="100%" height="100%" title="image-20210619084955692" alt="image-20210619084955692"></p>
+<p><img src="image-20210619084955692.png" width="100%" height="100%" title="image-20210619084955692" alt="image-20210619084955692"/></p>
 <p>然后pyuic的命令也发生变化了</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Parameters:-m PyQt5.uic.pyuic $FileName$ -o $FileNameWithoutExtension$.py</span><br></pre></td></tr></table></figure>
-<p><img src="/.io//image-20210619085353491.png" width="100%" height="100%" title="image-20210619085353491" alt="image-20210619085353491"></p>
+<p><img src="image-20210619085353491.png" width="100%" height="100%" title="image-20210619085353491" alt="image-20210619085353491"/></p>
 <p>新版本的qt-designer默认汉化了一部分操作界面，操作体验相当不爽了。</p>
-<p><img src="/.io//image-20210619090153049.png" width="100%" height="100%" title="image-20210619090153049" alt="image-20210619090153049"></p>
+<p><img src="image-20210619090153049.png" width="100%" height="100%" title="image-20210619090153049" alt="image-20210619090153049"/></p>
 <p>在目录<code>XX\Miniconda3\Lib\site-packages\qt5_applications\Qt\translations</code>使用<code>designer_en.qm</code>
 替换<code>designer_zh_CN.qm</code>之后可以恢复英文界面。</p>
-<p><img src="/.io//image-20210619092509877.png" width="100%" height="100%" title="image-20210619092509877" alt="image-20210619092509877"></p>
+<p><img src="image-20210619092509877.png" width="100%" height="100%" title="image-20210619092509877" alt="image-20210619092509877"/></p>
 <h2 id="自动添加文件头注释">自动添加文件头注释</h2>
 <p>文件头模板设置路径
 <code>Settings-&gt;Editor-&gt;File and Code Templates-&gt;Python Script</code></p>
-<p><img src="/.io//fig20220217.png" width="100%" height="100%" title="文件头注释" alt="文件头注释"></p>
+<p><img src="fig20220217.png" width="100%" height="100%" title="文件头注释" alt="文件头注释"/></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"># @Project  : $&#123;PROJECT_NAME&#125; </span><br><span class="line"># @File     : $&#123;NAME&#125;.py </span><br><span class="line"># @Author   : $&#123;USER&#125;</span><br><span class="line"># @Time     : $&#123;DATE&#125; $&#123;TIME&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ &#123;PROJECT_NAME&#125; - 当前项目的名称。</span><br><span class="line">$ &#123;NAME&#125; - 在文件创建过程中在“新建文件”对话框中指定的新文件的名称。</span><br><span class="line">$ &#123;USER&#125; - 当前用户的登录名。</span><br><span class="line">$ &#123;DATE&#125; - 当前的系统日期。</span><br><span class="line">$ &#123;TIME&#125; - 当前系统时间。</span><br><span class="line">$ &#123;YEAR&#125; - 今年。</span><br><span class="line">$ &#123;MONTH&#125; - 当月。</span><br><span class="line">$ &#123;DAY&#125; - 当月的当天。</span><br><span class="line">$ &#123;HOUR&#125; - 目前的小时。</span><br><span class="line">$ &#123;MINUTE&#125; - 当前分钟。</span><br><span class="line">$ &#123;PRODUCT_NAME&#125; - 将在其中创建文件的IDE的名称。</span><br><span class="line">$ &#123;MONTH_NAME_SHORT&#125; - 月份名称的前3个字母。 示例：1月，2月等</span><br><span class="line">$ &#123;MONTH_NAME_FULL&#125; - 一个月的全名。 示例：1月，2月等</span><br></pre></td></tr></table></figure>
 <h2 id="注释风格">注释风格</h2>
@@ -288,14 +288,16 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mac：ctl+J</span><br><span class="line">windows：ctrl+q</span><br></pre></td></tr></table></figure></p>
 <p>Docstring format 修改注释风格
 <code>File -&gt; Settings -&gt; Tools -&gt; Python Integrated Tools -&gt; Docstrings -&gt; Docstring format</code></p>
-<p><img src="/.io//fig2_20220217.png" width="100%" height="100%" title="文件头注释" alt="文件头注释"></p>
-<hr>
+<p><img src="fig2_20220217.png" width="100%" height="100%" title="文件头注释" alt="文件头注释"/></p>
+<hr />
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.yisu.com/zixun/163238.html">Python PyQt5
-Pycharm 环境搭建及配置详解</a><br>
+Pycharm 环境搭建及配置详解</a><br />
 </li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/gujianshuang/p/7801574.html">pycharm预定义文件模板变量</a></li>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/329967393">Pycharm自动添加文件头注释和函数注释参数</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/gujianshuang/p/7801574.html">pycharm预定义文件模板变量</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/329967393">Pycharm自动添加文件头注释和函数注释参数</a></li>
 </ul>
 
     </div>
