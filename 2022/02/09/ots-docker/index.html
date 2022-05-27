@@ -276,8 +276,9 @@ version `GLIBCXX_3.4.22’ not found（conda）</h3>
 <ul>
 <li><a
 target="_blank" rel="noopener" href="https://blog.csdn.net/fengzhongluoleidehua/article/details/84618540?">Libstdc++.so.6:
-version `GLIBCXX_3.4.22’ not found（conda）</a> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">strings /opt/miniconda3/lib/libstdc++.so.6 | grep GLIBCXX</span><br><span class="line">strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX</span><br><span class="line">cd /opt/miniconda3/lib</span><br><span class="line">rm libstdc++.so.6</span><br><span class="line">cp /usr/lib/x86_64-linux-gnu/libstdc++.so.6 ./</span><br></pre></td></tr></table></figure></li>
+version `GLIBCXX_3.4.22’ not found（conda）</a></li>
 </ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">strings /opt/miniconda3/lib/libstdc++.so.6 | grep GLIBCXX</span><br><span class="line">strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX</span><br><span class="line">cd /opt/miniconda3/lib</span><br><span class="line">rm libstdc++.so.6</span><br><span class="line">cp /usr/lib/x86_64-linux-gnu/libstdc++.so.6 ./</span><br></pre></td></tr></table></figure>
 <h3 id="nng">nng</h3>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/nanomsg/nng/pull/884">add -fPIC to
