@@ -250,7 +250,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>最近有些闲暇时间，打算尝试开发一个轻量级的期权交易系统。MyOTP目前计划是适合商品期权和股指期权的期权交易系统。</p>
+        <p>最近有些闲暇时间，打算尝试开发一个轻量级的期权交易系统。MyOTP目前定位是商品期权和股指期权的期权交易系统。</p>
 <h2 id="开发环境搭建">开发环境搭建</h2>
 <p>程序通过docker-remote开发调试，使用vscode-web作为前端ide。docker开发环境搭建链接如下</p>
 <ul>
@@ -259,10 +259,14 @@
 <li><a
 target="_blank" rel="noopener" href="https://github.com/dybeta2021/MyOTP/blob/main/docs/docker.md">docker-notes</a></li>
 </ul>
-<h2 id="模块介绍">模块介绍</h2>
+<h2 id="模块简介">模块简介</h2>
 <ul>
 <li>app/static-data
 通过ctp-future交易接口获取期权的盘前静态数据并存入sqlite。这个模块的作用是每日开盘前更新期货和期权的合约数据</li>
+<li>app/last_data
+通过ctp-future行情接口当前的行情数据并存入sqlite。这个模块的作用是每日开盘前/收盘后更新期货和期权的行情数据。</li>
+<li>app/data_recorder
+通过ctp-future行情接口获取行情数据并存入clickhouse</li>
 </ul>
 
     </div>
@@ -362,7 +366,7 @@ target="_blank" rel="noopener" href="https://github.com/dybeta2021/MyOTP/blob/ma
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">开发环境搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">模块介绍</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">开发环境搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">模块简介</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -376,20 +380,20 @@ target="_blank" rel="noopener" href="https://github.com/dybeta2021/MyOTP/blob/ma
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">49</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-count">53</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
