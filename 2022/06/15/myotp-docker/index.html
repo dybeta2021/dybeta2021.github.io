@@ -21,20 +21,21 @@
     var CONFIG = {"hostname":"dybeta2021.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Windows C++包管理">
+  <meta name="description" content="MyOTP-Docker开发环境搭建">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Vcpkg C++包管理">
-<meta property="og:url" content="https://dybeta2021.github.io/2022/04/13/vcpkg/index.html">
+<meta property="og:title" content="MyOTP-1 开发环境搭建">
+<meta property="og:url" content="https://dybeta2021.github.io/2022/06/15/myotp-docker/index.html">
 <meta property="og:site_name" content="子非鱼">
-<meta property="og:description" content="Windows C++包管理">
+<meta property="og:description" content="MyOTP-Docker开发环境搭建">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-04-13T03:19:39.000Z">
-<meta property="article:modified_time" content="2021-06-17T01:40:12.000Z">
+<meta property="article:published_time" content="2022-06-15T10:44:38.000Z">
+<meta property="article:modified_time" content="2022-06-15T03:15:37.000Z">
 <meta property="article:author" content="观鱼">
-<meta property="article:tag" content="C++ Package">
+<meta property="article:tag" content="option">
+<meta property="article:tag" content="trading-system">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://dybeta2021.github.io/2022/04/13/vcpkg/">
+<link rel="canonical" href="https://dybeta2021.github.io/2022/06/15/myotp-docker/">
 
 
 <script id="page-configurations">
@@ -47,7 +48,7 @@
   };
 </script>
 
-  <title>Vcpkg C++包管理 | 子非鱼</title>
+  <title>MyOTP-1 开发环境搭建 | 子非鱼</title>
   
 
 
@@ -202,7 +203,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://dybeta2021.github.io/2022/04/13/vcpkg/">
+    <link itemprop="mainEntityOfPage" href="https://dybeta2021.github.io/2022/06/15/myotp-docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -215,7 +216,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Vcpkg C++包管理
+          MyOTP-1 开发环境搭建
         </h1>
 
         <div class="post-meta">
@@ -224,16 +225,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2022-04-13 11:19:39" itemprop="dateCreated datePublished" datetime="2022-04-13T11:19:39+08:00">2022-04-13</time>
+              <time title="创建时间：2022-06-15 18:44:38 / 修改时间：11:15:37" itemprop="dateCreated datePublished" datetime="2022-06-15T18:44:38+08:00">2022-06-15</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-17 09:40:12" itemprop="dateModified" datetime="2021-06-17T09:40:12+08:00">2021-06-17</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -245,7 +240,7 @@
             </span>
 
           
-            <div class="post-description">Windows C++包管理</div>
+            <div class="post-description">MyOTP-Docker开发环境搭建</div>
 
         </div>
       </header>
@@ -256,17 +251,34 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/microsoft/vcpkg</span><br><span class="line">.\vcpkg\bootstrap-vcpkg.bat</span><br><span class="line">.\vcpkg\vcpkg integrate install</span><br></pre></td></tr></table></figure>
-<p>vcpkg在Windows中默认编译并安装x86版本的库。
-若要编译并安装x64版本，请执行:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.\vcpkg\vcpkg install [package name]:x64-windows</span><br><span class="line">.\vcpkg\vcpkg install [packages to install] --triplet=x64-windows</span><br><span class="line">.\vcpkg\vcpkg install nng:x64-windows</span><br><span class="line">.\vcpkg\vcpkg install boost:x64-windows</span><br></pre></td></tr></table></figure>
-<p>当您希望将vcpkg作为一个子模块加入到您的工程中时， 您可以在第一个
-project() 调用之前将以下内容添加到 CMakeLists.txt 中， 而无需将
-CMAKE_TOOLCHAIN_FILE 传递给cmake调用。 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(WIN32)</span><br><span class="line">    <span class="keyword">set</span>(CMAKE_TOOLCHAIN_FILE C:/Software/vcpkg/scripts/buildsystems/vcpkg.cmake  CACHE <span class="keyword">STRING</span> <span class="string">&quot;Vcpkg toolchain file&quot;</span>)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.22</span>)</span><br><span class="line"><span class="keyword">project</span>(yijinjing)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">23</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span>(Boost_USE_MULTITHREADED <span class="keyword">ON</span>)</span><br><span class="line"><span class="keyword">SET</span>(Boost_USE_STATIC_LIBS <span class="keyword">OFF</span>)</span><br><span class="line"><span class="keyword">SET</span>(Boost_USE_STATIC_RUNTIME <span class="keyword">OFF</span>)</span><br><span class="line"><span class="keyword">FIND_PACKAGE</span>(Boost COMPONENTS  filesystem system thread regex REQUIRED)</span><br><span class="line"><span class="keyword">INCLUDE_DIRECTORIES</span>(<span class="variable">$&#123;Boost_INCLUDE_DIR&#125;</span>)</span><br><span class="line"><span class="keyword">message</span>(<span class="variable">$&#123;Boost_INCLUDE_DIRS&#125;</span>)</span><br></pre></td></tr></table></figure></p>
+        <p>国内的程序化交易系统必须通过券商或期货公司的柜台间接介入交易所，并且需要进行看穿式监管认证，所以实盘系统一般很少使用云主机或docker虚拟环境。这里使用docker-ubuntu主要是为了设置一个相对纯净的开发环境。服务器版本可以通过vscode-web方式直接开发，本机则一般通过ssh使用pycharm、clion等ide开发。</p>
+<h2 id="docker设置">Docker设置</h2>
+<h3 id="启动容器">启动容器</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker pull ubuntu</span><br><span class="line">docker run --name iubuntu -t -i -d -p 4100:22 ubuntu</span><br><span class="line">docker exec -t -i iubuntu /bin/bash</span><br></pre></td></tr></table></figure>
+<h3 id="ssh">SSH</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apt-get update</span><br><span class="line">apt-get dist-upgrade -y </span><br><span class="line">apt-get install -y sudo vim git net-tools rsync sudo iputils-ping </span><br><span class="line">apt-get install -y openssh-client openssh-server</span><br><span class="line"></span><br><span class="line"># 启动SSH</span><br><span class="line">/etc/init.d/ssh start</span><br><span class="line">ps -e|grep ssh</span><br><span class="line"></span><br><span class="line"># 在表头添加</span><br><span class="line">vim /etc/ssh/sshd_config</span><br><span class="line">PermitRootLogin yes</span><br><span class="line"></span><br><span class="line">service ssh restart</span><br><span class="line">passwd root</span><br></pre></td></tr></table></figure>
+<h3 id="vscode-web">VSCode-Web</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y curl</span><br><span class="line"></span><br><span class="line"># 首次运行生成配置文件</span><br><span class="line">code-server </span><br><span class="line"></span><br><span class="line"># 修改配置文件</span><br><span class="line">vim  ~/.config/code-server/config.yaml</span><br><span class="line">bind-addr: 0.0.0.0:7101</span><br><span class="line">auth: password</span><br><span class="line">password: 1234567890</span><br><span class="line">cert: false</span><br><span class="line"></span><br><span class="line"># 或命令行启动</span><br><span class="line">code-server --port 7101 --host 0.0.0.0 --auth password 1234567890</span><br></pre></td></tr></table></figure>
+<h3 id="docker-ubunut设置时区">Docker-Ubunut设置时区</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get install tzdata</span><br><span class="line">tzselect</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Run 'dpkg-reconfigure tzdata' if you wish to change it.</li>
+</ul>
+<h3 id="配置docker-ubuntu的中文环境">配置Docker-Ubuntu的中文环境</h3>
 <ul>
 <li><a
-target="_blank" rel="noopener" href="https://github.com/microsoft/vcpkg/blob/master/README_zh_CN.md#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B-windows">Vcpkg</a></li>
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31078295">Docker容器中添加中文字符的支持</a></li>
 </ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">locale -a</span><br><span class="line">apt-get update</span><br><span class="line">apt-get install -y locales</span><br><span class="line">apt-get install language-pack-zh-hans</span><br><span class="line">locale-gen zh_CN</span><br><span class="line">locale-gen zh_CN.utf8</span><br><span class="line">locale-gen zh_CN.UTF-8</span><br><span class="line">locale-gen zh_CN.GB18030</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash">看看当前启用的本地支持</span></span><br><span class="line">locale -a</span><br><span class="line">export LANG=zh_CN.UTF-8</span><br><span class="line">export LC_ALL=zh_CN.UTF-8</span><br><span class="line">export LANGUAGE=zh_CN.UTF-8</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash">现在来看看当前的字符集</span></span><br><span class="line">locale</span><br><span class="line"></span><br><span class="line">sudo update-locale LANG=zh_CN.UTF-8 LC_ALL=zh_CN.UTF-8 LANGUAGE=zh_CN.UTF-8</span><br><span class="line">cat /etc/default/locale</span><br></pre></td></tr></table></figure>
+<h3 id="c">C++</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y build-essential cmake gdb gdbserver</span><br></pre></td></tr></table></figure>
+<h3 id="python">Python</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cd opt</span><br><span class="line">wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh</span><br><span class="line"></span><br><span class="line">bash Miniconda3-latest-Linux-x86_64.sh </span><br><span class="line">/opt/miniconda3</span><br><span class="line">bash</span><br></pre></td></tr></table></figure>
+<h3 id="python库">Python库</h3>
+<p>todo:如何指定python库的版本</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install pandas</span><br></pre></td></tr></table></figure>
+<h3 id="生成镜像">生成镜像</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker commit iubuntu ubuntu-simnow</span><br><span class="line">docker save ubuntu-simnow &gt; ubuntu-simnow.tar</span><br><span class="line">docker run --name ubuntu-simnow -t -i -d -p 7100:22  -p 7101:7101 ubuntu-simnow /usr/sbin/sshd -D</span><br><span class="line"></span><br><span class="line">docker exec -t -i ubuntu-simnow /bin/bash</span><br><span class="line">code-server --port 7101 --host 0.0.0.0 --auth password 1234567890</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -282,7 +294,7 @@ target="_blank" rel="noopener" href="https://github.com/microsoft/vcpkg/blob/mas
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://dybeta2021.github.io/2022/04/13/vcpkg/" title="Vcpkg C++包管理">https://dybeta2021.github.io/2022/04/13/vcpkg/</a>
+    <a href="https://dybeta2021.github.io/2022/06/15/myotp-docker/" title="MyOTP-1 开发环境搭建">https://dybeta2021.github.io/2022/06/15/myotp-docker/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -293,7 +305,8 @@ target="_blank" rel="noopener" href="https://github.com/microsoft/vcpkg/blob/mas
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/C-Package/" rel="tag"># C++ Package</a>
+              <a href="/tags/option/" rel="tag"># option</a>
+              <a href="/tags/trading-system/" rel="tag"># trading-system</a>
           </div>
 
         
@@ -302,13 +315,10 @@ target="_blank" rel="noopener" href="https://github.com/microsoft/vcpkg/blob/mas
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/03/31/jupyter-notebook/" rel="prev" title="Notebook常用表头设置">
-      <i class="fa fa-chevron-left"></i> Notebook常用表头设置
+    <a href="/2022/06/15/myotp/" rel="prev" title="MyOTP">
+      <i class="fa fa-chevron-left"></i> MyOTP
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/06/13/settlement-price/" rel="next" title="股票期权结算价计算方法">
-      股票期权结算价计算方法 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -367,6 +377,7 @@ target="_blank" rel="noopener" href="https://github.com/microsoft/vcpkg/blob/mas
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#docker%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">Docker设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%AE%B9%E5%99%A8"><span class="nav-number">1.1.</span> <span class="nav-text">启动容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh"><span class="nav-number">1.2.</span> <span class="nav-text">SSH</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vscode-web"><span class="nav-number">1.3.</span> <span class="nav-text">VSCode-Web</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-ubunut%E8%AE%BE%E7%BD%AE%E6%97%B6%E5%8C%BA"><span class="nav-number">1.4.</span> <span class="nav-text">Docker-Ubunut设置时区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEdocker-ubuntu%E7%9A%84%E4%B8%AD%E6%96%87%E7%8E%AF%E5%A2%83"><span class="nav-number">1.5.</span> <span class="nav-text">配置Docker-Ubuntu的中文环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c"><span class="nav-number">1.6.</span> <span class="nav-text">C++</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python"><span class="nav-number">1.7.</span> <span class="nav-text">Python</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python%E5%BA%93"><span class="nav-number">1.8.</span> <span class="nav-text">Python库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E9%95%9C%E5%83%8F"><span class="nav-number">1.9.</span> <span class="nav-text">生成镜像</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -516,6 +527,59 @@ document.querySelectorAll('.pdfobject-container').forEach(element => {
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
