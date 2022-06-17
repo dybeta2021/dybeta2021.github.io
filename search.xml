@@ -209,27 +209,6 @@ OpenMP</h2>
       </tags>
   </entry>
   <entry>
-    <title>Ops备忘录</title>
-    <url>/2021/12/17/debug/</url>
-    <content><![CDATA[<h2 id="ubuntu物理机">Ubuntu物理机</h2>
-<ul>
-<li><a href="https://zhuanlan.zhihu.com/p/415661679">禁止ubuntu
-20.04自动休眠</a></li>
-</ul>
-<h2 id="macos网络问题">MacOS网络问题</h2>
-<ul>
-<li><a href="https://zhuanlan.zhihu.com/p/115450863">Failed to connect
-to raw.githubusercontent.com:443</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Ops</category>
-      </categories>
-      <tags>
-        <tag>ops</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>浮点数精度判定</title>
     <url>/2021/06/15/cpp_float/</url>
     <content><![CDATA[<p>在测试Bjerksund and Stensland American Option
@@ -331,6 +310,27 @@ href="https://book.douban.com/subject/27144565/">21天学通C++(第8版)
       </categories>
       <tags>
         <tag>C++ Notes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ops备忘录</title>
+    <url>/2021/12/17/debug/</url>
+    <content><![CDATA[<h2 id="ubuntu物理机">Ubuntu物理机</h2>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/415661679">禁止ubuntu
+20.04自动休眠</a></li>
+</ul>
+<h2 id="macos网络问题">MacOS网络问题</h2>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/115450863">Failed to connect
+to raw.githubusercontent.com:443</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Ops</category>
+      </categories>
+      <tags>
+        <tag>ops</tag>
       </tags>
   </entry>
   <entry>
@@ -614,6 +614,48 @@ jupyterhub 搭建多用户 jupyterlab 开发环境</a></p>
       </categories>
       <tags>
         <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>C++格式化输出库fmt</title>
+    <url>/2021/06/17/fmtlib/</url>
+    <content><![CDATA[<p>用 C++ 来拼接一个字符串非常糟心，虽然说你可以用 stringstream
+来做到，但是无数的 <code>&lt;&lt;</code> 就很麻烦，而 printf
+也是一样。（囧，我一般都是直接使用日志打印）</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">printf 函数家族声明如下：</span><br><span class="line"><span class="comment">// https://en.cppreference.com/w/cpp/header/cstdio</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">printf</span><span class="params">( <span class="keyword">const</span> <span class="keyword">char</span>* format, ... )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">fprintf</span><span class="params">(std::FILE* stream, <span class="keyword">const</span> <span class="keyword">char</span>* format, ... )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sprintf</span><span class="params">( <span class="keyword">char</span>* buffer, <span class="keyword">const</span> <span class="keyword">char</span>* format, ... )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">snprintf</span><span class="params">( <span class="keyword">char</span>* buffer, std::<span class="keyword">size_t</span> buf_size, <span class="keyword">const</span> <span class="keyword">char</span>* format, ... )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">vprintf</span><span class="params">( <span class="keyword">const</span> <span class="keyword">char</span>* format, va_list vlist )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">vfprintf</span><span class="params">( std::FILE* stream, <span class="keyword">const</span> <span class="keyword">char</span>* format, va_list vlist )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">vsprintf</span><span class="params">( <span class="keyword">char</span>* buffer, <span class="keyword">const</span> <span class="keyword">char</span>* format, va_list vlist )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">vsnprintf</span><span class="params">( <span class="keyword">char</span>* buffer, std::<span class="keyword">size_t</span> buf_size, <span class="keyword">const</span> <span class="keyword">char</span>* format, va_list vlist )</span></span>;</span><br></pre></td></tr></table></figure>
+<p>C++中printf的一个很好的替代品是fmtlib，其也进入了C++20的标准库<code>(std::format)</code>，可以算是C++字符串格式化的未来。</p>
+<p>fmtlib可以直接使用header-only的方法使用，cmake配置如下</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><span class="line">add_subdirectory(dependencies/fmt EXCLUDE_FROM_ALL)</span><br><span class="line">target_link_libraries(fmt_demo fmt-header-only)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>其中 <code>EXCLUDE_FROM_ALL</code>表示将这个项目移除出 make
+列表。</li>
+</ul>
+<p>两个有意思的用法</p>
+<p>Format a string using positional arguments</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">std::string s = fmt::format(<span class="string">&quot;I&#x27;d rather be &#123;1&#125; than &#123;0&#125;.&quot;</span>, <span class="string">&quot;right&quot;</span>, <span class="string">&quot;happy&quot;</span>);</span><br><span class="line"><span class="comment">// s == &quot;I&#x27;d rather be happy than right.&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>Check a format string at compile time</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">std::string s = fmt::format(<span class="built_in">FMT_STRING</span>(<span class="string">&quot;&#123;:d&#125;&quot;</span>), <span class="string">&quot;I am not a number&quot;</span>);</span><br></pre></td></tr></table></figure>
+<hr />
+<ul>
+<li><a
+href="https://zhuanlan.zhihu.com/p/370005360">fmtlog：比NanoLog更快的fmtlib风格C++日志库</a></li>
+<li><a
+href="https://forcemz.net/cxx/2019/04/29/StringFormattingTalk/">字符串格式化漫谈</a></li>
+<li><a href="https://github.com/fmtlib/fmt">fmt is an open-source
+formatting library providing a fast and safe alternative to C stdio and
+C++ iostreams.</a></li>
+<li><a
+href="https://moevis.github.io/cheatsheet/2018/10/11/fmt-%E6%9B%B4%E6%96%B9%E4%BE%BF%E7%9A%84-c++-format-%E5%BA%93.html">Fmt:更方便的
+c++ format 库</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>C++ Loggin</tag>
       </tags>
   </entry>
   <entry>
@@ -969,45 +1011,22 @@ Software : Open Source</a></li>
       </tags>
   </entry>
   <entry>
-    <title>C++格式化输出库fmt</title>
-    <url>/2021/06/17/fmtlib/</url>
-    <content><![CDATA[<p>用 C++ 来拼接一个字符串非常糟心，虽然说你可以用 stringstream
-来做到，但是无数的 <code>&lt;&lt;</code> 就很麻烦，而 printf
-也是一样。（囧，我一般都是直接使用日志打印）</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">printf 函数家族声明如下：</span><br><span class="line"><span class="comment">// https://en.cppreference.com/w/cpp/header/cstdio</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">printf</span><span class="params">( <span class="keyword">const</span> <span class="keyword">char</span>* format, ... )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">fprintf</span><span class="params">(std::FILE* stream, <span class="keyword">const</span> <span class="keyword">char</span>* format, ... )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sprintf</span><span class="params">( <span class="keyword">char</span>* buffer, <span class="keyword">const</span> <span class="keyword">char</span>* format, ... )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">snprintf</span><span class="params">( <span class="keyword">char</span>* buffer, std::<span class="keyword">size_t</span> buf_size, <span class="keyword">const</span> <span class="keyword">char</span>* format, ... )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">vprintf</span><span class="params">( <span class="keyword">const</span> <span class="keyword">char</span>* format, va_list vlist )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">vfprintf</span><span class="params">( std::FILE* stream, <span class="keyword">const</span> <span class="keyword">char</span>* format, va_list vlist )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">vsprintf</span><span class="params">( <span class="keyword">char</span>* buffer, <span class="keyword">const</span> <span class="keyword">char</span>* format, va_list vlist )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">vsnprintf</span><span class="params">( <span class="keyword">char</span>* buffer, std::<span class="keyword">size_t</span> buf_size, <span class="keyword">const</span> <span class="keyword">char</span>* format, va_list vlist )</span></span>;</span><br></pre></td></tr></table></figure>
-<p>C++中printf的一个很好的替代品是fmtlib，其也进入了C++20的标准库<code>(std::format)</code>，可以算是C++字符串格式化的未来。</p>
-<p>fmtlib可以直接使用header-only的方法使用，cmake配置如下</p>
-<figure class="highlight makefile"><table><tr><td class="code"><pre><span class="line">add_subdirectory(dependencies/fmt EXCLUDE_FROM_ALL)</span><br><span class="line">target_link_libraries(fmt_demo fmt-header-only)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>其中 <code>EXCLUDE_FROM_ALL</code>表示将这个项目移除出 make
-列表。</li>
-</ul>
-<p>两个有意思的用法</p>
-<p>Format a string using positional arguments</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">std::string s = fmt::format(<span class="string">&quot;I&#x27;d rather be &#123;1&#125; than &#123;0&#125;.&quot;</span>, <span class="string">&quot;right&quot;</span>, <span class="string">&quot;happy&quot;</span>);</span><br><span class="line"><span class="comment">// s == &quot;I&#x27;d rather be happy than right.&quot;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>Check a format string at compile time</li>
-</ul>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">std::string s = fmt::format(<span class="built_in">FMT_STRING</span>(<span class="string">&quot;&#123;:d&#125;&quot;</span>), <span class="string">&quot;I am not a number&quot;</span>);</span><br></pre></td></tr></table></figure>
-<hr />
+    <title>Hampel Filter</title>
+    <url>/2020/09/11/hampel_filter/</url>
+    <content><![CDATA[<p>滤波器算法</p>
+<span id="more"></span>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hampel</span>(<span class="params">vals_orig, k=<span class="number">7</span>, t0=<span class="number">3</span></span>):</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    vals: pandas series of values from which to remove outliers</span></span><br><span class="line"><span class="string">    k: size of window (including the sample; 7 is equal to 3 on either side of value)</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">#Make copy so original not edited</span></span><br><span class="line">    vals = vals_orig.copy()</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#Hampel Filter</span></span><br><span class="line">    L = <span class="number">1.4826</span></span><br><span class="line">    rolling_median = vals.rolling(window=k, center=<span class="literal">True</span>).median()</span><br><span class="line">    MAD = <span class="keyword">lambda</span> x: np.median(np.<span class="built_in">abs</span>(x - np.median(x)))</span><br><span class="line">    rolling_MAD = vals.rolling(window=k, center=<span class="literal">True</span>).apply(MAD)</span><br><span class="line">    threshold = t0 * L * rolling_MAD</span><br><span class="line">    difference = np.<span class="built_in">abs</span>(vals - rolling_median)</span><br><span class="line">    </span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    Perhaps a condition should be added here in the case that the threshold value</span></span><br><span class="line"><span class="string">    is 0.0; maybe do not mark as outlier. MAD may be 0.0 without the original values</span></span><br><span class="line"><span class="string">    being equal. See differences between MAD vs SDV.</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    </span><br><span class="line">    outlier_idx = difference &gt; threshold</span><br><span class="line">    vals[outlier_idx] = rolling_median[outlier_idx] </span><br><span class="line">    <span class="keyword">return</span>(vals)</span><br></pre></td></tr></table></figure>
 <ul>
 <li><a
-href="https://zhuanlan.zhihu.com/p/370005360">fmtlog：比NanoLog更快的fmtlib风格C++日志库</a></li>
-<li><a
-href="https://forcemz.net/cxx/2019/04/29/StringFormattingTalk/">字符串格式化漫谈</a></li>
-<li><a href="https://github.com/fmtlib/fmt">fmt is an open-source
-formatting library providing a fast and safe alternative to C stdio and
-C++ iostreams.</a></li>
-<li><a
-href="https://moevis.github.io/cheatsheet/2018/10/11/fmt-%E6%9B%B4%E6%96%B9%E4%BE%BF%E7%9A%84-c++-format-%E5%BA%93.html">Fmt:更方便的
-c++ format 库</a></li>
+href="https://stackoverflow.com/questions/46819260/filtering-outliers-how-to-make-median-based-hampel-function-faster">Filtering
+Outliers - how to make median-based Hampel Function faster?</a></li>
 </ul>
 ]]></content>
       <categories>
-        <category>C++</category>
+        <category>Option</category>
       </categories>
       <tags>
-        <tag>C++ Loggin</tag>
+        <tag>Filter</tag>
       </tags>
   </entry>
   <entry>
@@ -1030,25 +1049,6 @@ c++ format 库</a></li>
       </categories>
       <tags>
         <tag>risk manager</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hampel Filter</title>
-    <url>/2020/09/11/hampel_filter/</url>
-    <content><![CDATA[<p>滤波器算法</p>
-<span id="more"></span>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hampel</span>(<span class="params">vals_orig, k=<span class="number">7</span>, t0=<span class="number">3</span></span>):</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    vals: pandas series of values from which to remove outliers</span></span><br><span class="line"><span class="string">    k: size of window (including the sample; 7 is equal to 3 on either side of value)</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">#Make copy so original not edited</span></span><br><span class="line">    vals = vals_orig.copy()</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#Hampel Filter</span></span><br><span class="line">    L = <span class="number">1.4826</span></span><br><span class="line">    rolling_median = vals.rolling(window=k, center=<span class="literal">True</span>).median()</span><br><span class="line">    MAD = <span class="keyword">lambda</span> x: np.median(np.<span class="built_in">abs</span>(x - np.median(x)))</span><br><span class="line">    rolling_MAD = vals.rolling(window=k, center=<span class="literal">True</span>).apply(MAD)</span><br><span class="line">    threshold = t0 * L * rolling_MAD</span><br><span class="line">    difference = np.<span class="built_in">abs</span>(vals - rolling_median)</span><br><span class="line">    </span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    Perhaps a condition should be added here in the case that the threshold value</span></span><br><span class="line"><span class="string">    is 0.0; maybe do not mark as outlier. MAD may be 0.0 without the original values</span></span><br><span class="line"><span class="string">    being equal. See differences between MAD vs SDV.</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    </span><br><span class="line">    outlier_idx = difference &gt; threshold</span><br><span class="line">    vals[outlier_idx] = rolling_median[outlier_idx] </span><br><span class="line">    <span class="keyword">return</span>(vals)</span><br></pre></td></tr></table></figure>
-<ul>
-<li><a
-href="https://stackoverflow.com/questions/46819260/filtering-outliers-how-to-make-median-based-hampel-function-faster">Filtering
-Outliers - how to make median-based Hampel Function faster?</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Option</category>
-      </categories>
-      <tags>
-        <tag>Filter</tag>
       </tags>
   </entry>
   <entry>
@@ -1144,20 +1144,6 @@ href="http://m.dce.com.cn/dalianshangpin/resource/cms/2020/08/202008061437439919
       </tags>
   </entry>
   <entry>
-    <title>MyOTP-4 行情收录模块</title>
-    <url>/2022/06/16/myotp-data-recorder/</url>
-    <content><![CDATA[<h2 id="获取合约代码列表">获取合约代码列表</h2>
-<h2 id="clickhouse">Clickhouse</h2>
-]]></content>
-      <categories>
-        <category>C++</category>
-      </categories>
-      <tags>
-        <tag>option</tag>
-        <tag>trading-system</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Greeks Monitor User Manual</title>
     <url>/2020/09/10/monitor/</url>
     <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
@@ -1179,6 +1165,20 @@ href="http://m.dce.com.cn/dalianshangpin/resource/cms/2020/08/202008061437439919
         <tag>Greeks</tag>
         <tag>IVS</tag>
         <tag>Option Risk Manager</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MyOTP-4 行情收录模块</title>
+    <url>/2022/06/16/myotp-data-recorder/</url>
+    <content><![CDATA[<h2 id="获取合约代码列表">获取合约代码列表</h2>
+<h2 id="clickhouse">Clickhouse</h2>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>option</tag>
+        <tag>trading-system</tag>
       </tags>
   </entry>
   <entry>
@@ -1204,6 +1204,31 @@ href="https://github.com/7starsea/yijinjing-lite">yijinjing-lite</a></li>
 <li>基于共享内存的MQ框架库 <a href="https://github.com/nanomsg/nng">NNG:
 Lightweight Messaging Library</a></li>
 </ul>
+<h2 id="clickhouse">Clickhouse</h2>
+<p>听说官方客户端<a
+href="https://github.com/ClickHouse/clickhouse-cpp">ClickHouse C++
+client</a>性能似乎不是最好的，在连续批量写入的时候占用资源更多一些。不过行情收录模型本身也不是实时系统的组成部分，只是用来收录行情做数据分析，为了保持一致性故而这里还是使用官方的客户端。</p>
+<blockquote>
+<p>Please note that Client instance is NOT thread-safe. I.e. you must
+create a separate Client for each thread or utilize some synchronization
+techniques.</p>
+</blockquote>
+<p>这个客户端不是线程安全的，多线程写入需要自己管理。根据之前的经验，在多线程频繁写入的情景下clickhouse处理性能一般，通常可以将多线程的数据累积在任务队列里面，批次写入。</p>
+<p>行情收录模块使用<a
+href="https://clickhouse.com/docs/en/engines/table-engines/special/buffer/">Buffer
+Table
+Engine</a>，ctp接口回调函数通过无锁队列批次提交到缓存区，缓冲数据写入RAM中，周期性地将数据刷新落地存储的行情表中。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> tick_data.buffer_tick_data <span class="keyword">AS</span> tick_data.am_20220617 ENGINE Buffer(</span><br><span class="line">    tick_data, am_20220617, <span class="number">16</span>, <span class="number">10</span>, <span class="number">100</span>, <span class="number">10000</span>, <span class="number">1000000</span>,<span class="number">10000000</span>, <span class="number">100000000</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="clickhouse-c-client">Clickhouse C++ Client</h2>
+<ul>
+<li>代码<a
+href="https://github.com/dybeta2021/MyOTP/tree/main/tools/clickhouse-client">Clickhouse
+C++ Client</a></li>
+</ul>
+<p>Create client <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">clickhouse::Client <span class="title">client</span><span class="params">(clickhouse::ClientOptions()</span></span></span><br><span class="line"><span class="params"><span class="function">                                    .SetHost(<span class="string">&quot;single-clickhouse-server&quot;</span>)</span></span></span><br><span class="line"><span class="params"><span class="function">                                    .SetPort(<span class="number">9000</span>)</span></span></span><br><span class="line"><span class="params"><span class="function">                                    .SetUser(<span class="string">&quot;default&quot;</span>)</span></span></span><br><span class="line"><span class="params"><span class="function">                                    .SetPassword(<span class="string">&quot;default&quot;</span>)</span></span></span><br><span class="line"><span class="params"><span class="function">                                    .SetPingBeforeQuery(<span class="literal">true</span>))</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>Create a table. <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">client.<span class="built_in">Execute</span>(<span class="string">&quot;CREATE DATABASE IF NOT EXISTS test_db;&quot;</span>);</span><br></pre></td></tr></table></figure></p>
+<p>Insert Data <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// tick-data</span></span><br><span class="line">TickData tick_data&#123;&#125;;</span><br><span class="line">tick_data.local_time = <span class="number">201808081111</span>;</span><br><span class="line">tick_data.TradingDay = <span class="string">&quot;20220617&quot;</span>;</span><br><span class="line">tick_data.InstrumentID = <span class="string">&quot;IF2212&quot;</span>;</span><br><span class="line">tick_data.LastPrice = <span class="number">4000.0</span>;</span><br><span class="line">tick_data.Volume = <span class="number">4000</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// cur</span></span><br><span class="line"><span class="keyword">auto</span> local_time = std::make_shared&lt;clickhouse::ColumnInt64&gt;();</span><br><span class="line"><span class="keyword">auto</span> TradingDay = std::make_shared&lt;clickhouse::ColumnString&gt;();</span><br><span class="line"><span class="keyword">auto</span> InstrumentID = std::make_shared&lt;clickhouse::ColumnString&gt;();</span><br><span class="line"><span class="keyword">auto</span> LastPrice = std::make_shared&lt;clickhouse::ColumnFloat64&gt;();</span><br><span class="line"><span class="keyword">auto</span> Volume = std::make_shared&lt;clickhouse::ColumnInt64&gt;();</span><br><span class="line">clickhouse::Block block;</span><br><span class="line"></span><br><span class="line"><span class="comment">// data</span></span><br><span class="line">local_time-&gt;<span class="built_in">Append</span>(tick_data.local_time);</span><br><span class="line">TradingDay-&gt;<span class="built_in">Append</span>(tick_data.TradingDay);</span><br><span class="line">LastPrice-&gt;<span class="built_in">Append</span>(tick_data.LastPrice);</span><br><span class="line">Volume-&gt;<span class="built_in">Append</span>(tick_data.Volume);</span><br><span class="line">InstrumentID-&gt;<span class="built_in">Append</span>(tick_data.InstrumentID);</span><br><span class="line"></span><br><span class="line"><span class="comment">// to ck</span></span><br><span class="line">block.<span class="built_in">AppendColumn</span>(<span class="string">&quot;local_time&quot;</span>, local_time);</span><br><span class="line">block.<span class="built_in">AppendColumn</span>(<span class="string">&quot;TradingDay&quot;</span>, TradingDay);</span><br><span class="line">block.<span class="built_in">AppendColumn</span>(<span class="string">&quot;LastPrice&quot;</span>, LastPrice);</span><br><span class="line">block.<span class="built_in">AppendColumn</span>(<span class="string">&quot;Volume&quot;</span>, Volume);</span><br><span class="line">block.<span class="built_in">AppendColumn</span>(<span class="string">&quot;InstrumentID&quot;</span>, InstrumentID);</span><br><span class="line">client.<span class="built_in">Insert</span>(<span class="string">&quot;test_db.test_table&quot;</span>, block);</span><br></pre></td></tr></table></figure></p>
+<p>Query Data <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">client.<span class="built_in">Select</span>(<span class="string">&quot;SELECT * FROM test_db.test_table;&quot;</span>, [](<span class="keyword">const</span> clickhouse::Block &amp;block) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; block.<span class="built_in">GetRowCount</span>(); ++i) &#123;</span><br><span class="line">        std::cout &lt;&lt; block[<span class="number">0</span>]-&gt;As&lt;clickhouse::ColumnString&gt;()-&gt;<span class="built_in">At</span>(i) &lt;&lt; <span class="string">&quot; &quot;</span></span><br><span class="line">                    &lt;&lt; block[<span class="number">1</span>]-&gt;As&lt;clickhouse::ColumnString&gt;()-&gt;<span class="built_in">At</span>(i) &lt;&lt; <span class="string">&quot; &quot;</span></span><br><span class="line">                    &lt;&lt; block[<span class="number">2</span>]-&gt;As&lt;clickhouse::ColumnFloat64&gt;()-&gt;<span class="built_in">At</span>(i) &lt;&lt; <span class="string">&quot; &quot;</span></span><br><span class="line">                    &lt;&lt; block[<span class="number">3</span>]-&gt;As&lt;clickhouse::ColumnInt64&gt;()-&gt;<span class="built_in">At</span>(i) &lt;&lt; <span class="string">&quot; &quot;</span></span><br><span class="line">                    &lt;&lt; block[<span class="number">4</span>]-&gt;As&lt;clickhouse::ColumnInt64&gt;()-&gt;<span class="built_in">At</span>(i) &lt;&lt; <span class="string">&quot; &quot;</span></span><br><span class="line">                    &lt;&lt; <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
 <h2 id="链接">链接</h2>
 <ul>
 <li><a
@@ -1295,6 +1320,19 @@ formatting</a></li>
 <li><a
 href="https://www.jianshu.com/p/a0915895dbbc">cmake命令之find_package介绍</a></li>
 </ul>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>option</tag>
+        <tag>trading-system</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MyOTP-5 时间模块</title>
+    <url>/2022/06/17/myotp-time/</url>
+    <content><![CDATA[
 ]]></content>
       <categories>
         <category>C++</category>
@@ -1640,6 +1678,20 @@ href="https://zhuanlan.zhihu.com/p/329967393">Pycharm自动添加文件头注释
       </tags>
   </entry>
   <entry>
+    <title>PyQt设置备忘录</title>
+    <url>/2022/03/30/pyqt/</url>
+    <content><![CDATA[<h3 id="边距设置">边距设置</h3>
+<p><img src="WechatIMG104.png" width="100%" height="100%" title="边距宽度" alt="边距宽度"/></p>
+]]></content>
+      <categories>
+        <category>GUI</category>
+      </categories>
+      <tags>
+        <tag>Qt</tag>
+        <tag>PyQt</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python库打包备忘录</title>
     <url>/2021/06/24/python-wheel/</url>
     <content><![CDATA[<p>Python 库打包的格式包括 <code>Wheel</code> 和 <code>Egg</code>。Egg
@@ -1815,6 +1867,75 @@ href="https://setuptools.readthedocs.io/en/latest/index.html">Setuptools</a></li
       </tags>
   </entry>
   <entry>
+    <title>管理Python虚拟环境</title>
+    <url>/2021/06/17/python_env/</url>
+    <content><![CDATA[<h3 id="用conda管理python虚拟环境">用Conda管理Python虚拟环境</h3>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">查看安装了哪些包</span><br><span class="line">conda list</span><br><span class="line"></span><br><span class="line">查看当前存在哪些虚拟环境</span><br><span class="line">conda env list </span><br><span class="line">conda info -e</span><br><span class="line"></span><br><span class="line">建虚拟环境</span><br><span class="line">conda create -n your_env_name python=x.x</span><br><span class="line">conda create -n py38 python=3.8</span><br><span class="line"></span><br><span class="line">切换虚拟环境</span><br><span class="line">Linux:  source activate your_env_nam</span><br><span class="line">Windows: activate your_env_name</span><br><span class="line"></span><br><span class="line">对虚拟环境中安装额外的包</span><br><span class="line">conda install -n your_env_name [package]</span><br><span class="line"></span><br><span class="line">关闭虚拟环境(即从当前环境退出返回使用PATH环境中的默认python版本)</span><br><span class="line">Windows: deactivate env_name 或者`activate root`切回root环境</span><br><span class="line">Linux下：source deactivate </span><br><span class="line"></span><br><span class="line">删除虚拟环境</span><br><span class="line">conda remove -n your_env_name --all</span><br><span class="line"></span><br><span class="line">删除环境钟的某个包</span><br><span class="line">conda remove --name $your_env_name  $package_name </span><br></pre></td></tr></table></figure>
+<h3 id="使用-pip-freeze-生成requirements.txt">使用 pip freeze
+生成requirements.txt</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install pipreqs</span><br><span class="line"></span><br><span class="line">在项目根目录下生成requirements</span><br><span class="line">pipreqs . --encoding=utf-8 --force</span><br><span class="line"></span><br><span class="line">执行requirement.txt</span><br><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+<h3
+id="bat快捷方式激活虚拟环境运行python程序">bat快捷方式激活虚拟环境+运行python程序</h3>
+<p>激活python虚拟环境的workon，activate命令是一个bat文件，在bat文件中激活虚拟环境相当于是一个bat文件调用了另一个bat文件，这会导致第一个bat文件中断。解决的方法很简单，就是在workon或activate前面加call就可以实现激活虚拟环境并继续运行python程序了。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">@echo off</span><br><span class="line">chcp 65001</span><br><span class="line">title project x shortcut</span><br><span class="line">call activate py37</span><br><span class="line">python run_update_static_data.py</span><br><span class="line">ping -n 3 127.0.0.1&gt;nul</span><br><span class="line">python run_paste_ctp.py</span><br><span class="line">pause</span><br></pre></td></tr></table></figure>
+<hr />
+<ul>
+<li><a
+href="https://zhuanlan.zhihu.com/p/94744929">Anaconda-用conda创建python虚拟环境</a></li>
+<li><a
+href="https://www.jianshu.com/p/acb3205aea54">Python项目如何生成requirements.txt文件</a></li>
+<li><a
+href="http://www.xueshanlinghu.com/excellent-articles/2642.html">python切换虚拟环境（workon或activate）会中断bat的运行的处理方案
+| 雪山凌狐教程 (xueshanlinghu.com)</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Conda</tag>
+        <tag>Miniconda</tag>
+        <tag>Anaconda</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>处理Python混编接口对字典操作的多线程竞争问题</title>
+    <url>/2021/06/21/python_fix_dict/</url>
+    <content><![CDATA[<p>在使用Python3对字典操作时遇到错误：dictionary changed size during
+iteration</p>
+<p>原始代码如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_data_dict</span>(<span class="params">self</span>) -&gt; (<span class="built_in">dict</span>, <span class="built_in">bool</span>):</span></span><br><span class="line">	<span class="keyword">if</span> self.time_point &gt; self.pre_time_point:</span><br><span class="line">		self.pre_time_point = self.time_point</span><br><span class="line">		<span class="keyword">return</span> deepcopy(self.access), <span class="literal">False</span></span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		<span class="keyword">return</span> deepcopy(self.access), <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<p>其中access是使用C++混编模块回调函数更新数据的缓存变量（字典），在数据量较少（每秒钟更新100~200笔数据）的时候没有发生过问题，在加大数据量到每秒钟3000笔到5000笔数据的时候出现bug</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">dictionary changed size during iteration</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Dictionaries implement a <code>tp_iter</code> slot that returns an
+efficient iterator that iterates over the keys of the dictionary. During
+such an iteration, the dictionary should not be modified, except that
+setting the value for an existing key is allowed (deletions or additions
+are not, nor is the <code>update()</code> method).</p>
+</blockquote>
+<p>可以看到由于多线程共用一个变量没有线程锁导致的问题，需要同步的修改python和c++接口部分的代码，添加线程同步锁，由于涉及到混编和接口这种修改较为复杂并且强化了不同模块代码的耦合。偶然间在网上发现一种另类的解决方法，Python字典在遍历时不能进行修改，但是转换成列表或集合可以。对轻度使用的函数可以将dict修改为list避免工作量。修改后的代码如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_data_dict</span>(<span class="params">self</span>) -&gt; (<span class="built_in">dict</span>, <span class="built_in">bool</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Python3对字典操作时遇到错误：dictionary changed size during iteration</span></span><br><span class="line"><span class="string">    https://blog.csdn.net/zhihaoma/article/details/51265168</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    access = <span class="built_in">dict</span>()</span><br><span class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> <span class="built_in">list</span>(self.access.keys()):</span><br><span class="line">        access[key] = self.access[key]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> self.time_point &gt; self.pre_time_point:</span><br><span class="line">        self.pre_time_point = self.time_point</span><br><span class="line">        <span class="keyword">return</span> access, <span class="literal">False</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> access, <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_data_dict</span>(<span class="params">self</span>) -&gt; (<span class="built_in">dict</span>, <span class="built_in">bool</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Python3对字典操作时遇到错误：dictionary changed size during iteration</span></span><br><span class="line"><span class="string">    https://blog.csdn.net/zhihaoma/article/details/51265168</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    access = <span class="built_in">dict</span>()</span><br><span class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> self.access:</span><br><span class="line">        access[key] = self.access[key]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> self.time_point &gt; self.pre_time_point:</span><br><span class="line">        self.pre_time_point = self.time_point</span><br><span class="line">        <span class="keyword">return</span> access, <span class="literal">False</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> access, <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<hr />
+<ul>
+<li><a
+href="https://www.python.org/dev/peps/pep-0234/#dictionary-iterators">Dictionary
+Iterators</a></li>
+<li><a
+href="https://blog.csdn.net/zhihaoma/article/details/51265168">Python3对字典操作时遇到错误：dictionary
+changed size during iteration</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Python Debug</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python RPyC</title>
     <url>/2022/03/02/rpc-python/</url>
     <content><![CDATA[<p><a href="https://github.com/tomerfiliba-org/rpyc">RPyC</a></p>
@@ -1832,20 +1953,6 @@ href="https://setuptools.readthedocs.io/en/latest/index.html">Setuptools</a></li
       </categories>
       <tags>
         <tag>rpyc</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PyQt设置备忘录</title>
-    <url>/2022/03/30/pyqt/</url>
-    <content><![CDATA[<h3 id="边距设置">边距设置</h3>
-<p><img src="WechatIMG104.png" width="100%" height="100%" title="边距宽度" alt="边距宽度"/></p>
-]]></content>
-      <categories>
-        <category>GUI</category>
-      </categories>
-      <tags>
-        <tag>Qt</tag>
-        <tag>PyQt</tag>
       </tags>
   </entry>
   <entry>
@@ -1953,75 +2060,6 @@ href="http://www.sse.com.cn/lawandrules/sselawsrules/option/c/c_20210128_5312075
       <tags>
         <tag>option</tag>
         <tag>settlement_price</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>处理Python混编接口对字典操作的多线程竞争问题</title>
-    <url>/2021/06/21/python_fix_dict/</url>
-    <content><![CDATA[<p>在使用Python3对字典操作时遇到错误：dictionary changed size during
-iteration</p>
-<p>原始代码如下</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_data_dict</span>(<span class="params">self</span>) -&gt; (<span class="built_in">dict</span>, <span class="built_in">bool</span>):</span></span><br><span class="line">	<span class="keyword">if</span> self.time_point &gt; self.pre_time_point:</span><br><span class="line">		self.pre_time_point = self.time_point</span><br><span class="line">		<span class="keyword">return</span> deepcopy(self.access), <span class="literal">False</span></span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		<span class="keyword">return</span> deepcopy(self.access), <span class="literal">True</span></span><br></pre></td></tr></table></figure>
-<p>其中access是使用C++混编模块回调函数更新数据的缓存变量（字典），在数据量较少（每秒钟更新100~200笔数据）的时候没有发生过问题，在加大数据量到每秒钟3000笔到5000笔数据的时候出现bug</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">dictionary changed size during iteration</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>Dictionaries implement a <code>tp_iter</code> slot that returns an
-efficient iterator that iterates over the keys of the dictionary. During
-such an iteration, the dictionary should not be modified, except that
-setting the value for an existing key is allowed (deletions or additions
-are not, nor is the <code>update()</code> method).</p>
-</blockquote>
-<p>可以看到由于多线程共用一个变量没有线程锁导致的问题，需要同步的修改python和c++接口部分的代码，添加线程同步锁，由于涉及到混编和接口这种修改较为复杂并且强化了不同模块代码的耦合。偶然间在网上发现一种另类的解决方法，Python字典在遍历时不能进行修改，但是转换成列表或集合可以。对轻度使用的函数可以将dict修改为list避免工作量。修改后的代码如下</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_data_dict</span>(<span class="params">self</span>) -&gt; (<span class="built_in">dict</span>, <span class="built_in">bool</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Python3对字典操作时遇到错误：dictionary changed size during iteration</span></span><br><span class="line"><span class="string">    https://blog.csdn.net/zhihaoma/article/details/51265168</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    access = <span class="built_in">dict</span>()</span><br><span class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> <span class="built_in">list</span>(self.access.keys()):</span><br><span class="line">        access[key] = self.access[key]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> self.time_point &gt; self.pre_time_point:</span><br><span class="line">        self.pre_time_point = self.time_point</span><br><span class="line">        <span class="keyword">return</span> access, <span class="literal">False</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> access, <span class="literal">True</span></span><br></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_data_dict</span>(<span class="params">self</span>) -&gt; (<span class="built_in">dict</span>, <span class="built_in">bool</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Python3对字典操作时遇到错误：dictionary changed size during iteration</span></span><br><span class="line"><span class="string">    https://blog.csdn.net/zhihaoma/article/details/51265168</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    access = <span class="built_in">dict</span>()</span><br><span class="line">    <span class="keyword">for</span> key <span class="keyword">in</span> self.access:</span><br><span class="line">        access[key] = self.access[key]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> self.time_point &gt; self.pre_time_point:</span><br><span class="line">        self.pre_time_point = self.time_point</span><br><span class="line">        <span class="keyword">return</span> access, <span class="literal">False</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> access, <span class="literal">True</span></span><br></pre></td></tr></table></figure>
-<hr />
-<ul>
-<li><a
-href="https://www.python.org/dev/peps/pep-0234/#dictionary-iterators">Dictionary
-Iterators</a></li>
-<li><a
-href="https://blog.csdn.net/zhihaoma/article/details/51265168">Python3对字典操作时遇到错误：dictionary
-changed size during iteration</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Python</category>
-      </categories>
-      <tags>
-        <tag>Python Debug</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>管理Python虚拟环境</title>
-    <url>/2021/06/17/python_env/</url>
-    <content><![CDATA[<h3 id="用conda管理python虚拟环境">用Conda管理Python虚拟环境</h3>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">查看安装了哪些包</span><br><span class="line">conda list</span><br><span class="line"></span><br><span class="line">查看当前存在哪些虚拟环境</span><br><span class="line">conda env list </span><br><span class="line">conda info -e</span><br><span class="line"></span><br><span class="line">建虚拟环境</span><br><span class="line">conda create -n your_env_name python=x.x</span><br><span class="line">conda create -n py38 python=3.8</span><br><span class="line"></span><br><span class="line">切换虚拟环境</span><br><span class="line">Linux:  source activate your_env_nam</span><br><span class="line">Windows: activate your_env_name</span><br><span class="line"></span><br><span class="line">对虚拟环境中安装额外的包</span><br><span class="line">conda install -n your_env_name [package]</span><br><span class="line"></span><br><span class="line">关闭虚拟环境(即从当前环境退出返回使用PATH环境中的默认python版本)</span><br><span class="line">Windows: deactivate env_name 或者`activate root`切回root环境</span><br><span class="line">Linux下：source deactivate </span><br><span class="line"></span><br><span class="line">删除虚拟环境</span><br><span class="line">conda remove -n your_env_name --all</span><br><span class="line"></span><br><span class="line">删除环境钟的某个包</span><br><span class="line">conda remove --name $your_env_name  $package_name </span><br></pre></td></tr></table></figure>
-<h3 id="使用-pip-freeze-生成requirements.txt">使用 pip freeze
-生成requirements.txt</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install pipreqs</span><br><span class="line"></span><br><span class="line">在项目根目录下生成requirements</span><br><span class="line">pipreqs . --encoding=utf-8 --force</span><br><span class="line"></span><br><span class="line">执行requirement.txt</span><br><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-<h3
-id="bat快捷方式激活虚拟环境运行python程序">bat快捷方式激活虚拟环境+运行python程序</h3>
-<p>激活python虚拟环境的workon，activate命令是一个bat文件，在bat文件中激活虚拟环境相当于是一个bat文件调用了另一个bat文件，这会导致第一个bat文件中断。解决的方法很简单，就是在workon或activate前面加call就可以实现激活虚拟环境并继续运行python程序了。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">@echo off</span><br><span class="line">chcp 65001</span><br><span class="line">title project x shortcut</span><br><span class="line">call activate py37</span><br><span class="line">python run_update_static_data.py</span><br><span class="line">ping -n 3 127.0.0.1&gt;nul</span><br><span class="line">python run_paste_ctp.py</span><br><span class="line">pause</span><br></pre></td></tr></table></figure>
-<hr />
-<ul>
-<li><a
-href="https://zhuanlan.zhihu.com/p/94744929">Anaconda-用conda创建python虚拟环境</a></li>
-<li><a
-href="https://www.jianshu.com/p/acb3205aea54">Python项目如何生成requirements.txt文件</a></li>
-<li><a
-href="http://www.xueshanlinghu.com/excellent-articles/2642.html">python切换虚拟环境（workon或activate）会中断bat的运行的处理方案
-| 雪山凌狐教程 (xueshanlinghu.com)</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Python</category>
-      </categories>
-      <tags>
-        <tag>Conda</tag>
-        <tag>Miniconda</tag>
-        <tag>Anaconda</tag>
       </tags>
   </entry>
   <entry>
@@ -2694,28 +2732,6 @@ H(\mathbf x_k)=
       </categories>
       <tags>
         <tag>Math</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Vcpkg C++包管理</title>
-    <url>/2022/04/13/vcpkg/</url>
-    <content><![CDATA[<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/microsoft/vcpkg</span><br><span class="line">.\vcpkg\bootstrap-vcpkg.bat</span><br><span class="line">.\vcpkg\vcpkg integrate install</span><br></pre></td></tr></table></figure>
-<p>vcpkg在Windows中默认编译并安装x86版本的库。
-若要编译并安装x64版本，请执行:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">.\vcpkg\vcpkg install [package name]:x64-windows</span><br><span class="line">.\vcpkg\vcpkg install [packages to install] --triplet=x64-windows</span><br><span class="line">.\vcpkg\vcpkg install nng:x64-windows</span><br><span class="line">.\vcpkg\vcpkg install boost:x64-windows</span><br></pre></td></tr></table></figure>
-<p>当您希望将vcpkg作为一个子模块加入到您的工程中时， 您可以在第一个
-project() 调用之前将以下内容添加到 CMakeLists.txt 中， 而无需将
-CMAKE_TOOLCHAIN_FILE 传递给cmake调用。 <figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(WIN32)</span><br><span class="line">    <span class="keyword">set</span>(CMAKE_TOOLCHAIN_FILE C:/Software/vcpkg/scripts/buildsystems/vcpkg.cmake  CACHE <span class="keyword">STRING</span> <span class="string">&quot;Vcpkg toolchain file&quot;</span>)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.22</span>)</span><br><span class="line"><span class="keyword">project</span>(yijinjing)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">23</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span>(Boost_USE_MULTITHREADED <span class="keyword">ON</span>)</span><br><span class="line"><span class="keyword">SET</span>(Boost_USE_STATIC_LIBS <span class="keyword">OFF</span>)</span><br><span class="line"><span class="keyword">SET</span>(Boost_USE_STATIC_RUNTIME <span class="keyword">OFF</span>)</span><br><span class="line"><span class="keyword">FIND_PACKAGE</span>(Boost COMPONENTS  filesystem system thread regex REQUIRED)</span><br><span class="line"><span class="keyword">INCLUDE_DIRECTORIES</span>(<span class="variable">$&#123;Boost_INCLUDE_DIR&#125;</span>)</span><br><span class="line"><span class="keyword">message</span>(<span class="variable">$&#123;Boost_INCLUDE_DIRS&#125;</span>)</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><a
-href="https://github.com/microsoft/vcpkg/blob/master/README_zh_CN.md#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B-windows">Vcpkg</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>C++</category>
-      </categories>
-      <tags>
-        <tag>C++ Package</tag>
       </tags>
   </entry>
   <entry>
@@ -3430,6 +3446,28 @@ Information Systems (TOIS), 2016, 34(2): 11.</p></li>
       <tags>
         <tag>MultiFactor</tag>
         <tag>LinearRegression</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Vcpkg C++包管理</title>
+    <url>/2022/04/13/vcpkg/</url>
+    <content><![CDATA[<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/microsoft/vcpkg</span><br><span class="line">.\vcpkg\bootstrap-vcpkg.bat</span><br><span class="line">.\vcpkg\vcpkg integrate install</span><br></pre></td></tr></table></figure>
+<p>vcpkg在Windows中默认编译并安装x86版本的库。
+若要编译并安装x64版本，请执行:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">.\vcpkg\vcpkg install [package name]:x64-windows</span><br><span class="line">.\vcpkg\vcpkg install [packages to install] --triplet=x64-windows</span><br><span class="line">.\vcpkg\vcpkg install nng:x64-windows</span><br><span class="line">.\vcpkg\vcpkg install boost:x64-windows</span><br></pre></td></tr></table></figure>
+<p>当您希望将vcpkg作为一个子模块加入到您的工程中时， 您可以在第一个
+project() 调用之前将以下内容添加到 CMakeLists.txt 中， 而无需将
+CMAKE_TOOLCHAIN_FILE 传递给cmake调用。 <figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(WIN32)</span><br><span class="line">    <span class="keyword">set</span>(CMAKE_TOOLCHAIN_FILE C:/Software/vcpkg/scripts/buildsystems/vcpkg.cmake  CACHE <span class="keyword">STRING</span> <span class="string">&quot;Vcpkg toolchain file&quot;</span>)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.22</span>)</span><br><span class="line"><span class="keyword">project</span>(yijinjing)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">23</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span>(Boost_USE_MULTITHREADED <span class="keyword">ON</span>)</span><br><span class="line"><span class="keyword">SET</span>(Boost_USE_STATIC_LIBS <span class="keyword">OFF</span>)</span><br><span class="line"><span class="keyword">SET</span>(Boost_USE_STATIC_RUNTIME <span class="keyword">OFF</span>)</span><br><span class="line"><span class="keyword">FIND_PACKAGE</span>(Boost COMPONENTS  filesystem system thread regex REQUIRED)</span><br><span class="line"><span class="keyword">INCLUDE_DIRECTORIES</span>(<span class="variable">$&#123;Boost_INCLUDE_DIR&#125;</span>)</span><br><span class="line"><span class="keyword">message</span>(<span class="variable">$&#123;Boost_INCLUDE_DIRS&#125;</span>)</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><a
+href="https://github.com/microsoft/vcpkg/blob/master/README_zh_CN.md#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B-windows">Vcpkg</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>C++ Package</tag>
       </tags>
   </entry>
   <entry>
