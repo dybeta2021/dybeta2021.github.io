@@ -251,20 +251,25 @@
 
       
         <p>最近有些闲暇时间，打算尝试开发一个轻量级的期权交易系统。MyOTP目前定位是商品期权和股指期权的期权交易系统。</p>
+<h2 id="目录">目录</h2>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/dybeta2021/MyOTP/tree/main/core/static_data">core/static_data</a>CTP接口获取期权的合约数据</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/dybeta2021/MyOTP/tree/main/core/data_recorder">core/data_recorder</a>Tick行情接收并存储Clickhouse</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/dybeta2021/MyOTP/tree/main/app/data_recorder">app/data_recorder</a>Tick行情收录程序</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/dybeta2021/MyOTP/tree/main/tools/logger">tools/logger</a>日志模块</li>
+</ul>
 <h2 id="说明文档">说明文档</h2>
 <ul>
 <li><a
 href="https://dybeta2021.github.io/2022/06/15/myotp-docker/">MyOTP-1
 开发环境搭建</a></li>
-</ul>
-<h2 id="模块简介">模块简介</h2>
-<ul>
-<li>app/static-data
-通过ctp-future交易接口获取期权的盘前静态数据并存入sqlite。这个模块的作用是每日开盘前更新期货和期权的合约数据</li>
-<li>app/last_data
-通过ctp-future行情接口当前的行情数据并存入sqlite。这个模块的作用是每日开盘前/收盘后更新期货和期权的行情数据。</li>
-<li>app/data_recorder
-通过ctp-future行情接口获取行情数据并存入clickhouse</li>
+<li><a
+href="https://dybeta2021.github.io/2022/06/15/myotp-logger/">MyOTP-2
+日志模块</a></li>
 </ul>
 
     </div>
@@ -306,8 +311,8 @@ href="https://dybeta2021.github.io/2022/06/15/myotp-docker/">MyOTP-1
       <i class="fa fa-chevron-left"></i> 股票期权结算价计算方法
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/06/15/myotp-docker/" rel="next" title="MyOTP-1 开发环境搭建">
-      MyOTP-1 开发环境搭建 <i class="fa fa-chevron-right"></i>
+    <a href="/2022/06/15/myotp-docker/" rel="next" title="MyOTP-1 Docker开发环境搭建">
+      MyOTP-1 Docker开发环境搭建 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -367,7 +372,7 @@ href="https://dybeta2021.github.io/2022/06/15/myotp-docker/">MyOTP-1
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3"><span class="nav-number">1.</span> <span class="nav-text">说明文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">模块简介</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3"><span class="nav-number">2.</span> <span class="nav-text">说明文档</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -381,7 +386,7 @@ href="https://dybeta2021.github.io/2022/06/15/myotp-docker/">MyOTP-1
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -440,7 +445,7 @@ href="https://dybeta2021.github.io/2022/06/15/myotp-docker/">MyOTP-1
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
-博客全站共257k字
+博客全站共257.1k字
         
 
 

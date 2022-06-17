@@ -23,7 +23,7 @@
 
   <meta name="description" content="MyOTP-Docker开发环境搭建">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MyOTP-1 开发环境搭建">
+<meta property="og:title" content="MyOTP-1 Docker开发环境搭建">
 <meta property="og:url" content="https://dybeta2021.github.io/2022/06/15/myotp-docker/index.html">
 <meta property="og:site_name" content="子非鱼">
 <meta property="og:description" content="MyOTP-Docker开发环境搭建">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>MyOTP-1 开发环境搭建 | 子非鱼</title>
+  <title>MyOTP-1 Docker开发环境搭建 | 子非鱼</title>
   
 
 
@@ -216,7 +216,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          MyOTP-1 开发环境搭建
+          MyOTP-1 Docker开发环境搭建
         </h1>
 
         <div class="post-meta">
@@ -252,7 +252,7 @@
 
       
         <p>国内的程序化交易系统必须通过券商或期货公司的柜台间接介入交易所，并且需要进行看穿式监管认证，所以实盘系统一般很少使用云主机或docker虚拟环境。这里使用docker-ubuntu主要是为了设置一个相对纯净的开发环境。服务器版本可以通过vscode-web方式直接开发，本机则一般通过ssh使用pycharm、clion等ide开发。</p>
-<h2 id="docker设置">Docker设置</h2>
+<h2 id="开发环境">开发环境</h2>
 <h3 id="启动容器">启动容器</h3>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker pull ubuntu</span><br><span class="line">docker run --name iubuntu -t -i -d -p 4100:22 ubuntu</span><br><span class="line">docker exec -t -i iubuntu /bin/bash</span><br></pre></td></tr></table></figure>
 <h3 id="ssh">SSH</h3>
@@ -279,6 +279,13 @@ target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31078295">Dock
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install pandas</span><br></pre></td></tr></table></figure>
 <h3 id="生成镜像">生成镜像</h3>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker commit iubuntu ubuntu-simnow</span><br><span class="line">docker save ubuntu-simnow &gt; ubuntu-simnow.tar</span><br><span class="line">docker run --name ubuntu-simnow -t -i -d -p 7100:22  -p 7101:7101 ubuntu-simnow /usr/sbin/sshd -D</span><br><span class="line"></span><br><span class="line">docker exec -t -i ubuntu-simnow /bin/bash</span><br><span class="line">code-server --port 7101 --host 0.0.0.0 --auth password 1234567890</span><br></pre></td></tr></table></figure>
+<h2 id="clickhouse">Clickhouse</h2>
+<ul>
+<li><a
+href="https://dybeta2021.github.io/2021/06/19/docker/">docker-clickhouse</a></li>
+</ul>
+<h2 id="docker-network">Docker Network</h2>
+<p>实现docker互联 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker network create otpnet</span><br><span class="line">docker network connect --alias ubuntu-simnow otpnet ubuntu-simnow</span><br><span class="line">docker network connect --alias single-clickhouse-server otpnet single-clickhouse-server</span><br><span class="line">docker network inspect otpnet</span><br></pre></td></tr></table></figure></p>
 
     </div>
 
@@ -294,7 +301,7 @@ target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31078295">Dock
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://dybeta2021.github.io/2022/06/15/myotp-docker/" title="MyOTP-1 开发环境搭建">https://dybeta2021.github.io/2022/06/15/myotp-docker/</a>
+    <a href="https://dybeta2021.github.io/2022/06/15/myotp-docker/" title="MyOTP-1 Docker开发环境搭建">https://dybeta2021.github.io/2022/06/15/myotp-docker/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -380,7 +387,7 @@ target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31078295">Dock
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#docker%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">Docker设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%AE%B9%E5%99%A8"><span class="nav-number">1.1.</span> <span class="nav-text">启动容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh"><span class="nav-number">1.2.</span> <span class="nav-text">SSH</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vscode-web"><span class="nav-number">1.3.</span> <span class="nav-text">VSCode-Web</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-ubunut%E8%AE%BE%E7%BD%AE%E6%97%B6%E5%8C%BA"><span class="nav-number">1.4.</span> <span class="nav-text">Docker-Ubunut设置时区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEdocker-ubuntu%E7%9A%84%E4%B8%AD%E6%96%87%E7%8E%AF%E5%A2%83"><span class="nav-number">1.5.</span> <span class="nav-text">配置Docker-Ubuntu的中文环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c"><span class="nav-number">1.6.</span> <span class="nav-text">C++</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python"><span class="nav-number">1.7.</span> <span class="nav-text">Python</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python%E5%BA%93"><span class="nav-number">1.8.</span> <span class="nav-text">Python库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E9%95%9C%E5%83%8F"><span class="nav-number">1.9.</span> <span class="nav-text">生成镜像</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83"><span class="nav-number">1.</span> <span class="nav-text">开发环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%AE%B9%E5%99%A8"><span class="nav-number">1.1.</span> <span class="nav-text">启动容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh"><span class="nav-number">1.2.</span> <span class="nav-text">SSH</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vscode-web"><span class="nav-number">1.3.</span> <span class="nav-text">VSCode-Web</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-ubunut%E8%AE%BE%E7%BD%AE%E6%97%B6%E5%8C%BA"><span class="nav-number">1.4.</span> <span class="nav-text">Docker-Ubunut设置时区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEdocker-ubuntu%E7%9A%84%E4%B8%AD%E6%96%87%E7%8E%AF%E5%A2%83"><span class="nav-number">1.5.</span> <span class="nav-text">配置Docker-Ubuntu的中文环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c"><span class="nav-number">1.6.</span> <span class="nav-text">C++</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python"><span class="nav-number">1.7.</span> <span class="nav-text">Python</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python%E5%BA%93"><span class="nav-number">1.8.</span> <span class="nav-text">Python库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E9%95%9C%E5%83%8F"><span class="nav-number">1.9.</span> <span class="nav-text">生成镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#clickhouse"><span class="nav-number">2.</span> <span class="nav-text">Clickhouse</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-network"><span class="nav-number">3.</span> <span class="nav-text">Docker Network</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -394,7 +401,7 @@ target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31078295">Dock
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -453,7 +460,7 @@ target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31078295">Dock
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
-博客全站共257k字
+博客全站共257.1k字
         
 
 
