@@ -23,7 +23,7 @@
 
   <meta name="description" content="A high performance, shared memory, lock free, cross platform, no dependencies, key-value store.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="多进程无锁KV数据库">
+<meta property="og:title" content="Shm IPC Lock-Free KV Store">
 <meta property="og:url" content="https://dybeta2021.github.io/2021/10/11/shmkv/index.html">
 <meta property="og:site_name" content="子非鱼">
 <meta property="og:description" content="A high performance, shared memory, lock free, cross platform, no dependencies, key-value store.">
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>多进程无锁KV数据库 | 子非鱼</title>
+  <title>Shm IPC Lock-Free KV Store | 子非鱼</title>
   
 
 
@@ -218,7 +218,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          多进程无锁KV数据库
+          Shm IPC Lock-Free KV Store
         </h1>
 
         <div class="post-meta">
@@ -259,10 +259,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文通过修改pupa内存数据库实现python多进程共享内存数据库，可以在python内将任意数据类型的数据通过kv方式跨进程交互。</p>
+        <p><a
+target="_blank" rel="noopener" href="https://github.com/dybeta2021/dyblog/tree/main/PyShmKV">PyShmKV</a>通过修改pupa内存数据库实现python多进程共享内存数据库，可以在python内将任意数据类型的数据通过kv方式跨进程交互。</p>
 <h2 id="内存内数据体结构">内存内数据体结构</h2>
 <p><a
-target="_blank" rel="noopener" href="https://github.com/agile6v/pupa">pupa</a>原作者设计是通过双buffer实现的在一写多读情况下无锁的KV数据库，代码由纯C编写，笔者在使用的时候发现核心部分有bug，并且被设计为单独运行的数据库。这里魔改为C++并添加封装变成进程内组件，添加类封装，方便创建多个实例。
+target="_blank" rel="noopener" href="https://github.com/agile6v/pupa">pupa</a>原作者设计是通过双buffer实现的在一写多读情况下无锁的KV数据库，代码由纯C编写，笔者在使用的时候发现核心部分有bug，并且被设计为单独运行的数据库。这里修改为C++并添加封装变成进程内组件，添加类封装，方便创建多个实例。
 如下图，是pupa的内存结构设计</p>
 <p><img src="mem_layout.png" width="40%" height="40%" title="mem_layout" alt="mem_layout"/></p>
 <p>其中Header部分由三个结构体组成即item、key和value三部分在内存中的首位置和字节长度。</p>
@@ -421,7 +422,7 @@ target="_blank" rel="noopener" href="https://www.cnblogs.com/jiangwang2013/p/372
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://dybeta2021.github.io/2021/10/11/shmkv/" title="多进程无锁KV数据库">https://dybeta2021.github.io/2021/10/11/shmkv/</a>
+    <a href="https://dybeta2021.github.io/2021/10/11/shmkv/" title="Shm IPC Lock-Free KV Store">https://dybeta2021.github.io/2021/10/11/shmkv/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
