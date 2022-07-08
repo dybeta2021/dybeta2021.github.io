@@ -23,7 +23,7 @@
 
   <meta name="description" content="从现代操作系统理念设计上，将行情接口、策略引擎、交易接口放在同一个进程中是最方便快捷的方式。MyOTP没有采用这种方式，一是考虑到行情和交易通常不是一套柜台系统API进程隔离更安全，另一个是多功能耦合在一起不利于模块化分离。模块化设计功能分割方便，利于多人协同开发。由于MyOTP定位不是高频交易系统（虽然整体运行速度效率高于相当一部分所谓高频交易系统），在框架设计上不会特意为了针对优化某些功能而调">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MyOTP-5 IPC进程通信模块">
+<meta property="og:title" content="MyOTP-5 IPC进程通信">
 <meta property="og:url" content="https://dybeta2021.github.io/2022/06/17/myotp-ipc/index.html">
 <meta property="og:site_name" content="子非鱼">
 <meta property="og:description" content="从现代操作系统理念设计上，将行情接口、策略引擎、交易接口放在同一个进程中是最方便快捷的方式。MyOTP没有采用这种方式，一是考虑到行情和交易通常不是一套柜台系统API进程隔离更安全，另一个是多功能耦合在一起不利于模块化分离。模块化设计功能分割方便，利于多人协同开发。由于MyOTP定位不是高频交易系统（虽然整体运行速度效率高于相当一部分所谓高频交易系统），在框架设计上不会特意为了针对优化某些功能而调">
@@ -52,7 +52,7 @@
   };
 </script>
 
-  <title>MyOTP-5 IPC进程通信模块 | 子非鱼</title>
+  <title>MyOTP-5 IPC进程通信 | 子非鱼</title>
   
 
 
@@ -220,7 +220,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          MyOTP-5 IPC进程通信模块
+          MyOTP-5 IPC进程通信
         </h1>
 
         <div class="post-meta">
@@ -362,7 +362,7 @@ target="_blank" rel="noopener" href="https://leiyiming.com/2017/08/25/falseshari
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://dybeta2021.github.io/2022/06/17/myotp-ipc/" title="MyOTP-5 IPC进程通信模块">https://dybeta2021.github.io/2022/06/17/myotp-ipc/</a>
+    <a href="https://dybeta2021.github.io/2022/06/17/myotp-ipc/" title="MyOTP-5 IPC进程通信">https://dybeta2021.github.io/2022/06/17/myotp-ipc/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -383,10 +383,13 @@ target="_blank" rel="noopener" href="https://leiyiming.com/2017/08/25/falseshari
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/06/16/myotp-data-recorder/" rel="prev" title="MyOTP-4 行情收录系统">
-      <i class="fa fa-chevron-left"></i> MyOTP-4 行情收录系统
+    <a href="/2022/06/16/myotp-data-recorder/" rel="prev" title="MyOTP-4 行情收录">
+      <i class="fa fa-chevron-left"></i> MyOTP-4 行情收录
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/30/myotp-oncall/" rel="next" title="MyOTP-6 Quote-Broker-Agent">
+      MyOTP-6 Quote-Broker-Agent <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -459,7 +462,7 @@ target="_blank" rel="noopener" href="https://leiyiming.com/2017/08/25/falseshari
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">52</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -518,7 +521,7 @@ target="_blank" rel="noopener" href="https://leiyiming.com/2017/08/25/falseshari
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
-博客全站共255.9k字
+博客全站共256.1k字
         
 
 
