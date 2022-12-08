@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dybeta2021.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="通常波动率被分为两种，一种是回望型波动率(backward looking)，另外一种是前瞻波动率(forward looking)。前者是用历史数据算出来的波动率，后者是根据现在的期权市场报价用定价模型反推出来的波动率。前者是已经发生了的历史价格的波动，根据历史数据计算的一个波动率，后者是市场对未来标的价格的波动程度(波动率)的预测，通常不准确。相关性是一个统计指标，表示两个变量线性相关（即它们">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Volatility and Correlation">
+<meta property="og:url" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="通常波动率被分为两种，一种是回望型波动率(backward looking)，另外一种是前瞻波动率(forward looking)。前者是用历史数据算出来的波动率，后者是根据现在的期权市场报价用定价模型反推出来的波动率。前者是已经发生了的历史价格的波动，根据历史数据计算的一个波动率，后者是市场对未来标的价格的波动程度(波动率)的预测，通常不准确。相关性是一个统计指标，表示两个变量线性相关（即它们">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/test.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/hv_ema.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/correlation_coefficient.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/image-20210723135420391.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/hv.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/newplot.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/hv20.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/hv60.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/hv30.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/hv20_1.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/hv60_1.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/test1.png">
+<meta property="article:published_time" content="2021-06-19T08:23:03.000Z">
+<meta property="article:modified_time" content="2021-06-19T08:23:03.000Z">
+<meta property="article:author" content="稻草人">
+<meta property="article:tag" content="Volatility">
+<meta property="article:tag" content="Correlation">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/test.png">
+
+<link rel="canonical" href="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Volatility and Correlation | 子非鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子非鱼</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/dybeta2021" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="稻草人">
+      <meta itemprop="description" content="风物长宜放眼量">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子非鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Volatility and Correlation
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-19 16:23:03" itemprop="dateCreated datePublished" datetime="2021-06-19T16:23:03+08:00">2021-06-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Option/" itemprop="url" rel="index"><span itemprop="name">Option</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">通常波动率被分为两种，一种是回望型波动率(backward looking)，另外一种是前瞻波动率(forward looking)。前者是用历史数据算出来的波动率，后者是根据现在的期权市场报价用定价模型反推出来的波动率。前者是已经发生了的历史价格的波动，根据历史数据计算的一个波动率，后者是市场对未来标的价格的波动程度(波动率)的预测，通常不准确。相关性是一个统计指标，表示两个变量线性相关（即它们以固定的比率一起变化）的程度。它是一个用于描述简单关系而没有陈述因果关系的常用工具。相关性可以检验两个变量之间的关系。但是，两个变量一起变动并不一定意味着我们知道是不是一个变量引起了另一个变量的变动。因此我们常说，“相关性并不意味着因果关系”。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="波动率">波动率</h2>
+<p>波动率(volatility)指的是资产价格的波动强弱程度，
+类似于概率论中随机变量标准差的概念。 波动率不能直接观测，
+可以从资产收益率中看出波动率的一些特征。</p>
+<ul>
+<li>存在波动率聚集(volatility clustering)</li>
+<li>波动率随时间连续变化，一般不出现波动率的跳跃式变动（存疑）</li>
+<li>波动率一般在固定的范围内变化，意味着动态的波动率是平稳的</li>
+<li>在资产价格大幅上扬和大幅下跌两种情形下， 波动率的反映不同，
+大幅下跌时波动率一般也更大， 这种现象称为杠杆效应（leverage
+effect）</li>
+</ul>
+<p>通常波动率被分为两种，一种是回望型波动率(backward
+looking)，另外一种是前瞻波动率(forward
+looking)。前者是用历史数据算出来的波动率，后者是根据现在的期权市场报价用定价模型反推出来的波动率。前者是已经发生了的历史价格的波动，根据历史数据计算的一个波动率，后者是市场对未来标的价格的波动程度(波动率)的预测，通常不准确。</p>
+<p>除此之外我认为还有两个概念经常被混淆，分别是实际波动率(Actual
+Volatility)和理论波动率(Theory
+Volatility)。实际波动率是对期权有效期内投资回报率波动程度的度量，对一个期权头寸组合而言，它的实际波动率应该指的是实盘交易中离散的动态对冲过程中delta敞口变化导致采样到的标的波动，这个概念通常与历史波动率混淆，即使用历史波动率来代替组合实际采样到的波动率。举例说明，假设标的<span
+class="math inline">\(X\)</span>存在极端的日内波动，一个交易日内的振幅为<span
+class="math inline">\(0\%, +r\%, -r\%, 0\%\)</span>
+。对一个Gamma-Scalping的头寸组合存在如下几种对冲情况</p>
+<ul>
+<li>组合在标的振幅为<span class="math inline">\(+r\%, -r\%,
+0\%\)</span>进行了全部对冲，则组合采样标的的当日的波动幅度为<span
+class="math inline">\(r+2r+r\)</span></li>
+<li>组合在标的振幅为<span class="math inline">\(+r\%, -r\%,
+0\%\)</span>进行部分对冲，由于Greeks敞口的减少组合采样标的的当日的波动幅度小于<span
+class="math inline">\(r+2r+r\)</span></li>
+<li>组合在标的振幅为<span class="math inline">\(+0.5r\%, 0\%, -0.5r\%,
+0\%\)</span>等位置（既不是在日内最高点、最低点）进行完全或部分对冲，由于Greeks敞口的减少组合采样标的的当日的波动幅度小于<span
+class="math inline">\(r+2r+r\)</span></li>
+<li>组合在当日未进行对冲，则在日终收盘组合采样到的波动幅度为<span
+class="math inline">\(0\%\)</span></li>
+</ul>
+<p>理论波动率(Theory
+Volatility)指的是“虚假理论定价模型”中假设的那个波动率。就如那个经典笑话中所讲的，面对一瓶红酒，经济学家假设存在一个开瓶器，这个开瓶器应该符合某些特征的一种存在，然后按图索骥。波动率这里被假设为一个符号参数（未知，但是假设存在并被使用），对简化抽象的的模型这个参数的嵌入使得模型在模型假设的世界里面逻辑自洽，再反向推导这个初始假设存在的参数。这样将理论波动率设定为波动率<span
+class="math inline">\(\sigma\)</span>，这样不同的波动率算法计算的波动率都可以被近似认定为这个理论波动率的有偏差的数值，这样不同算法（假设）的波动率就可以进行比较了。例如历史波动率和隐含波动率，一个向后一个向前从含义上并不能进行比较，但是如果假设历史波动率是过去一段时间的波动率（理论波动率）数值，隐含波动率是未来一段时间的波动率的数值，在逻辑上就不会显得那么突兀别扭。或者可以直接理解为理论波动率是一个可以看到但是看不清楚的波动率，所有的波动率算法都是试图更小误差的观察这个波动率的工具。</p>
+<h3 id="回望型波动率">回望型波动率</h3>
+<p>历史波动率通常使用标的收盘价的对数收益率年化标准差计算 <span
+class="math display">\[\begin{equation}
+\begin{aligned}
+r_t &amp;= {\rm log}(S_{t} / S_{t-1})\\  
+\sigma_{\rm hv} &amp;= \sqrt{\frac{1}{n-1}\sum^{n}_{t=1}(r_i -
+\overline{r})^2}
+\end{aligned}
+\end{equation}\]</span></p>
+<p>对日线数据通常假设收益率均值为0，减少一个要估算的参数增加一个自由度，历史波动率算法修改为
+<span class="math display">\[
+\sigma_{\rm hv}^{\prime} = \sqrt{\frac{1}{n}\sum^{n}_{t=1}(r_i)^2}
+\]</span></p>
+<h3 id="exponential-decay-volatility">Exponential Decay Volatility</h3>
+<p>波动率算法修改为一段时间内方差的均值，可以使用指数衰减的权重因子为时间序列靠后的数据赋予更高的权重，使当前的波动率受近期影响大于远期影响。塔勒布在《动态对冲》的Chapter-6
+Volatility and
+Correlation中通过设定证券的收益率序列均值为0，将单日收益率转换为单日的“波动率价格序列”，然后进行滤波平滑处理。</p>
+<p><img src="test.png" width="100%" height="100%" title="test" alt="test"/>
+<span class="math display">\[\begin{equation}
+\begin{aligned}
+\sigma_{\rm hv} &amp;= \sqrt{\frac{1}{\Omega}\sum^{n}_{t=1}
+\lambda^{t}\cdot r^{2}_{t}}\\
+\Omega &amp;= \sum^{n}_{t=1}\lambda^t = (\lambda +\lambda^2
++\lambda^3+\cdots+\lambda^{n})
+\end{aligned}
+\end{equation}\]</span></p>
+<p>可以用递归函数计算波动率的时间序列 <span
+class="math display">\[\begin{equation}
+\begin{aligned}
+\sigma^2 &amp;= \frac{\sum^{n}_{t=1} \lambda^{t}\cdot r^{2}_{t}}{\lambda
++\lambda^2 +\lambda^3+\cdots+\lambda^{n}}\\
+&amp;=\frac{\sum^{n}_{t=1} \lambda^{t-1}\cdot r^{2}_{t}}{1+\lambda
++\lambda^2 +\cdots+\lambda^{n}}\\
+&amp;=(1-\lambda)\sum^{n}_{t=1} \lambda^{t-1}\cdot r^{2}_{t}\\
+&amp;=(1-\lambda)r^{2}_{t} + \lambda \sigma_{t-1}^2
+\end{aligned}
+\end{equation}\]</span></p>
+<p>几何级数 <span class="math display">\[
+\frac{1}{1-x} = \sum^{\infty}_{n=0}x^n = 1+x+x^2+\cdots+x^{n}+\cdots
+\]</span> <span class="math display">\[
+\forall x: \left|x \right|&lt;1
+\]</span></p>
+<p>令<span class="math inline">\(\alpha= 1-\lambda\)</span> 则 <span
+class="math display">\[\begin{equation}
+\begin{aligned}
+\sigma^2 &amp;=\alpha r^{2}_{t} + (1-\alpha) \sigma_{t-1}^2\\
+&amp;={\rm EMA}(r^2)\\
+&amp;= \alpha\cdot r^{2}_{t} + (1-\alpha){\rm EMA}(r_{t-1}^2)
+\end{aligned}
+\end{equation}\]</span></p>
+<p>修改了波动率算法为方差时间序列的均值之后可以直接使用常见的MA和EMA算法了</p>
+<p>方差的MA计算波动率 <span class="math display">\[
+\sigma_{\rm hv} = \sqrt{\rm MA(r^2)}\\
+\]</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 麦语言</span><br><span class="line">RET:=CLOSE/REF(CLOSE,1);</span><br><span class="line">RETV:=LN(RET) * LN(RET);</span><br><span class="line">MA1:SQRT(MA(RETV, N) * 244)*100;</span><br></pre></td></tr></table></figure>
+<p>方差的EMA计算波动率 <span class="math display">\[
+\sigma_{\rm hv} = \sqrt{\rm EMA(r^2)}
+\]</span> <span class="math display">\[
+{\rm EMA}(r^2) = \alpha \cdot r^2_{t} + (1-\alpha)  {\rm EMA}(r_{t-1}^2)
+\]</span> <span class="math display">\[
+\alpha = \frac{2}{n+1}
+\]</span></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 麦语言</span><br><span class="line">RET:=CLOSE/REF(CLOSE,1);</span><br><span class="line">RETV:=LN(RET) * LN(RET);</span><br><span class="line">EMA1:SQRT(EMA(RETV, N) * 244)*100;</span><br></pre></td></tr></table></figure>
+<p>如下图，EMA算法要比MA算法对短期变动更敏感
+<img src="hv_ema.png" width="100%" height="100%" title="hv_ema" alt="hv_ema"/></p>
+<h2 id="相关性">相关性</h2>
+<p>相关性是一个统计指标，表示两个变量线性相关（即它们以固定的比率一起变化）的程度。它是一个用于描述简单关系而没有陈述因果关系的常用工具。相关性可以检验两个变量之间的关系。但是相关性无法告诉我们在所探索的两个变量之外是否存在其他变量，或这些变量有何影响，即两个变量一起变动并不一定意味着我们知道是不是一个变量引起了另一个变量的变动。因此我们常说，“相关性并不意味着因果关系”。</p>
+<p>通常使用无量纲的相关系数来描述相关性，相关系数 <span
+class="math display">\[
+\rho =
+\frac{1}{n-1}\frac{\sum^{n}_{t=1}(x-\overline{x})(y_t-\overline{y})}{\sigma_x
+\sigma_y}
+\]</span> 忽略收益率时间序列的均值，两个资产的收益率相关性修改为 <span
+class="math display">\[
+\rho = \frac{1}{n}\frac{\sum^{n}_{t=1}x_t y_t}{\sigma_x^{\prime}
+\sigma_y^{\prime}}
+\]</span>
+同样可以使用指数衰减调整相关系数调整长短期记忆，使相关性的时间序列对短期时间序列的变化更加敏感
+<span class="math display">\[
+\rho = \frac{1}{\Omega} \frac{\sum^{n}_{t=1}\lambda^{t} x_t
+y_t}{\sigma_x \sigma_y}
+\]</span></p>
+<p><img src="correlation_coefficient.png" width="100%" height="100%" title="correlation_coefficient" alt="correlation_coefficient"/></p>
+<p>相关性<span
+class="math inline">\(\rho=1\)</span>不表示两个时间序列完全相同，两个时间序列相对自身的变化比率（收益率时间序列）环比相同的情况下，相关性同样为1。</p>
+<p><img src="image-20210723135420391.png" width="100%" height="100%" title="相关系数" alt="相关系数"/></p>
+<h2 id="what-is-the-beta-coefficient">What is the Beta Coefficient?</h2>
+<p>Beta 系数是衡量证券或投资组合对整体市场变动的敏感性或相关性的指标。
+我们可以通过将单个证券/投资组合的回报与整体市场的回报进行比较来推导出风险的统计度量，并确定可归因于市场的风险比例。</p>
+<p>The Capital Asset Pricing Model (CAPM) <span
+class="math display">\[{\rm R_e} - {\rm R_f} = \beta \times[{\rm R_m -
+R_f}]\]</span></p>
+<ul>
+<li><span class="math inline">\({\rm R_e}\)</span> Stock Return</li>
+<li><span class="math inline">\({\rm R_f}\)</span> Risk Free Rate</li>
+<li><span class="math inline">\({\rm R_m}\)</span> Market Return</li>
+<li><span class="math inline">\(\beta\)</span> Beta Coefficient</li>
+</ul>
+<p>How to Calculate the Beta Coefficient <span
+class="math display">\[\beta=\frac{\rm Covariance (R_e, R_m)}{\rm
+Variance(R_m)}\]</span></p>
+<ul>
+<li><p><span class="math inline">\({\rm Covariance (R_e, R_m)} = \sum
+\frac{\rm (R_{e,n} - R_{e,avg}) (R_{m,n} - R_{m, avg})}{\rm
+n-1}\)</span></p></li>
+<li><p><span class="math inline">\({\rm Variance (R_m)} = \sum \frac{\rm
+(R_{m,n} - R_{m,avg})^2}{n-1}\)</span></p></li>
+</ul>
+<p>Adjusted Beta Coefficient</p>
+<ul>
+<li><span class="math inline">\({\rm Covariance (R_e, R_m)} = \sum
+\frac{\rm (R_{e,n} - 0) (R_{m,n} - 0)}{\rm n}\)</span></li>
+<li><span class="math inline">\({\rm Variance (R_m)} = \sum \frac{\rm
+(R_{m,n} - 0)^2}{n}\)</span></li>
+</ul>
+<h2 id="measuring-historical-volatility">Measuring Historical
+Volatility</h2>
+<p>除了使用标的资产价格的close-to-close计算波动率之外，还有几种算法被开发出来计算历史波动率</p>
+<p>PARKINSON</p>
+<blockquote>
+<p>The first advanced volatility estimator was created by Parkinson in
+1980, and instead of using closing prices it uses the high and low
+price. One drawback of this estimator is that it assumes continuous
+trading, hence it underestimates the volatility as potential movements
+when the market is shut are ignored.</p>
+</blockquote>
+<p><span class="math display">\[
+\sigma_{\rm p} = \sqrt{\frac{F}{N}}
+\sqrt{\frac{1}{4Ln(2)}\sum^{N}_{i=1}(Ln(\frac{h_i}{l_i}))^2}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(F\)</span> 年化系数</li>
+</ul>
+<p>GARMAN-KLASS</p>
+<blockquote>
+<p>Later in 1980 the Garman-Klass volatility estimator was created. It
+is an extension of Parkinson which includes opening and closing prices
+(if opening prices are not available the close from the previous day can
+be used instead). As overnight jumps are ignored the measure
+underestimates the volatility.</p>
+</blockquote>
+<p><span class="math display">\[
+\sigma_{\rm GK} = \sqrt{\frac{F}{N}}
+\sqrt{\sum^{N}_{i=1}\frac{1}{2}(Ln(\frac{h_i}{l_i}))^2 - (2Ln(2) -
+1)(Ln(\frac{c_i}{o_i}))^2}
+\]</span></p>
+<p>ROGERS-SATCHELL</p>
+<blockquote>
+<p>All of the previous advanced volatility measures assume the average
+return (or drift) is zero. Securities which have a drift, or non-zero
+mean, require a more sophisticated measure of volatility. The
+Rogers-Satchell volatility created in the early 1990s is able to
+properly measure the volatility for securities with non-zero mean. It
+does not, however, handle jumps, hence it underestimates the
+volatility.</p>
+</blockquote>
+<p><span class="math display">\[
+\sigma_{\rm RS} = \sqrt{\frac{F}{N}}
+\sqrt{\sum^{N}_{i=1}Ln(\frac{h_i}{c_i})Ln(\frac{h_i}{c_i}) +
+Ln(\frac{l_i}{c_i})Ln(\frac{l_i}{c_i})}
+\]</span></p>
+<p>GARMAN-KLASS YANG-ZHANG EXTENSION</p>
+<blockquote>
+<p>Yang-Zhang modified the Garman-Klass volatility measure in order to
+let it handle jumps. The measure does assume a zero drift, hence it will
+overestimate the volatility if a security has a non-zero mean return. As
+the effect of drift is small, the fact continuous prices are not
+available usually means it underestimates the volatility (but by a
+smaller amount than the previous alternative measures).</p>
+</blockquote>
+<p><span class="math display">\[
+\sigma_{\rm GKYZ} =\sqrt{\frac{F}{N}} \sqrt{\sum^{N}_{i=1}
+(Ln(\frac{o_i}{c_{i-1}}))^2 + \frac{1}{2}(Ln(\frac{h_i}{l_i}))^2 -
+(2Ln(2)-1)(Ln(\frac{c_i}{o_i}))^2}
+\]</span></p>
+<p>YANG-ZHANG</p>
+<blockquote>
+<p>It is the sum of the overnight volatility (close-to-open volatility)
+and a weighted average of the Rogers-Satchell volatility and the
+open-to-close volatility. The assumption of continuous prices does mean
+the measure tends to slightly underestimate the volatility.</p>
+</blockquote>
+<p><span class="math display">\[
+\sigma_{\rm YZ} = \sqrt{F} \sqrt{\sigma^2_{\rm overnight \ volatility} +
+\sigma^2_{\rm open \ to \ close \ volatility} + (1-k)\sigma_{RS}^2}
+\]</span></p>
+<p><span class="math display">\[
+k = \frac{0.34}{1.34+ \frac{N+1}{N-1}}
+\]</span></p>
+<p><span class="math display">\[
+\sigma^2_{\rm overnight \ volatility} = \frac{1}{N-1} \sum^{N}_{i=1}[Ln
+(\frac{o_i}{c_{i-1}}) - \overline{Ln(\frac{o_i}{c_{i-1}})}]^2
+\]</span></p>
+<p><span class="math display">\[
+\sigma^2_{\rm open \ to \ close \ volatility} = \frac{1}{N-1}
+\sum^{N}_{i=1}[Ln (\frac{o_i}{c_{i}}) -
+\overline{Ln(\frac{o_i}{c_{i}})}]^2
+\]</span></p>
+<p>衡量同一段时间内的HV，不同算法呈现数值差异较大</p>
+<p><img src="hv.png" width="100%" height="100%" title="hv" alt="hv"/></p>
+<p>粗糙的评估历史波动率收敛速度（算法有效性）可以使用GBM生成时间序列，观察不同算法在不同波动率水平下收敛到预定波动率参数需要的时间序列长度。
+<span class="math display">\[
+{\rm ln}S(t+\Delta t)- {\rm ln}S(t) = (\mu-\frac{\sigma^2}{2})\Delta t +
+\sigma \varepsilon \sqrt{\Delta t}
+\]</span>
+将一个交易日的时间分割成多份生成当日的股价随机游走的路径图，将这个时间序列假设为当日真实的交易情况生成K线。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># params</span></span><br><span class="line">mu = <span class="number">1e-8</span></span><br><span class="line">sigma = <span class="number">0.2</span></span><br><span class="line">diff_time = <span class="number">1</span> / <span class="number">244.</span> / (<span class="number">4</span> * <span class="number">4</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># path</span></span><br><span class="line">spot = <span class="number">5000</span></span><br><span class="line">size = <span class="number">201</span> * (<span class="number">4</span> * <span class="number">4</span> + <span class="number">1</span>) - <span class="number">1</span></span><br><span class="line">lns = (mu - sigma * sigma / <span class="number">2</span>) * diff_time + sigma * normal(<span class="number">0</span>, <span class="number">1</span>, size=size) * sqrt(diff_time)</span><br><span class="line">lns = insert(lns, <span class="number">0</span>, log(spot))</span><br><span class="line">lns = lns.cumsum()</span><br><span class="line"></span><br><span class="line"><span class="comment"># k-line</span></span><br><span class="line">lns = lns.reshape(-<span class="number">1</span>, <span class="number">17</span>)</span><br><span class="line">spot_path = exp(lns)</span><br><span class="line">open_s = spot_path[<span class="number">1</span>:, <span class="number">0</span>]</span><br><span class="line">high = spot_path.<span class="built_in">max</span>(axis=<span class="number">1</span>)[<span class="number">1</span>:]</span><br><span class="line">low = spot_path.<span class="built_in">min</span>(axis=<span class="number">1</span>)[<span class="number">1</span>:]</span><br><span class="line">close = spot_path[<span class="number">1</span>:, -<span class="number">1</span>]</span><br><span class="line">pre_close = spot_path[:-<span class="number">1</span>, -<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<p><img src="newplot.png" width="100%" height="100%" title="k-line" alt="k-line"/></p>
+<p>由于仿真数据使用<span class="math inline">\(\sigma =
+0.2\)</span>生成，最接近<span
+class="math inline">\(\sigma=0.2\)</span>的算法粗略的评估是最好的
+<img src="hv20.png" width="100%" height="100%" title="hv20" alt="hv20"/>
+<img src="hv60.png" width="100%" height="100%" title="hv60" alt="hv60"/></p>
+<p>可以看到"先进算法"系统性低估波动率，而"原始算法"倾向于高估波动率，此外股价的路径严重影响波动率的计算。连续的单向移动会导致波动率的计算出现较大偏误，在这个问题上，强制假设日收益率为0（均值为0）会高估波动率，但是“先进算法”采样更多的数据点之后并没有降低漂移的影响，从长序列数据看呈现系统性低估的偏差。</p>
+<p><img src="hv30.png" width="100%" height="100%" title="hv30" alt="hv30"/></p>
+<p>由于实际交易不是连续时间交易上述算法中<code>PARKINSON</code>、<code>GARMAN-KLASS</code>和<code>ROGERS-SATCHELL</code>在实盘数据中只使用了当日K线数据，日间波动没有被计算，可以将上一个交易日的收盘价合并到当日的K线数据中重新生成K线进行调整。
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">data = vstack([pre_close, open_s, high, low, close]).T</span><br><span class="line">adj_open_s = data[:, <span class="number">0</span>]</span><br><span class="line">adj_close = data[:, -<span class="number">1</span>]</span><br><span class="line">adj_high = data.<span class="built_in">max</span>(axis=<span class="number">1</span>)</span><br><span class="line">adj_low = data.<span class="built_in">min</span>(axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure></p>
+<p>调整之后波动率数据同比上升，但是不能观察到具有更好的收敛效果
+<img src="hv20_1.png" width="100%" height="100%" title="hv20_1" alt="hv20_1"/>
+<img src="hv60_1.png" width="100%" height="100%" title="hv60_1" alt="hv60_1"/></p>
+<table>
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>pk</th>
+<th>gk</th>
+<th>rs</th>
+<th>adj-pk</th>
+<th>adj-gk</th>
+<th>adj-rs</th>
+<th>pk</th>
+<th>gk</th>
+<th>rs</th>
+<th>adj-pk</th>
+<th>adj-gk</th>
+<th>adj-rs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>count</td>
+<td>300</td>
+<td>300</td>
+<td>300</td>
+<td>300</td>
+<td>300</td>
+<td>300</td>
+<td>300</td>
+<td>300</td>
+<td>300</td>
+<td>300</td>
+<td>300</td>
+<td>300</td>
+</tr>
+<tr class="even">
+<td>mean</td>
+<td>0.1727</td>
+<td>0.1581</td>
+<td>0.1558</td>
+<td>0.1789</td>
+<td>0.1640</td>
+<td>0.1611</td>
+<td>0.1732</td>
+<td>0.1583</td>
+<td>0.1562</td>
+<td>0.1794</td>
+<td>0.1641</td>
+<td>0.1610</td>
+</tr>
+<tr class="odd">
+<td>std</td>
+<td>0.0163</td>
+<td>0.0115</td>
+<td>0.0147</td>
+<td>0.0164</td>
+<td>0.0118</td>
+<td>0.0128</td>
+<td>0.0060</td>
+<td>0.0041</td>
+<td>0.0055</td>
+<td>0.0065</td>
+<td>0.0042</td>
+<td>0.0053</td>
+</tr>
+<tr class="even">
+<td>min</td>
+<td>0.1388</td>
+<td>0.1321</td>
+<td>0.1223</td>
+<td>0.1422</td>
+<td>0.1376</td>
+<td>0.1299</td>
+<td>0.1614</td>
+<td>0.1463</td>
+<td>0.1426</td>
+<td>0.1650</td>
+<td>0.1551</td>
+<td>0.1487</td>
+</tr>
+<tr class="odd">
+<td>25%</td>
+<td>0.1600</td>
+<td>0.1506</td>
+<td>0.1455</td>
+<td>0.1672</td>
+<td>0.1552</td>
+<td>0.1524</td>
+<td>0.1689</td>
+<td>0.1548</td>
+<td>0.1518</td>
+<td>0.1745</td>
+<td>0.1609</td>
+<td>0.1569</td>
+</tr>
+<tr class="even">
+<td>50%</td>
+<td>0.1716</td>
+<td>0.1579</td>
+<td>0.1577</td>
+<td>0.1777</td>
+<td>0.1654</td>
+<td>0.1616</td>
+<td>0.1734</td>
+<td>0.1587</td>
+<td>0.1570</td>
+<td>0.1797</td>
+<td>0.1639</td>
+<td>0.1616</td>
+</tr>
+<tr class="odd">
+<td>75%</td>
+<td>0.1864</td>
+<td>0.1671</td>
+<td>0.1659</td>
+<td>0.1933</td>
+<td>0.1726</td>
+<td>0.1698</td>
+<td>0.1774</td>
+<td>0.1615</td>
+<td>0.1607</td>
+<td>0.1839</td>
+<td>0.1675</td>
+<td>0.1654</td>
+</tr>
+<tr class="even">
+<td>max</td>
+<td>0.2059</td>
+<td>0.1862</td>
+<td>0.1857</td>
+<td>0.2109</td>
+<td>0.1907</td>
+<td>0.1926</td>
+<td>0.1862</td>
+<td>0.1669</td>
+<td>0.1672</td>
+<td>0.1919</td>
+<td>0.1741</td>
+<td>0.1721</td>
+</tr>
+</tbody>
+</table>
+<h2
+id="trending-markets-imply-weekly-volatility-is-greater-than-daily-volatility">Trending
+Markets Imply Weekly Volatility is Greater Than Daily Volatility</h2>
+<blockquote>
+<p>With 100% autocorrelation, returns are perfectly correlated (a
+positive return is followed by a positive return, i.e. trending
+markets). Should autocorrelation be -100% correlated then a positive
+return is followed by a negative return (mean reverting or range trading
+markets). If we assume markets are 100% daily correlated with a 1% daily
+return, this means the weekly return is 5%. The daily volatility is
+therefore c16% (1% × <span class="math inline">\(\sqrt{252}\)</span>)
+while the weekly volatility of c35% (5% × <span
+class="math inline">\(\sqrt{52}\)</span>) is more than twice as
+large.</p>
+</blockquote>
+<p>这里是使用不同周期频率的HV评估标的价格时间序列自相关性的方法，例如对比5min的K线和日K线计算的HV，使用日线/5分钟线HV(1d)
+/
+HV(5min)，如果低频的HV高于高频的HV，说明这段时间内标的的价格存在正相关，也就是存在动量或趋势，对这种情景下的delta-hedging，日间对冲要比日内频繁对冲的预期P&amp;L高，如果小于1则存在负相关应该频繁的进行对冲，在1附近则是说明标的价格独立同分布，在这个计量区间内震荡为主。</p>
+<p><img src="test1.png" width="100%" height="100%" title="test1" alt="test1"/></p>
+<p>如上图，上证50的HV数据显示，对50指数在过去两年时间内，逐日进行delta-hedging的预期收益要强于日内频繁对冲，即逐日对冲会在对冲过程中捕捉到更高的波动率。</p>
+<table style="width:17%;">
+<colgroup>
+<col style="width: 16%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">代码实现</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hv</span> = <span class="title">calc_hv_pk</span><span class="params">(high, low, size, factor)</span></span></span><br><span class="line">    array_length = <span class="built_in">length</span>(high);</span><br><span class="line">    hv = <span class="built_in">nan</span>(array_length,<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> idx=<span class="number">1</span>:<span class="built_in">size</span><span class="number">-1</span></span><br><span class="line">        hv(idx) = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    shift = <span class="built_in">size</span> <span class="number">-1</span>;</span><br><span class="line">    const_num = <span class="number">4</span>*<span class="built_in">log</span>(<span class="number">2</span>);</span><br><span class="line">    <span class="keyword">for</span> idx=<span class="built_in">size</span>:array_length</span><br><span class="line">        h = high(idx-shift:idx);</span><br><span class="line">        l = low(idx-shift:idx);</span><br><span class="line">        hv(idx) = <span class="built_in">sqrt</span>(sum(power(<span class="built_in">log</span>(h ./ l), <span class="number">2</span>)) / (const_num*<span class="built_in">size</span>)) .* <span class="built_in">factor</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hv</span> = <span class="title">calc_hv_rs</span><span class="params">(open, high, low, close, size, factor)</span></span></span><br><span class="line">    array_length = <span class="built_in">length</span>(high);</span><br><span class="line">    hv = <span class="built_in">nan</span>(array_length,<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> idx=<span class="number">1</span>:<span class="built_in">size</span><span class="number">-1</span></span><br><span class="line">        hv(idx) = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    shift = <span class="built_in">size</span> <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">for</span> idx=<span class="built_in">size</span>:array_length</span><br><span class="line">        o = open(idx-shift:idx);</span><br><span class="line">        h = high(idx-shift:idx);</span><br><span class="line">        l = low(idx-shift:idx);</span><br><span class="line">        c = close(idx-shift:idx);</span><br><span class="line">        hv(idx) = <span class="built_in">sqrt</span>(sum(<span class="built_in">log</span>(h ./ c) .* <span class="built_in">log</span>(h ./ o) + <span class="built_in">log</span>(l ./ c) .* <span class="built_in">log</span>(l ./ o)) ./ <span class="built_in">size</span>) .* <span class="built_in">factor</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hv</span> = <span class="title">calc_hv_gk</span><span class="params">(open, high, low, close, size, factor)</span></span></span><br><span class="line">    array_length = <span class="built_in">length</span>(high);</span><br><span class="line">    hv = <span class="built_in">nan</span>(array_length,<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> idx=<span class="number">1</span>:<span class="built_in">size</span><span class="number">-1</span></span><br><span class="line">        hv(idx) = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    shift = <span class="built_in">size</span> <span class="number">-1</span>;</span><br><span class="line">    const_num = <span class="number">2</span> .* <span class="built_in">log</span>(<span class="number">2</span>) - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span> idx=<span class="built_in">size</span>:array_length</span><br><span class="line">        o = open(idx-shift:idx);</span><br><span class="line">        h = high(idx-shift:idx);</span><br><span class="line">        l = low(idx-shift:idx);</span><br><span class="line">        c = close(idx-shift:idx);</span><br><span class="line">        hv(idx) = <span class="built_in">sqrt</span>(sum(<span class="number">0.5</span> .* power(<span class="built_in">log</span>(h ./ l), <span class="number">2</span>) - const_num * power(<span class="built_in">log</span>(c ./ o), <span class="number">2</span>)) ./ <span class="built_in">size</span>) * <span class="built_in">factor</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hv</span> = <span class="title">calc_hv_gkyz</span><span class="params">(open, high, low, close, pre_close, size, factor)</span></span></span><br><span class="line">    array_length = <span class="built_in">length</span>(high);</span><br><span class="line">    hv = <span class="built_in">nan</span>(array_length,<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> idx=<span class="number">1</span>:<span class="built_in">size</span><span class="number">-1</span></span><br><span class="line">        hv(idx) = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    shift = <span class="built_in">size</span> <span class="number">-1</span>;</span><br><span class="line">    const_num = <span class="number">2</span> .* <span class="built_in">log</span>(<span class="number">2</span>) - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span> idx=<span class="built_in">size</span>:array_length</span><br><span class="line">        o = open(idx-shift:idx);</span><br><span class="line">        h = high(idx-shift:idx);</span><br><span class="line">        l = low(idx-shift:idx);</span><br><span class="line">        c = close(idx-shift:idx);</span><br><span class="line">        pc = pre_close(idx-shift:idx);</span><br><span class="line">        hv(idx) = <span class="built_in">sqrt</span>(sum(power(<span class="built_in">log</span>(o ./ pc), <span class="number">2</span>) + <span class="number">0.5</span> .* power(<span class="built_in">log</span>(h ./ l), <span class="number">2</span>) - const_num .* power(<span class="built_in">log</span>(c ./ o), <span class="number">2</span>)) ./ <span class="built_in">size</span>) .* <span class="built_in">factor</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hv</span> = <span class="title">calc_hv_yz</span><span class="params">(open, high, low, close, pre_close, size, factor)</span></span></span><br><span class="line">    array_length = <span class="built_in">length</span>(high);</span><br><span class="line">    hv = <span class="built_in">nan</span>(array_length,<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> idx=<span class="number">1</span>:<span class="built_in">size</span><span class="number">-1</span></span><br><span class="line">        hv(idx) = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    shift = <span class="built_in">size</span> <span class="number">-1</span>;</span><br><span class="line">    k = <span class="number">0.34</span> ./ (<span class="number">1.34</span> + (<span class="built_in">size</span> + <span class="number">1</span>) ./ (<span class="built_in">size</span> - <span class="number">1</span>));</span><br><span class="line">    <span class="keyword">for</span> idx=<span class="built_in">size</span>:array_length</span><br><span class="line">        o = open(idx-shift:idx);</span><br><span class="line">        h = high(idx-shift:idx);</span><br><span class="line">        l = low(idx-shift:idx);</span><br><span class="line">        c = close(idx-shift:idx);</span><br><span class="line">        pc = pre_close(idx-shift:idx);</span><br><span class="line"></span><br><span class="line">        <span class="comment">% overnight volatility</span></span><br><span class="line">        loc = <span class="built_in">log</span>(o ./ pc);</span><br><span class="line">        ov = sum(power(loc - <span class="built_in">mean</span>(loc), <span class="number">2</span>)) ./ (<span class="built_in">size</span> - <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">% open to close volatility</span></span><br><span class="line">        lco = <span class="built_in">log</span>(c ./ o);</span><br><span class="line">        oc = sum(power(lco - <span class="built_in">mean</span>(lco), <span class="number">2</span>)) ./ (<span class="built_in">size</span> - <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">% Rogers-Satchell volatility</span></span><br><span class="line">        rs = sum(<span class="built_in">log</span>(h ./ c) .* <span class="built_in">log</span>(h ./ o) + <span class="built_in">log</span>(l ./ c) .* <span class="built_in">log</span>(l ./ o)) ./ <span class="built_in">size</span>;</span><br><span class="line">        hv(idx) = <span class="built_in">sqrt</span>(ov + k .* oc + (<span class="number">1</span> - k) .* rs).* <span class="built_in">factor</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; <span class="title">calc_hv_cc</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;close,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">int</span> &amp;time_period,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">double</span> &amp;factor)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 参数转换</span></span><br><span class="line">    py::buffer_info buf_close = close.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_close = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_close.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// result</span></span><br><span class="line">    <span class="keyword">auto</span> result = py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt;(buf_close.size);</span><br><span class="line">    py::buffer_info buffer_result = result.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_result = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buffer_result.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//// calculate function</span></span><br><span class="line">    <span class="comment">// 方差, var[0] = 0, var[1] = ret[0]</span></span><br><span class="line">    <span class="keyword">auto</span> size = buf_close.size;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var</span><span class="params">(size, <span class="number">0.0</span>)</span></span>;</span><br><span class="line">    <span class="keyword">double</span> ret = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        ret = <span class="built_in">log</span>(ptr_close[i] / ptr_close[i - <span class="number">1</span>]);</span><br><span class="line">        var[i] = std::<span class="built_in">pow</span>(ret, <span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 波动率</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; time_period; i++) &#123;</span><br><span class="line">        ptr_result[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = time_period; i &lt; size; i++) &#123;</span><br><span class="line">        <span class="keyword">double</span> tv = <span class="number">0.0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i - time_period + <span class="number">1</span>; j &lt;= i; j++) &#123;</span><br><span class="line">            tv += var[j];</span><br><span class="line">        &#125;</span><br><span class="line">        ptr_result[i] = <span class="built_in">sqrt</span>(tv / time_period) * factor;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; <span class="title">calc_hv_cc_ema</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;close,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">int</span> &amp;time_period,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">double</span> &amp;factor)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 参数转换</span></span><br><span class="line">    py::buffer_info buf_close = close.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_close = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_close.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// result</span></span><br><span class="line">    <span class="keyword">auto</span> result = py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt;(buf_close.size);</span><br><span class="line">    py::buffer_info buffer_result = result.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_result = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buffer_result.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//// calculate function</span></span><br><span class="line">    <span class="comment">// 方差, var[0] = 0, var[1] = ret[0]</span></span><br><span class="line">    <span class="keyword">auto</span> size = buf_close.size;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var</span><span class="params">(size, <span class="number">0.0</span>)</span></span>;</span><br><span class="line">    <span class="keyword">double</span> ret = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        ret = <span class="built_in">log</span>(ptr_close[i] / ptr_close[i - <span class="number">1</span>]);</span><br><span class="line">        var[i] = std::<span class="built_in">pow</span>(ret, <span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指数加权</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">double</span> alpha = <span class="number">2.</span> / (time_period + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">double</span> beta = <span class="number">1.</span> - alpha;</span><br><span class="line">    <span class="keyword">double</span> tv = var[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        tv = alpha * var[i] + beta * tv;</span><br><span class="line">        ptr_result[i] = <span class="built_in">sqrt</span>(tv) * factor;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> shift = <span class="built_in"><span class="keyword">int</span></span>(<span class="built_in">log</span>(<span class="number">0.05</span>) / <span class="built_in">log</span>(beta));</span><br><span class="line">    <span class="comment">// 波动率</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; shift + <span class="number">1</span>; i++) &#123;</span><br><span class="line">        ptr_result[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; <span class="title">calc_corr_cc</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;close_x,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;close_y,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">int</span> &amp;time_period)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 参数转换</span></span><br><span class="line">    py::buffer_info buf_x = close_x.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_x = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_x.ptr);</span><br><span class="line">    py::buffer_info buf_y = close_y.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_y = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_y.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// result</span></span><br><span class="line">    <span class="keyword">auto</span> result = py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt;(buf_x.size);</span><br><span class="line">    py::buffer_info buffer_result = result.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_result = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buffer_result.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 方差, var[0] = 0, var[1] = ret[0]</span></span><br><span class="line">    <span class="keyword">auto</span> size = buf_x.size;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var_x</span><span class="params">(size)</span></span>;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var_y</span><span class="params">(size)</span></span>;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var_xy</span><span class="params">(size)</span></span>;</span><br><span class="line">    <span class="keyword">double</span> ret_x = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">double</span> ret_y = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        ret_x = <span class="built_in">log</span>(ptr_x[i] / ptr_x[i - <span class="number">1</span>]);</span><br><span class="line">        ret_y = <span class="built_in">log</span>(ptr_y[i] / ptr_y[i - <span class="number">1</span>]);</span><br><span class="line">        var_x[i] = std::<span class="built_in">pow</span>(ret_x, <span class="number">2</span>);</span><br><span class="line">        var_y[i] = std::<span class="built_in">pow</span>(ret_y, <span class="number">2</span>);</span><br><span class="line">        var_xy[i] = ret_x * ret_y;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 相关性</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; time_period + <span class="number">1</span>; i++) &#123;</span><br><span class="line">        ptr_result[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = time_period + <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        <span class="keyword">double</span> std_x = <span class="number">0.0</span>;</span><br><span class="line">        <span class="keyword">double</span> std_y = <span class="number">0.0</span>;</span><br><span class="line">        <span class="keyword">double</span> std_xy = <span class="number">0.0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i - time_period; j &lt; i; j++) &#123;</span><br><span class="line">            std_x += var_x[j];</span><br><span class="line">            std_y += var_y[j];</span><br><span class="line">            std_xy += var_xy[j];</span><br><span class="line">        &#125;</span><br><span class="line">        ptr_result[i] = std_xy / (<span class="built_in">sqrt</span>(std_x) * <span class="built_in">sqrt</span>(std_y));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; <span class="title">calc_corr_cc_ema</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;close_x,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;close_y,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">int</span> &amp;time_period)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 参数转换</span></span><br><span class="line">    py::buffer_info buf_x = close_x.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_x = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_x.ptr);</span><br><span class="line">    py::buffer_info buf_y = close_y.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_y = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_y.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// result</span></span><br><span class="line">    <span class="keyword">auto</span> result = py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt;(buf_x.size);</span><br><span class="line">    py::buffer_info buffer_result = result.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_result = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buffer_result.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 方差, var[0] = 0, var[1] = ret[0]</span></span><br><span class="line">    <span class="keyword">auto</span> size = buf_x.size;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var_x</span><span class="params">(size)</span></span>;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var_y</span><span class="params">(size)</span></span>;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var_xy</span><span class="params">(size)</span></span>;</span><br><span class="line">    <span class="keyword">double</span> ret_x = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">double</span> ret_y = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        ret_x = <span class="built_in">log</span>(ptr_x[i] / ptr_x[i - <span class="number">1</span>]);</span><br><span class="line">        ret_y = <span class="built_in">log</span>(ptr_y[i] / ptr_y[i - <span class="number">1</span>]);</span><br><span class="line">        var_x[i] = std::<span class="built_in">pow</span>(ret_x, <span class="number">2</span>);</span><br><span class="line">        var_y[i] = std::<span class="built_in">pow</span>(ret_y, <span class="number">2</span>);</span><br><span class="line">        var_xy[i] = ret_x * ret_y;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指数加权</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">double</span> alpha = <span class="number">2.</span> / (time_period + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">double</span> beta = <span class="number">1.</span> - alpha;</span><br><span class="line">    <span class="keyword">double</span> corr = var_xy[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">double</span> vx = var_x[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">double</span> vy = var_y[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        vx = alpha * var_x[i] + beta * vx;</span><br><span class="line">        vy = alpha * var_y[i] + beta * vy;</span><br><span class="line">        corr = alpha * var_xy[i] + beta * corr;</span><br><span class="line">        ptr_result[i] = corr / (<span class="built_in">sqrt</span>(vx) * <span class="built_in">sqrt</span>(vy));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 相关性</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> shift = <span class="built_in"><span class="keyword">int</span></span>(<span class="built_in">log</span>(<span class="number">0.05</span>) / <span class="built_in">log</span>(beta));</span><br><span class="line">    <span class="comment">// 波动率</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; shift + <span class="number">1</span>; i++) &#123;</span><br><span class="line">        ptr_result[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; <span class="title">calc_hv_pk</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;high,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;low,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">int</span> &amp;time_period,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">double</span> &amp;factor)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 参数转换</span></span><br><span class="line">    py::buffer_info buf_high = high.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_high = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_high.ptr);</span><br><span class="line">    py::buffer_info buf_low = low.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_low = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_low.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// result</span></span><br><span class="line">    <span class="keyword">auto</span> result = py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt;(buf_high.size);</span><br><span class="line">    py::buffer_info buffer_result = result.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_result = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buffer_result.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate function</span></span><br><span class="line">    <span class="keyword">auto</span> size = buf_high.size;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var</span><span class="params">(size, <span class="number">0.0</span>)</span></span>;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">double</span> const_num = <span class="number">0.25</span> / <span class="built_in">log</span>(<span class="number">2.</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">        var[i] = const_num * std::<span class="built_in">pow</span>(<span class="built_in">log</span>(ptr_high[i] / ptr_low[i]), <span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 波动率</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; time_period; i++) &#123;</span><br><span class="line">        ptr_result[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = time_period - <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        <span class="keyword">double</span> tv = <span class="number">0.0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i - time_period + <span class="number">1</span>; j &lt;= i; j++) &#123;</span><br><span class="line">            tv += var[j];</span><br><span class="line">        &#125;</span><br><span class="line">        ptr_result[i] = <span class="built_in">sqrt</span>(tv / time_period) * factor;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; <span class="title">calc_hv_rs</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;open,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;high,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;low,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;close,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">int</span> &amp;time_period,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">double</span> &amp;factor)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 参数转换</span></span><br><span class="line">    py::buffer_info buf_open = open.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_open = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_open.ptr);</span><br><span class="line">    py::buffer_info buf_high = high.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_high = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_high.ptr);</span><br><span class="line">    py::buffer_info buf_low = low.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_low = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_low.ptr);</span><br><span class="line">    py::buffer_info buf_close = close.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_close = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_close.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// result</span></span><br><span class="line">    <span class="keyword">auto</span> result = py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt;(buf_high.size);</span><br><span class="line">    py::buffer_info buffer_result = result.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_result = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buffer_result.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate function</span></span><br><span class="line">    <span class="keyword">auto</span> size = buf_high.size;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var</span><span class="params">(size, <span class="number">0.0</span>)</span></span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">        <span class="keyword">double</span> tmp = <span class="built_in">log</span>(ptr_high[i] / ptr_close[i]) * <span class="built_in">log</span>(ptr_high[i] / ptr_open[i]) +</span><br><span class="line">                     <span class="built_in">log</span>(ptr_low[i] / ptr_close[i]) * <span class="built_in">log</span>(ptr_low[i] / ptr_open[i]);</span><br><span class="line">        var[i] = <span class="built_in">nan_to_num</span>(tmp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 波动率</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; time_period; i++) &#123;</span><br><span class="line">        ptr_result[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = time_period - <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        <span class="keyword">double</span> tv = <span class="number">0.0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i - time_period + <span class="number">1</span>; j &lt;= i; j++) &#123;</span><br><span class="line">            tv += var[j];</span><br><span class="line">        &#125;</span><br><span class="line">        ptr_result[i] = <span class="built_in">sqrt</span>(tv / time_period) * factor;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function">py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; <span class="title">calc_hv_gk</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;open,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;high,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;low,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;close,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">int</span> &amp;time_period,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">double</span> &amp;factor)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 参数转换</span></span><br><span class="line">    py::buffer_info buf_open = open.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_open = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_open.ptr);</span><br><span class="line">    py::buffer_info buf_high = high.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_high = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_high.ptr);</span><br><span class="line">    py::buffer_info buf_low = low.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_low = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_low.ptr);</span><br><span class="line">    py::buffer_info buf_close = close.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_close = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_close.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// result</span></span><br><span class="line">    <span class="keyword">auto</span> result = py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt;(buf_high.size);</span><br><span class="line">    py::buffer_info buffer_result = result.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_result = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buffer_result.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate function</span></span><br><span class="line">    <span class="keyword">auto</span> size = buf_high.size;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var</span><span class="params">(size, <span class="number">0.0</span>)</span></span>;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">double</span> const_num = <span class="number">2.</span> * <span class="built_in">log</span>(<span class="number">2.</span>) - <span class="number">1.</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">        var[i] = <span class="number">0.5</span> * std::<span class="built_in">pow</span>(<span class="built_in">log</span>(ptr_high[i] / ptr_low[i]), <span class="number">2</span>) -</span><br><span class="line">                 const_num * std::<span class="built_in">pow</span>(<span class="built_in">log</span>(ptr_close[i] / ptr_open[i]), <span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 波动率</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; time_period; i++) &#123;</span><br><span class="line">        ptr_result[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = time_period - <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        <span class="keyword">double</span> tv = <span class="number">0.0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i - time_period + <span class="number">1</span>; j &lt;= i; j++) &#123;</span><br><span class="line">            tv += var[j];</span><br><span class="line">        &#125;</span><br><span class="line">        ptr_result[i] = <span class="built_in">sqrt</span>(tv / time_period) * factor;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function">py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; <span class="title">calc_hv_gkyz</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;open,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;high,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;low,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;close,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt; &amp;pre_close,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">int</span> &amp;time_period,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> <span class="keyword">double</span> &amp;factor)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 参数转换</span></span><br><span class="line">    py::buffer_info buf_open = open.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_open = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_open.ptr);</span><br><span class="line">    py::buffer_info buf_high = high.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_high = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_high.ptr);</span><br><span class="line">    py::buffer_info buf_low = low.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_low = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_low.ptr);</span><br><span class="line">    py::buffer_info buf_close = close.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_close = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_close.ptr);</span><br><span class="line">    py::buffer_info buf_pre_close = pre_close.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_pre_close = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buf_pre_close.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// result</span></span><br><span class="line">    <span class="keyword">auto</span> result = py::<span class="keyword">array_t</span>&lt;<span class="keyword">double</span>&gt;(buf_high.size);</span><br><span class="line">    py::buffer_info buffer_result = result.<span class="built_in">request</span>();</span><br><span class="line">    <span class="keyword">auto</span> *ptr_result = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span> *&gt;(buffer_result.ptr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate function</span></span><br><span class="line">    <span class="keyword">auto</span> size = buf_high.size;</span><br><span class="line">    <span class="function">std::vector&lt;<span class="keyword">double</span>&gt; <span class="title">var</span><span class="params">(size, <span class="number">0.0</span>)</span></span>;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">double</span> const_num = <span class="number">2.</span> * <span class="built_in">log</span>(<span class="number">2.</span>) - <span class="number">1.</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">        var[i] = std::<span class="built_in">pow</span>(<span class="built_in">log</span>(ptr_open[i] / ptr_pre_close[i]), <span class="number">2</span>) + <span class="number">0.5</span> * std::<span class="built_in">pow</span>(<span class="built_in">log</span>(ptr_high[i] / ptr_low[i]), <span class="number">2</span>) -</span><br><span class="line">                 const_num * std::<span class="built_in">pow</span>(<span class="built_in">log</span>(ptr_close[i] / ptr_open[i]), <span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 波动率</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; time_period; i++) &#123;</span><br><span class="line">        ptr_result[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = time_period - <span class="number">1</span>; i &lt; size; i++) &#123;</span><br><span class="line">        <span class="keyword">double</span> tv = <span class="number">0.0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i - time_period + <span class="number">1</span>; j &lt;= i; j++) &#123;</span><br><span class="line">            tv += var[j];</span><br><span class="line">        &#125;</span><br><span class="line">        ptr_result[i] = <span class="built_in">sqrt</span>(tv / time_period) * factor;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://www.jmp.com/zh_cn/statistics-knowledge-portal/what-is-correlation.html#404f1893-ae56-43ed-b84c-f6c99f313eca">相关性</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.jmp.com/zh_cn/statistics-knowledge-portal/what-is-correlation/correlation-vs-causation.html">相关性与因果关系</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://abego.cn/2019/05/25/%E9%87%8D%E8%A6%81%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E5%92%8C%E7%90%86%E8%A7%A3/">相关性分析如何计算和理解</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://dynamiproject.files.wordpress.com/2016/01/measuring_historic_volatility.pdf">MEASURING
+HISTORICAL VOLATILITY</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.fmlabs.com/reference/default.htm?url=ExpMA.htm">Exponential
+Moving Average</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://bookdown.org/kochiuyu/technical-analysis-with-r-second-edition/exponential-moving-average-ema.html">Exponential
+moving average (EMA)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.wiley.com/en-us/Dynamic+Hedging%3A+Managing+Vanilla+and+Exotic+Options-p-9780471152804">Dynamic
+Hedging: Managing Vanilla and Exotic Options</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zh.m.wikipedia.org/wiki/%E6%B3%B0%E5%8B%92%E7%BA%A7%E6%95%B0">泰勒级数</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://quant.stackexchange.com/questions/46194/half-life-of-exponetial-weighted-moving-average">Half
+life of Exponetial Weighted Moving Average</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/dybeta2021/dyblog/tree/main/Volatility%20and%20Correlation">Volatility
+and Correlation</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://corporatefinanceinstitute.com/resources/knowledge/finance/beta-coefficient/">Beta
+Coefficient</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.codinglabs.org/articles/basic-statistics-calculate.html">期望、方差、协方差及相关系数的基本运算</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>稻草人
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/" title="Volatility and Correlation">https://dybeta2021.github.io/2021/06/19/volatility-and-correlation/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Volatility/" rel="tag"># Volatility</a>
+              <a href="/tags/Correlation/" rel="tag"># Correlation</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/19/docker/" rel="prev" title="Docker">
+      <i class="fa fa-chevron-left"></i> Docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/21/python_fix_dict/" rel="next" title="处理Python混编接口对字典操作的多线程竞争问题">
+      处理Python混编接口对字典操作的多线程竞争问题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A2%E5%8A%A8%E7%8E%87"><span class="nav-number">1.</span> <span class="nav-text">波动率</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E6%9C%9B%E5%9E%8B%E6%B3%A2%E5%8A%A8%E7%8E%87"><span class="nav-number">1.1.</span> <span class="nav-text">回望型波动率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#exponential-decay-volatility"><span class="nav-number">1.2.</span> <span class="nav-text">Exponential Decay Volatility</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">相关性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#what-is-the-beta-coefficient"><span class="nav-number">3.</span> <span class="nav-text">What is the Beta Coefficient?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#measuring-historical-volatility"><span class="nav-number">4.</span> <span class="nav-text">Measuring Historical
+Volatility</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#trending-markets-imply-weekly-volatility-is-greater-than-daily-volatility"><span class="nav-number">5.</span> <span class="nav-text">Trending
+Markets Imply Weekly Volatility is Greater Than Daily Volatility</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">稻草人</p>
+  <div class="site-description" itemprop="description">风物长宜放眼量</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dybeta2021" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dybeta2021" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dybeta2021@163.com" title="E-Mail → mailto:dybeta2021@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">稻草人</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+博客全站共294.4k字
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dybeta2021.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="期权卖出保证金算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="期权保证金计算函数">
+<meta property="og:url" content="https://dybeta2021.github.io/2021/12/05/margin/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="期权卖出保证金算法">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-12-05T13:51:30.000Z">
+<meta property="article:modified_time" content="2022-12-07T07:06:24.102Z">
+<meta property="article:author" content="稻草人">
+<meta property="article:tag" content="Margin Call">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://dybeta2021.github.io/2021/12/05/margin/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>期权保证金计算函数 | 子非鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子非鱼</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/dybeta2021" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dybeta2021.github.io/2021/12/05/margin/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="稻草人">
+      <meta itemprop="description" content="风物长宜放眼量">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子非鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          期权保证金计算函数
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-05 21:51:30" itemprop="dateCreated datePublished" datetime="2021-12-05T21:51:30+08:00">2021-12-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-12-07 15:06:24" itemprop="dateModified" datetime="2022-12-07T15:06:24+08:00">2022-12-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Option/" itemprop="url" rel="index"><span itemprop="name">Option</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">期权卖出保证金算法</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="上交所期权保证金算法">上交所期权保证金算法</h2>
+<h3 id="etf期权">ETF期权</h3>
+<p>开仓保证金最低标准</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">认购期权义务仓开仓保证金＝[合约前结算价+Max（12%×合约标的前收盘价- 认购期权虚值，7%×合约标的前收盘价）] ×合约单位</span><br><span class="line">认沽期权义务仓开仓保证金＝Min[合约前结算价+Max（12%×合约标的前收盘价- 认沽期权虚值，7%×行权价格），行权价格] ×合约单位</span><br></pre></td></tr></table></figure>
+<p>维持保证金计算公式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">认购期权义务仓维持保证金＝[合约结算价+Max（12%×合约标的收盘价- 认购期权虚值，7%×合约标的收盘价）]×合约单位</span><br><span class="line">认沽期权义务仓维持保证金＝Min[合约结算价+Max（12%×合标的收盘价- 认沽期权虚值，7%×行权价格），行权价格]×合约单位</span><br></pre></td></tr></table></figure>
+<p>保证金计算函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> ndarray, maximum, minimum</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_margin_etf_option_call</span>(<span class="params">settle: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                               close: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                               strike: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                               size: ndarray</span>) -&gt; ndarray:</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    认购期权义务仓开仓保证金＝[合约前结算价+Max（12%×合约标的前收盘价-认购期权虚值，7%×合约标的前收盘价）]×合约单位</span></span><br><span class="line"><span class="string">    认购期权义务仓维持保证金＝[合约结算价+Max（12%×合约标的收盘价-认购期权虚值，7%×合约标的收盘价）]×合约单位</span></span><br><span class="line"><span class="string">    认购期权虚值：行权价—50ETF（前）收盘价，如果是负数取0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    :param settle: settlement price</span></span><br><span class="line"><span class="string">    :param close: underlying asset close price</span></span><br><span class="line"><span class="string">    :param strike:</span></span><br><span class="line"><span class="string">    :param size: contract size</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    time_value = maximum(strike - close, <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> (settle + maximum(<span class="number">0.12</span> * close - time_value, <span class="number">0.07</span> * close)) * size</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_margin_etf_option_put</span>(<span class="params">settle: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                              close: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                              strike: ndarray, </span></span></span><br><span class="line"><span class="params"><span class="function">                              size: ndarray</span>) -&gt; ndarray:</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    认沽期权义务仓开仓保证金＝Min[合约前结算价+Max（12%×合约标的前收盘价-认沽期权虚值，7%×行权价格），行权价格] ×合约单位</span></span><br><span class="line"><span class="string">    认沽期权义务仓维持保证金＝Min[合约结算价 +Max（12%×合标的收盘价-认沽期权虚值，7%×行权价格），行权价格]×合约单位</span></span><br><span class="line"><span class="string">    认沽期权虚值：50ETF（前）收盘价—行权价，如果是负数取0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    :param settle:settlement price</span></span><br><span class="line"><span class="string">    :param close:underlying asset close price</span></span><br><span class="line"><span class="string">    :param strike:</span></span><br><span class="line"><span class="string">    :param size:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    time_value = maximum(close - strike, <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> minimum(settle + maximum(<span class="number">0.12</span> * close - time_value, <span class="number">0.07</span> * strike), strike) * size</span><br></pre></td></tr></table></figure>
+<h2 id="中金所期权保证金算法">中金所期权保证金算法</h2>
+<h3 id="股指期权io">股指期权IO</h3>
+<p>股指期权合约卖方开仓时，交易所按照上一交易日结算时合约交易保证金标准收取合约卖方交易保证金。股指期权合约卖方平仓时，交易所释放合约卖方所平合约的交易保证金。当日结算时，股指期权合约卖方交纳的交易保证金标准为：
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">每手看涨期权交易保证金=（合约当日结算价×合约乘数）+max（标的指数当日收盘价×合约乘数×合约保证金调整系数</span><br><span class="line">-虚值额，最低保障系数×标的指数当日收盘价×合约乘数×合约保证金调整系数）</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">每手看跌期权交易保证金=（合约当日结算价×合约乘数）+max（标的指数当日收盘价×合约乘数×合约保证金调整系数</span><br><span class="line">-虚值额，最低保障系数×合约行权价格×合约乘数×合约保证金调整系数）</span><br></pre></td></tr></table></figure>
+<p>虚值额计算方法 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">看涨期权虚值额为：max[（本合约行权价格-标的指数当日收盘价）×合约乘数，0]</span><br><span class="line">看跌期权虚值额为：max[（标的指数当日收盘价-本合约行权价格）×合约乘数，0]</span><br></pre></td></tr></table></figure></p>
+<p>保证金计算函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> ndarray, maximum, minimum</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_margin_index_option_call</span>(<span class="params">settle: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                                 strike: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                                 close: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                                 size: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                                 adjusted_factor: <span class="built_in">float</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                                 guarantee_factor: <span class="built_in">float</span></span>) -&gt; ndarray:</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    每手看涨期权交易保证金=（合约当日结算价×合约乘数）+max（标的指数当日收盘价×合约乘数×合约保证金调整系数-虚值额，</span></span><br><span class="line"><span class="string">    最低保障系数×标的指数当日收盘价×合约乘数×合约保证金调整系数）</span></span><br><span class="line"><span class="string">    :param settle:</span></span><br><span class="line"><span class="string">    :param strike:</span></span><br><span class="line"><span class="string">    :param close:</span></span><br><span class="line"><span class="string">    :param size:</span></span><br><span class="line"><span class="string">    :param adjusted_factor: 合约保证金调整系数</span></span><br><span class="line"><span class="string">    :param guarantee_factor: 最低保障系数</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 虚数额</span></span><br><span class="line">    time_value = maximum(strike - close, <span class="number">0</span>) * size</span><br><span class="line">    <span class="keyword">return</span> settle * size + maximum(close * size * adjusted_factor - time_value,</span><br><span class="line">                                   guarantee_factor * close * size * adjusted_factor)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_margin_index_option_put</span>(<span class="params">settle: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                                strike: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                                close: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                                size: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                                adjusted_factor: <span class="built_in">float</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                                guarantee_factor: <span class="built_in">float</span></span>) -&gt; ndarray:</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    每手看跌期权交易保证金=（合约当日结算价×合约乘数）+max（标的指数当日收盘价×合约乘数×合约保证金调整系数-虚值额，</span></span><br><span class="line"><span class="string">    最低保障系数×合约行权价格×合约乘数×合约保证金调整系数）</span></span><br><span class="line"><span class="string">    :param settle:</span></span><br><span class="line"><span class="string">    :param strike:</span></span><br><span class="line"><span class="string">    :param close:</span></span><br><span class="line"><span class="string">    :param size:</span></span><br><span class="line"><span class="string">    :param adjusted_factor:</span></span><br><span class="line"><span class="string">    :param guarantee_factor:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    time_value = maximum(close - strike, <span class="number">0</span>) * size</span><br><span class="line">    <span class="keyword">return</span> settle * size + maximum(close * size * adjusted_factor - time_value,</span><br><span class="line">                                   guarantee_factor * strike * size * adjusted_factor)</span><br></pre></td></tr></table></figure>
+<h2 id="大商所商品期权保证金算法">大商所商品期权保证金算法</h2>
+<h3 id="铁矿石期权">铁矿石期权</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">卖方单腿保证金 = Max(权利金 + 期货交易保证金 - 0.5*期权虚值额， 权利金+0.5*期货交易保证金)</span><br><span class="line">看涨期权虚值额=行权价格-标的价格（小于0则取0）</span><br><span class="line">看跌期权虚值额=标的价格-行权价格（小于0则取0）</span><br></pre></td></tr></table></figure>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="http://www.sse.com.cn/assortment/options/contract/c/c_20151016_3999892.shtml">上交所期权保证金</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://www.cffex.com.cn/u/cms/www/202003/27171321rvur.pdf">中金所期权保证金</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://m.dce.com.cn/dalianshangpin/resource/cms/2020/08/2020080614374399190.pdf">大商所期权保证金</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>稻草人
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://dybeta2021.github.io/2021/12/05/margin/" title="期权保证金计算函数">https://dybeta2021.github.io/2021/12/05/margin/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Margin-Call/" rel="tag"># Margin Call</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/04/start-blog/" rel="prev" title="博客设置备忘录">
+      <i class="fa fa-chevron-left"></i> 博客设置备忘录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/15/option-notes/" rel="next" title="期权相关的链接">
+      期权相关的链接 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%BA%A4%E6%89%80%E6%9C%9F%E6%9D%83%E4%BF%9D%E8%AF%81%E9%87%91%E7%AE%97%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">上交所期权保证金算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#etf%E6%9C%9F%E6%9D%83"><span class="nav-number">1.1.</span> <span class="nav-text">ETF期权</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E9%87%91%E6%89%80%E6%9C%9F%E6%9D%83%E4%BF%9D%E8%AF%81%E9%87%91%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">中金所期权保证金算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%82%A1%E6%8C%87%E6%9C%9F%E6%9D%83io"><span class="nav-number">2.1.</span> <span class="nav-text">股指期权IO</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E5%95%86%E6%89%80%E5%95%86%E5%93%81%E6%9C%9F%E6%9D%83%E4%BF%9D%E8%AF%81%E9%87%91%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">大商所商品期权保证金算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%93%81%E7%9F%BF%E7%9F%B3%E6%9C%9F%E6%9D%83"><span class="nav-number">3.1.</span> <span class="nav-text">铁矿石期权</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">稻草人</p>
+  <div class="site-description" itemprop="description">风物长宜放眼量</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dybeta2021" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dybeta2021" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dybeta2021@163.com" title="E-Mail → mailto:dybeta2021@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">稻草人</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+博客全站共294.4k字
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

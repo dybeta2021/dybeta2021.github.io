@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dybeta2021.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="MinDoc 是一款针对IT团队开发的简单好用的文档管理系统。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MinDoc接口文档在线管理系统">
+<meta property="og:url" content="https://dybeta2021.github.io/2022/09/23/min-doc/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="MinDoc 是一款针对IT团队开发的简单好用的文档管理系统。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-23T08:16:34.000Z">
+<meta property="article:modified_time" content="2022-09-23T08:16:34.000Z">
+<meta property="article:author" content="稻草人">
+<meta property="article:tag" content="Wiki">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://dybeta2021.github.io/2022/09/23/min-doc/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MinDoc接口文档在线管理系统 | 子非鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子非鱼</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/dybeta2021" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dybeta2021.github.io/2022/09/23/min-doc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="稻草人">
+      <meta itemprop="description" content="风物长宜放眼量">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子非鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MinDoc接口文档在线管理系统
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-09-23 16:16:34" itemprop="dateCreated datePublished" datetime="2022-09-23T16:16:34+08:00">2022-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Wiki/" itemprop="url" rel="index"><span itemprop="name">Wiki</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">MinDoc 是一款针对IT团队开发的简单好用的文档管理系统。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <hr />
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/mindoc-org/mindoc">MinDoc</a></li>
+</ul>
+<h3 id="mysql">MySQL</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker pull mysql</span><br><span class="line"></span><br><span class="line">docker run -p 3306:3306 --name mysql </span><br><span class="line">\-v /Users/yangdong/docker/mysql/conf:/etc/mysql/conf.d </span><br><span class="line">\-v /Users/yangdong/docker/mysql/logs:/var/log/mysql </span><br><span class="line">\-v /Users/yangdong/docker/mysql/data:/var/lib/mysql </span><br><span class="line">\-e MYSQL_ROOT_PASSWORD=123456 </span><br><span class="line">\-d mysql --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> DATABASE IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> mindoc_db;</span><br></pre></td></tr></table></figure>
+<h3 id="network">Network</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker network create netmindoc</span><br><span class="line">docker network connect --alias mysql netmindoc mysql</span><br><span class="line">docker network inspect netmindoc</span><br></pre></td></tr></table></figure>
+<h3 id="mindoc">MinDoc</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">docker pull ubuntu</span><br><span class="line">docker run --name iubuntu -t -i -d -p 4100:22 ubuntu</span><br><span class="line">docker exec -t -i iubuntu /bin/bash</span><br><span class="line"></span><br><span class="line">apt-get update</span><br><span class="line">apt-get install -y sudo vim git wget unzip calibre</span><br><span class="line"></span><br><span class="line">apt-get clean</span><br><span class="line">apt-get autoclean</span><br><span class="line">apt-get autoremove</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cd /home</span><br><span class="line"></span><br><span class="line">wget https://github.com/mindoc-org/mindoc/releases/download/v2.1/mindoc_linux_amd64.zip</span><br><span class="line"></span><br><span class="line">unzip mindoc_linux_amd64.zip -d mindoc</span><br><span class="line">rm -rf mindoc_linux_amd64.zip</span><br><span class="line"></span><br><span class="line">vi /etc/profileexport</span><br><span class="line">export ZONEINFO=/home/mindoc/lib/time/zoneinfo.zip</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker commit iubuntu min-doc</span><br><span class="line">docker save min-doc &gt; min-doc.tar</span><br><span class="line">docker load &lt; min-doc.tar</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 配置虚拟网络</span></span><br><span class="line">docker run --name min-doc -t -i -d -p 8181:8181 min-doc </span><br><span class="line">docker exec -t -i min-doc /bin/bash</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd conf</span><br><span class="line">vim app.conf</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">appname</span> <span class="string">=</span> <span class="string">mindoc</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#默认监听的网卡,为空则监听所有</span></span><br><span class="line"><span class="string">httpaddr=&quot;$&#123;MINDOC_ADDR&#125;&quot;</span></span><br><span class="line"><span class="string">httpport</span> <span class="string">=</span> <span class="string">&quot;$&#123;MINDOC_PORT||8181&#125;&quot;</span></span><br><span class="line"><span class="string">runmode</span> <span class="string">=</span> <span class="string">&quot;$&#123;MINDOC_RUN_MODE||prod&#125;&quot;</span></span><br><span class="line"><span class="string">sessionon</span> <span class="string">=</span> <span class="literal">true</span></span><br><span class="line"><span class="string">sessionname</span> <span class="string">=</span> <span class="string">mindoc_id</span></span><br><span class="line"><span class="string">copyrequestbody</span> <span class="string">=</span> <span class="literal">true</span></span><br><span class="line"><span class="string">enablexsrf</span> <span class="string">=</span> <span class="string">&quot;$&#123;MINDOC_ENABLE_XSRF||false&#125;&quot;</span></span><br><span class="line"><span class="string">enable_iframe</span> <span class="string">=</span> <span class="string">&quot;$&#123;MINDOC_ENABLE_IFRAME||false&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#系统完整URL(http://doc.iminho.me),如果该项不设置，会从请求头中获取地址。</span></span><br><span class="line"><span class="string">baseurl=&quot;$&#123;MINDOC_BASE_URL&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#########代码高亮样式################</span></span><br><span class="line"><span class="comment">#样式演示地址：https://highlightjs.org/static/demo/</span></span><br><span class="line"><span class="string">highlight_style=&quot;$&#123;MINDOC_HIGHLIGHT_STYLE||github&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">########配置文件自动加载##################</span></span><br><span class="line"><span class="comment">#大于0时系统会自动检测配置文件是否变动，变动后自动加载并生效,单位是秒。监听端口和数据库配置无效</span></span><br><span class="line"><span class="string">config_auto_delay=&quot;$&#123;MINDOC_CONFIG_AUTO_DELAY||20&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">########Session储存方式##############</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#默认Session生成Key的秘钥</span></span><br><span class="line"><span class="string">beegoserversessionkey=NY1B$28pms12JM&amp;c</span></span><br><span class="line"><span class="string">sessionprovider=&quot;$&#123;MINDOC_SESSION_PROVIDER||file&#125;&quot;</span></span><br><span class="line"><span class="string">sessionproviderconfig=&quot;$&#123;MINDOC_SESSION_PROVIDER_CONFIG||./runtime/session&#125;&quot;</span></span><br><span class="line"><span class="comment">#默认的过期时间</span></span><br><span class="line"><span class="string">sessiongcmaxlifetime=&quot;$&#123;MINDOC_SESSION_MAX_LIFETIME||3600&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#以文件方式储存</span></span><br><span class="line"><span class="comment">#sessionprovider=file</span></span><br><span class="line"><span class="comment">#sessionproviderconfig=./runtime/session</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#以redis方式储存</span></span><br><span class="line"><span class="comment">#sessionprovider=redis</span></span><br><span class="line"><span class="comment">#sessionproviderconfig=127.0.0.1:6379</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#以memcache方式储存</span></span><br><span class="line"><span class="comment">#sessionprovider=memcache</span></span><br><span class="line"><span class="comment">#sessionproviderconfig=127.0.0.1:11211</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#以内存方式托管Session</span></span><br><span class="line"><span class="comment">#sessionprovider=memory</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#时区设置</span></span><br><span class="line"><span class="string">timezone</span> <span class="string">=</span> <span class="string">Asia/Shanghai</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">####################MySQL 数据库配置###########################</span></span><br><span class="line"><span class="comment">#支持MySQL和sqlite3两种数据库，如果是sqlite3 则 db_database 标识数据库的物理目录</span></span><br><span class="line"><span class="comment"># db_adapter=&quot;$&#123;MINDOC_DB_ADAPTER||sqlite3&#125;&quot;</span></span><br><span class="line"><span class="comment"># db_host=&quot;$&#123;MINDOC_DB_HOST||127.0.0.1&#125;&quot;</span></span><br><span class="line"><span class="comment"># db_port=&quot;$&#123;MINDOC_DB_PORT||3306&#125;&quot;</span></span><br><span class="line"><span class="comment"># db_database=&quot;$&#123;MINDOC_DB_DATABASE||./database/mindoc.db&#125;&quot;</span></span><br><span class="line"><span class="comment"># db_username=&quot;$&#123;MINDOC_DB_USERNAME||root&#125;&quot;</span></span><br><span class="line"><span class="comment"># db_password=&quot;$&#123;MINDOC_DB_PASSWORD||123456&#125;&quot;</span></span><br><span class="line"><span class="string">db_adapter=mysql</span></span><br><span class="line"><span class="string">db_host=mysql</span></span><br><span class="line"><span class="string">db_port=3306</span></span><br><span class="line"><span class="string">db_database=mindoc_db</span></span><br><span class="line"><span class="string">db_username=root</span></span><br><span class="line"><span class="string">db_password=123456</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">####################sqlite3 数据库配置###########################</span></span><br><span class="line"><span class="comment">#db_adapter=sqlite3</span></span><br><span class="line"><span class="comment">#db_database=./database/mindoc.db</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#项目默认封面</span></span><br><span class="line"><span class="string">cover=/static/images/book.jpg</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#默认头像</span></span><br><span class="line"><span class="string">avatar=/static/images/headimgurl.jpg</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#默认阅读令牌长度</span></span><br><span class="line"><span class="string">token_size=12</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#上传文件的后缀,如果不限制后缀可以设置为 *</span></span><br><span class="line"><span class="string">upload_file_ext=*</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#上传的文件大小限制,如果不填写,默认不限制，单位可以是 GB KB MB</span></span><br><span class="line"><span class="string">upload_file_size=10GB</span></span><br><span class="line"></span><br><span class="line"><span class="comment">####################邮件配置######################</span></span><br><span class="line"><span class="comment">#是否启用邮件</span></span><br><span class="line"><span class="string">enable_mail=&quot;$&#123;MINDOC_ENABLE_MAIL||false&#125;&quot;</span></span><br><span class="line"><span class="comment">#每小时限制指定邮箱邮件发送次数</span></span><br><span class="line"><span class="string">mail_number=&quot;$&#123;MINDOC_MAIL_NUMBER||5&#125;&quot;</span></span><br><span class="line"><span class="comment">#smtp服务用户名</span></span><br><span class="line"><span class="string">smtp_user_name=&quot;$&#123;MINDOC_SMTP_USER_NAME||admin@iminho.me&#125;&quot;</span></span><br><span class="line"><span class="comment">#smtp服务器地址</span></span><br><span class="line"><span class="string">smtp_host=&quot;$&#123;MINDOC_SMTP_HOST||smtp.163.com&#125;&quot;&quot;</span></span><br><span class="line"><span class="comment">#smtp密码</span></span><br><span class="line"><span class="string">smtp_password=&quot;$&#123;MINDOC_SMTP_PASSWORD&#125;&quot;</span></span><br><span class="line"><span class="comment">#端口号</span></span><br><span class="line"><span class="string">smtp_port=&quot;$&#123;MINDOC_SMTP_PORT||25&#125;&quot;&quot;</span></span><br><span class="line"><span class="comment">#发送邮件的显示名称</span></span><br><span class="line"><span class="string">form_user_name=&quot;$&#123;MINDOC_FORM_USERNAME||admin@iminho.me&#125;&quot;</span></span><br><span class="line"><span class="comment">#邮件有效期30分钟</span></span><br><span class="line"><span class="string">mail_expired=&quot;$&#123;MINDOC_EXPIRED||30&#125;&quot;</span></span><br><span class="line"><span class="comment">#加密类型NONE 无认证、SSL 加密、LOGIN 普通用户登录</span></span><br><span class="line"><span class="string">secure=&quot;$&#123;MINDOC_MAIL_SECURE||LOGIN&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">###############配置导出项目###################</span></span><br><span class="line"><span class="string">enable_export=&quot;$&#123;MINDOC_ENABLE_EXPORT||false&#125;&quot;</span></span><br><span class="line"><span class="comment">#同一个项目同时运行导出程序的并行数量，取值1-4之间，取值越大导出速度越快，越占用资源</span></span><br><span class="line"><span class="string">export_process_num=&quot;$&#123;MINDOC_EXPORT_PROCESS_NUM||1&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#并发导出的项目限制，指同一时间限制的导出项目数量，如果为0则不限制。设置的越大，越占用资源</span></span><br><span class="line"><span class="string">export_limit_num=&quot;$&#123;MINDOC_EXPORT_LIMIT_NUM||5&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#指同时等待导出的任务数量</span></span><br><span class="line"><span class="string">export_queue_limit_num=&quot;$&#123;MINDOC_EXPORT_QUEUE_LIMIT_NUM||100&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#导出项目的缓存目录配置</span></span><br><span class="line"><span class="string">export_output_path=&quot;$&#123;MINDOC_EXPORT_OUTPUT_PATH||./runtime/cache&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">################百度地图密钥#################</span></span><br><span class="line"><span class="string">baidumapkey=</span></span><br><span class="line"></span><br><span class="line"><span class="comment">################Active Directory/LDAP################</span></span><br><span class="line"><span class="comment">#是否启用ldap</span></span><br><span class="line"><span class="string">ldap_enable=false</span></span><br><span class="line"><span class="comment">#ldap主机名</span></span><br><span class="line"><span class="string">ldap_host=ad.example.com</span></span><br><span class="line"><span class="comment">#ldap端口</span></span><br><span class="line"><span class="string">ldap_port=3268</span></span><br><span class="line"><span class="comment">#ldap内哪个属性作为用户名</span></span><br><span class="line"><span class="string">ldap_account=sAMAccountName</span></span><br><span class="line"><span class="comment">#ldap内哪个属性作为邮箱</span></span><br><span class="line"><span class="string">ldap_mail=mail</span></span><br><span class="line"><span class="comment">#搜索范围</span></span><br><span class="line"><span class="string">ldap_base=DC=example,DC=com</span></span><br><span class="line"><span class="comment">#第一次绑定ldap用户dn</span></span><br><span class="line"><span class="string">ldap_user=CN=ldap</span> <span class="string">helper,OU=example.com,DC=example,DC=com</span></span><br><span class="line"><span class="comment">#第一次绑定ldap用户密码</span></span><br><span class="line"><span class="string">ldap_password=superSecret</span></span><br><span class="line"><span class="comment">#自动注册用户角色：0 超级管理员 /1 管理员/ 2 普通用户</span></span><br><span class="line"><span class="string">ldap_user_role=2</span></span><br><span class="line"><span class="comment">#ldap搜索filter规则,AD服务器: objectClass=User, openldap服务器: objectClass=posixAccount ,也可以定义为其他属性,如: title=mindoc</span></span><br><span class="line"><span class="string">ldap_filter=objectClass=posixAccount</span></span><br><span class="line"></span><br><span class="line"><span class="comment">############# HTTP自定义接口登录 ################</span></span><br><span class="line"><span class="string">http_login_url=</span></span><br><span class="line"><span class="comment">#md5计算的秘钥</span></span><br><span class="line"><span class="string">http_login_secret=hzsp*THJUqwbCU%s</span></span><br><span class="line"><span class="comment">##################################</span></span><br><span class="line"></span><br><span class="line"><span class="comment">###############配置CDN加速##################</span></span><br><span class="line"><span class="string">cdn=&quot;$&#123;MINDOC_CDN_URL&#125;&quot;</span></span><br><span class="line"><span class="string">cdnjs=&quot;$&#123;MINDOC_CDN_JS_URL&#125;&quot;</span></span><br><span class="line"><span class="string">cdncss=&quot;$&#123;MINDOC_CDN_CSS_URL&#125;&quot;</span></span><br><span class="line"><span class="string">cdnimg=&quot;$&#123;MINDOC_CDN_IMG_URL&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">######################缓存配置###############################</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#是否开启缓存，true 开启/false 不开启</span></span><br><span class="line"><span class="string">cache=&quot;$&#123;MINDOC_CACHE||false&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#缓存方式:memory/memcache/redis/file</span></span><br><span class="line"><span class="string">cache_provider=&quot;$&#123;MINDOC_CACHE_PROVIDER||file&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#当配置缓存方式为memory时,内存回收时间,单位是秒</span></span><br><span class="line"><span class="string">cache_memory_interval=&quot;$&#123;MINDOC_CACHE_MEMORY_INTERVAL||120&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#当缓存方式配置为file时,缓存的储存目录</span></span><br><span class="line"><span class="string">cache_file_path=&quot;$&#123;MINDOC_CACHE_FILE_PATH||./runtime/cache/&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#缓存文件后缀</span></span><br><span class="line"><span class="string">cache_file_suffix=&quot;$&#123;MINDOC_CACHE_FILE_SUFFIX||.bin&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#文件缓存目录层级</span></span><br><span class="line"><span class="string">cache_file_dir_level=&quot;$&#123;MINDOC_CACHE_FILE_DIR_LEVEL||2&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#文件缓存的默认过期时间</span></span><br><span class="line"><span class="string">cache_file_expiry=&quot;$&#123;MINDOC_CACHE_FILE_EXPIRY||3600&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#memcache缓存服务器地址</span></span><br><span class="line"><span class="string">cache_memcache_host=&quot;$&#123;MINDOC_CACHE_MEMCACHE_HOST||127.0.0.1:11211&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#redis服务器地址</span></span><br><span class="line"><span class="string">cache_redis_host=&quot;$&#123;MINDOC_CACHE_REDIS_HOST||127.0.0.1:6379&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#redis数据库索引</span></span><br><span class="line"><span class="string">cache_redis_db=&quot;$&#123;MINDOC_CACHE_REDIS_DB||0&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#redis服务器密码</span></span><br><span class="line"><span class="string">cache_redis_password=&quot;$&#123;MINDOC_CACHE_REDIS_PASSWORD&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#缓存键的前缀</span></span><br><span class="line"><span class="string">cache_redis_prefix=&quot;$&#123;MINDOC_CACHE_REDIS_PREFIX||mindoc::cache&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#########日志储存配置##############</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#日志保存路径，在linux上，自动创建的日志文件请不要删除，否则将无法写入日志</span></span><br><span class="line"><span class="string">log_path=&quot;$&#123;MINDOC_LOG_PATH||./runtime/logs&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#每个文件保存的最大行数，默认值 1000000</span></span><br><span class="line"><span class="string">log_maxlines=&quot;$&#123;MINDOC_LOG_MAX_LINES||1000000&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 每个文件保存的最大尺寸，默认值是 1 &lt;&lt; 28, //256 MB</span></span><br><span class="line"><span class="string">log_maxsize=&quot;$&#123;MINDOC_LOG_MAX_SIZE&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 是否按照每天 logrotate，默认是 true</span></span><br><span class="line"><span class="string">log_daily=&quot;$&#123;MINDOC_LOG_DAILY||true&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 文件最多保存多少天，默认保存 7 天</span></span><br><span class="line"><span class="string">log_maxdays=&quot;$&#123;MINDOC_LOG_MAX_DAYS||30&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 日志保存的时候的级别，默认是 Trace 级别,可选值： Emergency/Alert/Critical/Error/Warning/Notice/Informational/Debug/Trace</span></span><br><span class="line"><span class="string">log_level=&quot;$&#123;MINDOC_LOG_LEVEL||Alert&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 是否异步生成日志，默认是 true</span></span><br><span class="line"><span class="string">log_is_async=&quot;$&#123;MINDOC_LOG_IS_ASYNC||TRUE&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">##########钉钉应用相关配置##############</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 企业钉钉ID</span></span><br><span class="line"><span class="string">dingtalk_corpid=&quot;$&#123;MINDOC_DINGTALK_CORPID&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 钉钉AppKey</span></span><br><span class="line"><span class="string">dingtalk_app_key=&quot;$&#123;MINDOC_DINGTALK_APPKEY&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 钉钉AppSecret</span></span><br><span class="line"><span class="string">dingtalk_app_secret=&quot;$&#123;MINDOC_DINGTALK_APPSECRET&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 钉钉登录默认只读账号</span></span><br><span class="line"><span class="string">dingtalk_tmp_reader=&quot;$&#123;MINDOC_DINGTALK_READER&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 钉钉扫码登录Key</span></span><br><span class="line"><span class="string">dingtalk_qr_key=&quot;$&#123;MINDOC_DINGTALK_QRKEY&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 钉钉扫码登录Secret</span></span><br><span class="line"><span class="string">dingtalk_qr_secret=&quot;$&#123;MINDOC_DINGTALK_QRSECRET&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">########企业微信登录配置##############</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 企业ID</span></span><br><span class="line"><span class="string">workweixin_corpid=&quot;$&#123;MINDOC_WORKWEIXIN_CORPID&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 应用ID</span></span><br><span class="line"><span class="string">workweixin_agentid=&quot;$&#123;MINDOC_WORKWEIXIN_AGENTID&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 应用密钥</span></span><br><span class="line"><span class="string">workweixin_secret=&quot;$&#123;MINDOC_WORKWEIXIN_SECRET&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 通讯录密钥</span></span><br><span class="line"><span class="string">workweixin_contact_secret=&quot;$&#123;MINDOC_WORKWEIXIN_CONTACT_SECRET&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># i18n config</span></span><br><span class="line"><span class="string">default_lang=&quot;zh-cn&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./mindoc_linux_amd64 install</span><br><span class="line">chmod +x mindoc_linux_amd64</span><br><span class="line">./mindoc_linux_amd64</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8181/</span><br><span class="line">admin / 123456 / 3069jiayou</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw status</span><br><span class="line">sudo ufw status # 查看已经开启的端口</span><br><span class="line">sudo ufw allow 8181  # 打开端口</span><br><span class="line">sudo ufw reload # 重启防火墙</span><br><span class="line">sudo ufw status # 查看一下端口是否已开放</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>稻草人
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://dybeta2021.github.io/2022/09/23/min-doc/" title="MinDoc接口文档在线管理系统">https://dybeta2021.github.io/2022/09/23/min-doc/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Wiki/" rel="tag"># Wiki</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/09/06/stock-index/" rel="prev" title="主要指数分析">
+      <i class="fa fa-chevron-left"></i> 主要指数分析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/09/23/struct/" rel="next" title="为什么底层 C/C++ 代码的 char[] 比 string 多很多？">
+      为什么底层 C/C++ 代码的 char[] 比 string 多很多？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#mysql"><span class="nav-number">1.</span> <span class="nav-text">MySQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#network"><span class="nav-number">2.</span> <span class="nav-text">Network</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mindoc"><span class="nav-number">3.</span> <span class="nav-text">MinDoc</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">稻草人</p>
+  <div class="site-description" itemprop="description">风物长宜放眼量</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dybeta2021" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dybeta2021" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dybeta2021@163.com" title="E-Mail → mailto:dybeta2021@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">稻草人</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+博客全站共294.4k字
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

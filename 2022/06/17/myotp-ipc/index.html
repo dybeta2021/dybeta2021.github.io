@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dybeta2021.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="从现代操作系统理念设计上，将行情接口、策略引擎、交易接口放在同一个进程中是最方便快捷的方式。MyOTP没有采用这种方式，一是考虑到行情和交易通常不是一套柜台系统API进程隔离更安全，另一个是多功能耦合在一起不利于模块化分离。模块化设计功能分割方便，利于多人协同开发。由于MyOTP定位不是高频交易系统（虽然整体运行速度效率高于相当一部分所谓高频交易系统），在框架设计上不会特意为了针对优化某些功能而调">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MyOTP-5 IPC进程通信">
+<meta property="og:url" content="https://dybeta2021.github.io/2022/06/17/myotp-ipc/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="从现代操作系统理念设计上，将行情接口、策略引擎、交易接口放在同一个进程中是最方便快捷的方式。MyOTP没有采用这种方式，一是考虑到行情和交易通常不是一套柜台系统API进程隔离更安全，另一个是多功能耦合在一起不利于模块化分离。模块化设计功能分割方便，利于多人协同开发。由于MyOTP定位不是高频交易系统（虽然整体运行速度效率高于相当一部分所谓高频交易系统），在框架设计上不会特意为了针对优化某些功能而调">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://dybeta2021.github.io/2022/06/17/myotp-ipc/fig1.jpeg">
+<meta property="og:image" content="https://dybeta2021.github.io/2022/06/17/myotp-ipc/fig3.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2022/06/17/myotp-ipc/fig4.png">
+<meta property="article:published_time" content="2022-06-17T09:26:29.000Z">
+<meta property="article:modified_time" content="2022-06-27T09:26:29.000Z">
+<meta property="article:author" content="稻草人">
+<meta property="article:tag" content="option">
+<meta property="article:tag" content="trading-system">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://dybeta2021.github.io/2022/06/17/myotp-ipc/fig1.jpeg">
+
+<link rel="canonical" href="https://dybeta2021.github.io/2022/06/17/myotp-ipc/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MyOTP-5 IPC进程通信 | 子非鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子非鱼</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/dybeta2021" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dybeta2021.github.io/2022/06/17/myotp-ipc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="稻草人">
+      <meta itemprop="description" content="风物长宜放眼量">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子非鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MyOTP-5 IPC进程通信
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-17 17:26:29" itemprop="dateCreated datePublished" datetime="2022-06-17T17:26:29+08:00">2022-06-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-27 17:26:29" itemprop="dateModified" datetime="2022-06-27T17:26:29+08:00">2022-06-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">从现代操作系统理念设计上，将行情接口、策略引擎、交易接口放在同一个进程中是最方便快捷的方式。MyOTP没有采用这种方式，一是考虑到行情和交易通常不是一套柜台系统API进程隔离更安全，另一个是多功能耦合在一起不利于模块化分离。模块化设计功能分割方便，利于多人协同开发。由于MyOTP定位不是高频交易系统（虽然整体运行速度效率高于相当一部分所谓高频交易系统），在框架设计上不会特意为了针对优化某些功能而调整框架设计。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="应用场景">应用场景</h2>
+<p>如下图所示，MyOTP中将一个传统的单进程多线程交易系统切换为多进程的交易系统。进程间通信采用基于共享内存的queue、disruptor、key-store和req-rep等组件实现。
+<img src="fig1.jpeg" width="100%" height="100%" title="fig1" alt="fig1"/></p>
+<h2 id="disruptor"><a
+target="_blank" rel="noopener" href="https://github.com/dybeta2021/MyOTP/tree/main/tools/disruptor-ipc/mmap">Disruptor</a></h2>
+<p>Disruptor是英国外汇交易公司LMAX开发的一个线程间通信的框架，即在多线程间共享数据。它是由LMAX公司开发的可信消息传递架构的一部分，以便用非常快速的方法来在多组件之间传递数据。这里借鉴这个框架的实现方式通过共享内存实现跨进程通信使用。
+如下图，Disruptor不是传统的生产者-消费者模式，Disruptor的是广播形式的，通过修改映射共享内存实现一个行情源广播多个策略进程的模式。</p>
+<p><img src="fig3.png" width="50%" height="75%" title="fig3" alt="fig3"/></p>
+<h3 id="ring-buffer">Ring Buffer</h3>
+<p>Disruptor的底层数据结构是一个RingBuffer，并且只维护一个用于指向下一个可用的位置的游标。
+当需要写入时，Disruptor会分配一个空间，并将指针更新为该空间的最大下标处，这块空间就是申请写入的线程所独享的。当空间分配成功后，写线程可以慢慢写入。所以当有多线程同时写入时，需要同步的地方只是更新游标，而更新游标只是做加操作，利用原子变量的加操作就可以避免使用锁，从而提高效率。当需要读取时，Disruptor
+会等待游标更新到想要读取的下标处，然后执行读操作，这个过程同样不需要加锁。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">size_t</span> buffer_size;</span><br><span class="line">    <span class="keyword">size_t</span> total_mem_size;</span><br><span class="line">    std::atomic&lt;<span class="keyword">size_t</span>&gt; registered_consumer_count;</span><br><span class="line">    std::atomic&lt;<span class="keyword">int64_t</span>&gt; cursor;</span><br><span class="line">    std::atomic&lt;<span class="keyword">int64_t</span>&gt; next;</span><br><span class="line">    std::atomic&lt;<span class="keyword">int64_t</span>&gt; array_of_consumer_indexes[MAX_CONSUMER];</span><br><span class="line">&#125; ShmStoreHeader;</span><br></pre></td></tr></table></figure>
+<p>RingBuffer使用<code>cursor</code>和<code>next</code>管理写入线程位置，<code>next</code>表示生产者为数据存储保留的位置，<code>cursor</code>是生产者保存完数据的位置，也就是消费者可以读取的位置。对SPMC和SPSC的模式，可以取消原子操作进一步提高效率。</p>
+<blockquote>
+<p>现实编程过程中，加锁通常会严重地影响性能。线程会因为竞争不到锁而被挂起，等锁被释放的时候，线程又会被恢复，这个过程中存在着很大的开销，并且通常会有较长时间的中断，因为当一个线程正在等待锁时，它不能做任何其他事情。如果一个线程在持有锁的情况下被延迟执行，例如发生了缺页错误、调度延迟或者其它类似情况，那么所有需要这个锁的线程都无法执行下去。如果被阻塞线程的优先级较高，而持有锁的线程优先级较低，就会发生优先级反转。</p>
+<p>Disruptor论文中讲述了一个实验：</p>
+<ul>
+<li>这个测试程序调用了一个函数，该函数会对一个64位的计数器循环自增5亿次。</li>
+<li>机器环境：2.4G 6核</li>
+<li>运算： 64位的计数器累加5亿次</li>
+</ul>
+<p>|Method | Time (ms) | |— | —| |Single thread | 300| |Single thread
+with CAS | 5,700| |Single thread with lock | 10,000| |Single thread with
+volatile write | 4,700| |Two threads with CAS | 30,000| |Two threads
+with lock | 224,000|</p>
+<p>CAS操作比单线程无锁慢了1个数量级；有锁且多线程并发的情况下，速度比单线程无锁慢3个数量级。可见无锁速度最快。</p>
+<p>单线程情况下，不加锁的性能 &gt; CAS操作的性能 &gt; 加锁的性能。</p>
+<p>在多线程情况下，为了保证线程安全，必须使用CAS或锁，这种情况下，CAS的性能超过锁的性能，前者大约是后者的8倍。</p>
+<p>综上可知，加锁的性能是最差的。</p>
+</blockquote>
+<p><img src="fig4.png" width="50%" height="75%" title="fig4" alt="fig4"/></p>
+<p>RingBuffer中数据的位置使用<code>next</code>和<code>cursor</code>两个单调递增的变量来表示。例如假设一个总大小为8的环形缓冲区。随着数据的存储，我们将使用顺序递增的索引来标记其位置（0,1,2,3,4,5,6..
+类似这样）。但是，如果指数超过7，则指数在Disruptor中并没有再次回到0，而是像8、9、10一样继续增加。</p>
+<h3 id="producer">Producer</h3>
+<p>Disruptor的实现思路就是每一个数据都会有一个唯一自增的序号，用一个环形队列来存储数据，写入数据的时候先分配出可写的空间序号，然后再慢慢写数据，等到数据写完后再更新一下可读区域。这样因为每个线程独占一块空间写入数据，就不会有线程同步问题，唯一需要同步的地方是分配写入空间和更新可读区域。但是这两个操作都是非常简单的加操作，加锁太浪费，所以Disruptor直接使用原子变量加自旋等待来同步，获取极高的性能。</p>
+<p><code>next</code>写入线程下个月写入位置，<code>cursor</code>读取线程可以读取的位置。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">set_data</span><span class="params">(T *data)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// get next </span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> idx = <span class="built_in">ClaimIndex</span>();</span><br><span class="line">    <span class="comment">// write data</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">bool</span> ret = <span class="built_in">SetData</span>(idx, data);</span><br><span class="line">    <span class="comment">// update cursor</span></span><br><span class="line">    <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Commit</span>(idx);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 一个进程写入，单进程内多线程因为原子操作无需区分写入线程</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">inline</span> <span class="keyword">int64_t</span> Disruptor&lt;T&gt;::<span class="built_in">ClaimIndex</span>() &#123;</span><br><span class="line">    <span class="comment">// fetch_add, Adds val to the contained value and returns </span></span><br><span class="line">    <span class="comment">// the value it had immediately before the operation.</span></span><br><span class="line">    <span class="keyword">auto</span> nNextSeqForClaim = shm_hdr_-&gt;next.<span class="built_in">fetch_add</span>(<span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int64_t</span> wrapPoint = nNextSeqForClaim - buffer_size_;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        <span class="keyword">int64_t</span> gatingSequence = <span class="built_in">GetMinIndexOfConsumers</span>();</span><br><span class="line">        <span class="keyword">if</span> (wrapPoint &gt;= gatingSequence) &#123;</span><br><span class="line">            <span class="comment">// std::this_thread::yield tells the implementation to </span></span><br><span class="line">            <span class="comment">// reschedule the execution of threads, that should be </span></span><br><span class="line">            <span class="comment">// used in a case where you are in a busy waiting state, </span></span><br><span class="line">            <span class="comment">// like in a thread pool:</span></span><br><span class="line">            std::this_thread::<span class="built_in">yield</span>();</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">while</span> (<span class="literal">true</span>);</span><br><span class="line">    <span class="keyword">return</span> nNextSeqForClaim;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="reader">Reader</h3>
+<p>读取的时候则是先声明想读取的序号。然后就一直等待直到写入数据后更新的可读序号赶上想读取的序号。等待可以是CPU自旋等待或者放弃CPU时间片或者睡眠或者使用条件变量唤醒。此时可读序号之前的数据都是可读的，而读操作也不需要加锁。又可以获得极高的性能。读取后更新一下已读取序号，这样写入着就可以继续重复利用这块空间了。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// last_idx, cursor last value</span></span><br><span class="line"><span class="keyword">auto</span> last_idx = shm.<span class="built_in">WaitFor</span>(reader_idx);</span><br><span class="line"><span class="comment">// if reader_idx &lt;= cursor</span></span><br><span class="line"><span class="keyword">if</span>(reader_idx &lt;= last_idx)&#123;</span><br><span class="line">    ptr = shm.<span class="built_in">GetData</span>(reader_idx);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// update user reader_idx</span></span><br><span class="line">shm.<span class="built_in">CommitRead</span>(user_id, reader_idx);</span><br></pre></td></tr></table></figure>
+<p>消费者和生产者一样，必须在对环形缓冲区索引的所有操作完成后保存它读取数据的点，以防止生产者通过引用消费者的位置来覆盖缓冲区。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// consomer/reader 最新可读取的数据位置</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">inline</span> <span class="keyword">int64_t</span> Disruptor&lt;T&gt;::<span class="built_in">GetMinIndexOfConsumers</span>() &#123;</span><br><span class="line">    <span class="keyword">int64_t</span> min_index = INT64_MAX;</span><br><span class="line">    <span class="keyword">bool</span> is_found = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; shm_hdr_-&gt;registered_consumer_count; i++) &#123;</span><br><span class="line">        <span class="keyword">int64_t</span> index = shm_hdr_-&gt;array_of_consumer_indexes[i];</span><br><span class="line">        <span class="keyword">if</span> (index &lt; min_index) &#123;</span><br><span class="line">            min_index = index;</span><br><span class="line">            is_found = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!is_found) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> min_index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当调用生产者的<code>Claim</code>或消费者的<code>WaitFor</code>方法时，它不会立即返回，而是等待直到满足适当的条件。比如生产者调用<code>Claim</code>，下一个<code>next</code>位置违反了消费者位置，就需要等待。在<code>Disruptor</code>中，此时如何等待的方法是在<code>Strategy</code>模式中实现的。生产者和消费者的等待策略类型如下。</p>
+<ul>
+<li>BusySpinStrategy：不放弃cpu死循环等待</li>
+<li>YieldingStrategy：死循环一定次数后调用yield放弃cpu时间片。</li>
+<li>SleepingStrategy：死循环一定次数后重复调用yield放弃cpu时间片。调用yield一定次数后重复调用sleep睡眠指定时间。</li>
+<li>BlockingStrategy：阻塞等待，内部使用了条件变量，需要写入的时候唤醒。</li>
+</ul>
+<h3 id="improve">Improve</h3>
+<p>如果内存足够大，写入数据量不是无限多的情况下，可以使用一个<code>huge-page</code>替换ring-buffer。操作在“无限长的内存页面”的上面，不需要考虑写入覆盖的问题，就可以取消ring-buffer里面对读写速度的控制部分进一步提高效率，同时也可以将所有的流程数据异步保存在本地，也就是把“事故现场”完整保留。<br />
+如下代码，<code>vector</code>通过管理内存地址的方式实现多个mmap创建内存空间连续使用，这样就可以直接使用在多线程和多进程中而不必区分版本。</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/dybeta2021/MyIPC/tree/main/disruptor">Disruptor</a></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建第一个Page，书签Bookmark也在这个页面上面</span></span><br><span class="line">&#123;</span><br><span class="line">    std::string file_path = folder_path + <span class="string">&quot;page0.store&quot;</span>;</span><br><span class="line">    <span class="keyword">auto</span> page = <span class="built_in">Page</span>(file_path, writer);</span><br><span class="line">    <span class="keyword">if</span> (!page.<span class="built_in">GetShm</span>()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 书签</span></span><br><span class="line">    bookmark_ = (Bookmark *) page.<span class="built_in">GetShmDataAddress</span>();</span><br><span class="line">    wait_ = <span class="keyword">new</span> <span class="built_in">WaitStrategy</span>(bookmark_);</span><br><span class="line">    <span class="keyword">if</span> (init) &#123;</span><br><span class="line">        bookmark_-&gt;item_num = item_num;</span><br><span class="line">        bookmark_-&gt;page_num = page_num;</span><br><span class="line">        bookmark_-&gt;cursor = <span class="number">-1</span>;</span><br><span class="line">        bookmark_-&gt;next = <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 只使用一个页面</span></span><br><span class="line">    <span class="keyword">if</span> (page_num == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> i = <span class="number">0</span>; i &lt; item_num; i++) &#123;</span><br><span class="line">            content_[i] = (T *) ((<span class="keyword">char</span> *) page.<span class="built_in">GetShmDataAddress</span>() + <span class="built_in"><span class="keyword">sizeof</span></span>(Bookmark) + <span class="built_in"><span class="keyword">sizeof</span></span>(T) * i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//使用多个页面</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> i = <span class="number">0</span>; i &lt; item_num_in_page - item_num_in_mark; i++) &#123;</span><br><span class="line">        content_[idx++] = (T *) ((<span class="keyword">char</span> *) page.<span class="built_in">GetShmDataAddress</span>() + <span class="built_in"><span class="keyword">sizeof</span></span>(Bookmark) + <span class="built_in"><span class="keyword">sizeof</span></span>(T) * i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Pages</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> p = <span class="number">1</span>; p &lt; page_num; p++) &#123;</span><br><span class="line">    std::string file_path = folder_path + <span class="string">&quot;page&quot;</span> + std::<span class="built_in">to_string</span>(p) + <span class="string">&quot;.store&quot;</span>;</span><br><span class="line">    <span class="keyword">auto</span> page = <span class="built_in">Page</span>(file_path, writer);</span><br><span class="line">    <span class="keyword">if</span> (!page.<span class="built_in">GetShm</span>()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> left_item_num =</span><br><span class="line">            total_item_num - (item_num_in_page - item_num_in_mark) - item_num_in_page * (p - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (left_item_num &lt; item_num_in_page) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> i = <span class="number">0</span>; i &lt; left_item_num; i++) &#123;</span><br><span class="line">            content_[idx++] = (T *) ((<span class="keyword">char</span> *) page.<span class="built_in">GetShmDataAddress</span>() + <span class="built_in"><span class="keyword">sizeof</span></span>(T) * i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> i = <span class="number">0</span>; i &lt; item_num_in_page; i++) &#123;</span><br><span class="line">            content_[idx++] = (T *) ((<span class="keyword">char</span> *) page.<span class="built_in">GetShmDataAddress</span>() + <span class="built_in"><span class="keyword">sizeof</span></span>(T) * i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="shmkv">ShmKV</h2>
+<ul>
+<li><a href="https://dybeta2021.github.io/2021/10/11/shmkv/">Shm IPC
+Lock-Free KV
+Store</a>对于小容量的hashmap直接使用二分法和共享内存是最好的方式</li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/mikewei/shm_container">SHM-Container</a>对大量数据交互的map采用fork形式共享内存映射更方便。</li>
+</ul>
+<h2 id="链接">链接</h2>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://spongecaptain.cool/SimpleClearFileIO/3.%20mmap.html">MMAP</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.zhihu.com/question/48161206/answer/110418693">Linux 中
+mmap() 函数的内存映射问题理解</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/308054212">Linux I/O 原理和
+Zero-copy 技术全面揭秘</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://spongecaptain.cool/SimpleClearFileIO/2.%20DMA%20%E4%B8%8E%E9%9B%B6%E6%8B%B7%E8%B4%9D%E6%8A%80%E6%9C%AF.html">DMA与零拷贝技术</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://heapdump.cn/article/1842762">一次“内存泄漏”引发的血案</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31099083">功夫交易系统架构篇之二
+「易筋经初探」</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/jeremyko/disruptorCpp-IPC">basic
+disruptor c++ implementation for IPC</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://jeremyko.blogspot.com/2015/09/disruptor.html">Disruptor
+분석 및 c++ 로 구현해보기</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://tech.meituan.com/2016/11/18/disruptor.html">高性能队列——Disruptor</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/Abc-Arbitrage/Disruptor-cpp.git">Disruptor-cpp</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://leiyiming.com/2017/08/25/falsesharing/">伪共享分析以及volatile与缓存行填充的应用</a></li>
+<li><a target="_blank" rel="noopener" href="https://lo.calho.st/posts/black-magic-buffer/">Using black
+magic to make a fast circular buffer</a></li>
+<li><a target="_blank" rel="noopener" href="https://yuanhaoji.com/2020/05/04/mmap.html">C++ mmap
+多进程文件读写</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/0voice/linux_kernel_wiki/blob/main/%E6%96%87%E7%AB%A0/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/%E5%B0%BD%E6%83%85%E9%98%85%E8%AF%BB%EF%BC%8C%E6%8A%80%E6%9C%AF%E8%BF%9B%E9%98%B6%EF%BC%8C%E8%AF%A6%E8%A7%A3mmap%E5%8E%9F%E7%90%86.md">详解mmap原理</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.xiaolincoding.com/os/3_memory/vmem.html#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98">为什么要有虚拟内存</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/iqpCQhOuq8HR3KL6fy0OYA">深入理解高并发技术
+dpdk 无锁队列</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>稻草人
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://dybeta2021.github.io/2022/06/17/myotp-ipc/" title="MyOTP-5 IPC进程通信">https://dybeta2021.github.io/2022/06/17/myotp-ipc/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/option/" rel="tag"># option</a>
+              <a href="/tags/trading-system/" rel="tag"># trading-system</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/16/myotp-data-recorder/" rel="prev" title="MyOTP-4 行情收录">
+      <i class="fa fa-chevron-left"></i> MyOTP-4 行情收录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/30/myotp-ft/" rel="next" title="MyOTP-6 Quote-Broker-Agent">
+      MyOTP-6 Quote-Broker-Agent <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#disruptor"><span class="nav-number">2.</span> <span class="nav-text">Disruptor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ring-buffer"><span class="nav-number">2.1.</span> <span class="nav-text">Ring Buffer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#producer"><span class="nav-number">2.2.</span> <span class="nav-text">Producer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reader"><span class="nav-number">2.3.</span> <span class="nav-text">Reader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#improve"><span class="nav-number">2.4.</span> <span class="nav-text">Improve</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shmkv"><span class="nav-number">3.</span> <span class="nav-text">ShmKV</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5"><span class="nav-number">4.</span> <span class="nav-text">链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">稻草人</p>
+  <div class="site-description" itemprop="description">风物长宜放眼量</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dybeta2021" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dybeta2021" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dybeta2021@163.com" title="E-Mail → mailto:dybeta2021@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">稻草人</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+博客全站共294.4k字
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

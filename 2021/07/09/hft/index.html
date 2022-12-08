@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dybeta2021.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="记录整理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以C++为核心语言的高频交易系统是如何做到低延迟的">
+<meta property="og:url" content="https://dybeta2021.github.io/2021/07/09/hft/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="记录整理">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-07-09T07:56:09.000Z">
+<meta property="article:modified_time" content="2021-07-09T07:56:09.000Z">
+<meta property="article:author" content="稻草人">
+<meta property="article:tag" content="HFT">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://dybeta2021.github.io/2021/07/09/hft/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>以C++为核心语言的高频交易系统是如何做到低延迟的 | 子非鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子非鱼</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/dybeta2021" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dybeta2021.github.io/2021/07/09/hft/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="稻草人">
+      <meta itemprop="description" content="风物长宜放眼量">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子非鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          以C++为核心语言的高频交易系统是如何做到低延迟的
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-09 15:56:09" itemprop="dateCreated datePublished" datetime="2021-07-09T15:56:09+08:00">2021-07-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">记录整理</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1
+id="以c为核心语言的高频交易系统是如何做到低延迟的">以C++为核心语言的高频交易系统是如何做到低延迟的？</h1>
+<p>作者：闵康
+链接：https://www.zhihu.com/question/23185359/answer/137034841
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>我们的程序的响应时间是10us（从收到行情到发出报单的响应时间），但是ping期货公司的交易前置机需要大约30us【这个数值会变化，见注释4】，所以网络延时占据了大量时间。</p>
+<p>我所有的性能测试都是在一台DELL
+r630机器上运行的，这台机器有2个NUMA结点，CPU型号是E5 2643 v4（3.4GHz
+6核）。所有的测试都是用rdtsc指令来测量时间，Intel官网上有一篇pdf文档[Gabriele
+Paoloni,
+2010]，讲述了如何精准地测量时间（要用cpuid来同步）。我自己做的性能测试的结果会写成“100(sd20)ns”的形式，代表平均值是100ns，标准差是20ns。我在算均值和标准差的时候会去掉最大的0.1%的数据再算，因为那些数据似乎并不是程序延时，而是cpu被调度执行别的任务了【原因见注释3】。有些性能测试在网上有现成的测试结果，我就没自己测，直接拿来用了，但是以后我会重新在我的机器上测一遍。</p>
+<p>一些我们比较注意的点：</p>
+<p><strong>1.限制动态分配内存</strong></p>
+<p><strong>相关的知识背景：</strong>glibc默认的malloc背后有复杂的算法，当堆空间不足时会调用sbrk()，当分配内存很大时会调用mmap()，这些都是系统调用，似乎会比较慢，而且新分配的内存被first
+touch时也要过很久才能准备好。</p>
+<p><strong>可取的做法：</strong>尽量使用vector或者array（初始化时分配足够的空间，之后每次使用都从里面取出来用）。尽量使用内存池。如果需要二叉树或者哈希表，尽量使用侵入式容器（boost::intrusive）。</p>
+<p><strong>性能测试：</strong>我测试的分配尺寸有64和8128两种。首先，我测试了glibc
+malloc的性能，分配64字节耗时98(sd247)ns，分配8128字节需要耗时1485(sd471)ns。其次，我写了一个多进程安全的内存池，分配64字节需要29(sd15)ns，分配8128字节需要22(sd12)ns。【内存池的细节见注释6】。最后，我单独测试了sbrk()和first
+touch的性能，但是数据不记得了。</p>
+<p><strong>2.使用轮询，尽量避免阻塞</strong></p>
+<p><strong>相关的知识背景：</strong>上下文切换是非常耗时的，其中固定的消耗包括（cpu流水线被冲掉、各种寄存器需要被保存和恢复、内核中的调度算法要被执行），此外，缓存很有可能出现大量miss，这属于不固定的时间消耗。</p>
+<p><strong>可取的做法：</strong>使用带有内核bypass功能的网卡。每个进程或者线程都独占一个cpu核【isolcpus和irqbalance的细节见注释3】，并且不停地轮询，用以保证快速响应。尽量避免任何可能导致阻塞的事件（如mutex），某些注定很慢的活动（比如把log写到磁盘上）应该被独立出来放到别的cpu上，不能影响主线程。</p>
+<p><strong>性能测试：</strong>网上有一篇博客[tsunanet, 2010]测试了mode
+switch、thread switch、process
+switch的耗时，但是这篇文章太早了，以后我要用我的新cpu重新测一下。这篇博客里面，系统调用只需要&lt;100ns，线程/进程切换需要&gt;1us（不包括缓存miss的时间）。</p>
+<p><strong>3.使用共享内存作为唯一的IPC机制</strong></p>
+<p><strong>相关的知识背景：</strong>共享内存只有在初始化的时候有一些系统调用，之后就可以像访问正常内存一样使用了。其他IPC机制（管道、消息队列、套接字）则是每次传输数据时都有系统调用，并且每次传输的数据都经历多次拷贝。因此共享内存是最快的IPC机制。</p>
+<p><strong>可取的做法：</strong>使用共享内存作为唯一的IPC机制。当然，可能需要手动实现一些东西来保证共享的数据在多进程下是安全，我们是自己实现了无锁内存池、无锁队列和顺序锁【关于seqlock的疑点见注释1】。</p>
+<p><strong>性能测试：</strong>我使用了boost中的Interprocess库和Lockfree库，在共享内存上建立了一个spsc队列，然后用这个队列来传送数据，代码参考了stackoverflow上的一个答案[sehe,
+2014]。我传送的数据是一个8字节整数，延时是153(sd61)ns。至于其他IPC机制，我在[cambridge,
+2016]看到了一些性能测试结果，通常是要几微秒到几十微秒不等。</p>
+<p><strong>4.传递消息时使用无锁队列</strong></p>
+<p><strong>相关的知识背景：</strong>我只关注基于数组的无锁队列，其中：spsc队列是wait-free的，不论是入队出队都可以在确定的步数之内完成，而且实现时只需要基本的原子操作【为什么这很重要见注释7】；mpmc队列的实现方式则多种多样，但都会稍微慢一点，因为它们需要用一些比较重的原子操作（CAS或者FAA），而且有时它们需要等待一段不确定的时间直到另一个线程完成相应操作；另外，还有一种multi-observer的『广播队列』，多个读者可以收到同一条消息广播，这种队列也有sp和mp类型的，可以检查或者不检查overwrite；最后，还有一种队列允许存储不定长的消息。</p>
+<p><strong>可取的做法：</strong>总的来说，应该避免使用mp类型的队列，举例：如果要用mpsc队列，可以使用多个spsc来达成目的，并不需要mp队列；同理，如果是消息广播，也可以使用多个sp队列来取代一个mp队列；如果广播时observer只想订阅一部分消息，那么可以用多个spsc+有计数功能的内存池【具体做法见注释2】；如果要求多个观察者看到多个生产者的消息，并且顺序一致，那只能用mp队列了。总结一下，mp类型的队列应该尽量避免，因为当多个生产者同时抢占队列的时候，延时会线性增长。</p>
+<p><strong>性能测试：</strong>我写了一个mp类型的广播队列，传输的数据是8字节int，当只有一个生产者时，传输的延时是105(sd26)ns。增加观察者会使延时略微变大，增加生产者会使延时急剧变大（我用rdtsc指令控制不同生产者同时发送消息）。对于这个队列来说，它的延时只略高于跨核可视延时【测试结果见注释8】，所以应该算是不错了。</p>
+<p><strong>5.考虑缓存对速度的影响</strong></p>
+<p><strong>相关的背景知识：</strong>现在的机器内存是十分充足的，但是缓存还是很小，因此所有节省内存的技巧都还有用武之地。</p>
+<p><strong>可取的做法：</strong>尽量让可能被同时使用的数据挨在一起；减少指针链接（比如用array取代vector，因为链接指向的地方可能不在缓存里）；尽量节省内存（比如用unique_ptr&lt;Data[]&gt;取代vector<Data>，比如成员变量按照从大到小排序，比如能用int8的地方就不用int16）；指定cpu
+affinity时考虑LLC缓存（同核的两个超线程是共享L1，同cpu的两个核是共享L3，不同NUMA核是通过QPI总线）；会被多个核同时读写的数据按照缓存行对齐（避免false
+sharing）。</p>
+<p>【注释1】：有一篇惠普的论文[Hans-J.Boehm,
+2012]大致叙述了顺序锁的实现方法，但是那里面有两点让我感到困惑。一是需要用到thread_fence，这在某些cpu上可能会影响性能(x86似乎没影响)；二是被保护的内容也必须是原子变量(可以是多个原子变量，所以被保护的内容可以很长)。但这是我见过的唯一一个符合C++标准的SeqLock的实现。</p>
+<p>【注释2】：如果有M个生产者要发消息给N个观察者，可以建M*N个spsc队列和M个内存池，观察者只能读内存池里的数据，只有对应的那一个生产者可以修改内存池。我感觉这样应该会更快，但我没测过。</p>
+<p>【注释3】：isolcpus可以隔离出一些cpu，避免其他线程被调度到这些cpu上执行。此外，设置irq
+affinity可以让一些cpu尽量避免响应中断，但在/proc/interrupts里面仍然有一些项目是避免不了的，而cpu处理中断时，用户程序会有一段时间（有时高达几十微秒）无法响应，我们没法解决这个问题。</p>
+<p>【注释4】：在不同的时间点，ping的结果会有很大差异。交易时间段内ping出来的结果是30us，其它时间段ping出来的结果可能是几百微秒。我不知道这是什么原因，可能是期货公司为了省电关掉了某些东西？</p>
+<p>【注释6】：我们要在共享内存上使用内存池，所以不得不自己写一个。我写的内存池只能分配固定尺寸的内存块，但是用户可以建立好几个内存池，用来分配不同的尺寸。实现的过程中有两个要点。一是用无锁链表来保存空闲的内存块；二是每个线程内部有一个缓冲区，所以真正取内存块的时候是没有CAS操作的。</p>
+<p>【注释7】：在Intel
+x86的cpu上，如果C++中的内存顺序只用了acquire和release，那么编译出来的汇编代码里面不会有任何内存栅栏指令；如果同时也没有RMW（读-改-写）指令的话，无锁的代码编译出来就会像是普通的代码一样了。事实上，spsc队列的延时几乎等于跨核可视延时。</p>
+<p>【注释8】：跨核可视延时：对于一个共享变量来说，如果有一个核上面的进程或者线程修改了这个变量，另一个核需要过一段时间才能看到这个修改，这段时间被称作跨核可视延时。我不确定在这段时间内，第二个核是会看到旧的数据还是这条指令会执行很久。在我的机器上，对于同一个cpu上的不同核心，这个值是96(sd14)ns。另外，对于同一个核心上的不同超线程，这个值应该会更小；对于同一台机器上的不同cpu，这个值应该会更大。</p>
+<hr />
+<p>作者：陈硕
+链接：https://www.zhihu.com/question/23185359/answer/23853729 来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>谢邀。只搞过 sell side，没搞过 buy
+side，只能算“实时交易”，算不上“高频交易”。工作以来一直在跟延迟做斗争，勉强可以说上几句。</p>
+<p>要控制和降低延迟，首先要能准确测量延迟，因此需要比较准的钟，每个机房配几个带GPS和/或原子钟primary
+standard的NTP服务器是少不了的。而且就算用了NTP，同一机房两台机器的时间也会有毫秒级的差异，计算延迟的时候，两台机器的时间戳不能直接相减，因为不在同一时钟域。解决办法是设法补偿这个时差。另外，不仅要测量平均延迟，更重要的是要测量并控制长尾延迟，即99百分位数或99.9百分位数的延迟，就算是sell
+side，系统偶尔慢一下被speculator利用了也是要亏钱的。</p>
+<p>普通的C++服务程序，内部延迟（从进程收到消息到进程发出消息）做到几百微秒（即亚毫秒级）是不需要特殊的努力的。没什么忌讳，该怎么写就怎么写，不犯低级错误就行。我很纳闷国内流传的写
+C++ 服务程序时的那些“讲究”是怎么来的（而且还不是 latency critical
+的服务程序）。如果瓶颈在CPU，那么最有效的优化方式是“强度消减”，即不在于怎么做得快，而在于怎么做得少。哪些可以不用做，哪些可以不提前做，哪些做一次就可以缓存起来用一阵子，这些都是值得考虑的。</p>
+<p>网络延迟分传输延迟和惯性延迟，通常局域网内以后者为主，广域网以前者为主。前者是传送1字节消息的基本延迟，大致跟距离成正比，千兆局域网单程是近百微秒，伦敦到纽约是几十毫秒。这个延迟受物理定律限制，优化办法是买更好的网络设备和租更短的线路（或者想办法把光速调大，据说
+Jeff Dean
+干过）。惯性延迟跟消息大小成正比，跟网络带宽成反比，千兆网TCP有效带宽按115MB/s估算，那么发送1150字节的消息从第1个字节离开本机网卡到第1150个字节离开本机网卡至少需要
+10us，这是无法降低的，因此必要的话可以减小消息长度。举例来说，要发10k的消息，先花20us
+CPU时间，压缩到3k，接收端再花10us解压缩，一共“60us+传输延迟”，这比直接发送10k消息花“100us+传输延迟”要快一点点。（广域网是否也适用这个办法取决于带宽和延迟的大小，不难估算的。）</p>
+<p>延迟和吞吐量是矛盾的，通常吞吐量上去了延迟也会跟着飚上去，因此控制负载是控制延迟的重要手段。延迟跟吞吐量的关系通常是个U型曲线，吞吐量接近0的时候延迟反而比较高，因为系统比较“冷”；吞吐量上去一些，平均延迟会降到正常水平，这时系统是“温”的；吞吐量再上去一些，延迟缓慢上升，系统是“热”的；吞吐量过了某个临界点，延迟开始飙升，系统是“烫”的，还可能“冒烟”。因此要做的是把吞吐量控制在“温”和“热”的范围，不要“烫”，也不要太冷。系统启动之后要“预热”。</p>
+<p>延迟和资源使用率是矛盾的，做高吞吐的服务程序，恨不得把CPU和IO都跑满，资源都用完。而低延迟的服务程序的资源占用率通常低得可怜，让人认为闲着没干什么事，可以再“加码”，要抵住这种压力。就算系统到了前面说的“发烫”的程度，其资源使用率也远没有到
+100%。实际上平时资源使用率低是为了准备应付突发请求，请求或消息一来就可以立刻得到处理，尽量少排队，“排队”就意味着等待，等待就意味着长延迟。消除等待是最直接有效的降低延迟的办法，靠的就是富裕的容量。有时候队列的长度也可以作为系统的性能指标，而不仅仅是CPU使用率和网络带宽使用率。另外，队列也可能是隐式的，比如操作系统和网络设备的网络输入输出
+buffer 也算是队列。</p>
+<p>延迟和可靠传输也是矛盾的，TCP做到可靠传输的办法是超时重传，一旦发生重传，几百毫秒的延迟就搭进去了，因此保持网络随时畅通，避免拥塞也是控制延迟的必要手段。要注意不要让batch
+job抢serving
+job的带宽，比方说把服务器上的日志文件拷到备份存储，这件事不要在繁忙交易时段做。QoS也是办法；或者布两套网，每台机器两个网口，两个IP。</p>
+<p>最后，设法保证关键服务进程的资源充裕，避免侵占（主要是CPU和网络带宽）。比如把服务器的日志文件拷到别的机器会占用网络带宽，一个办法是慢速拷贝，写个程序，故意降低拷贝速度，每50毫秒拷贝50kB，这样用时间换带宽。还可以先压缩再拷贝，比如gzip压缩100MB的服务器日志文件需要1秒，在生产服务器上会短期占满1个core的CPU资源，可能造成延迟波动。可以考虑写个慢速压缩的程序，每100毫秒压缩100kB，花一分半钟压缩完100MB数据，分散了CPU资源使用，减少对延迟的影响。千万不要为了加快压缩速度，采用多线程并发的办法，这就喧宾夺主了。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>稻草人
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://dybeta2021.github.io/2021/07/09/hft/" title="以C++为核心语言的高频交易系统是如何做到低延迟的">https://dybeta2021.github.io/2021/07/09/hft/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/HFT/" rel="tag"># HFT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/09/jupyter-client/" rel="prev" title="使用QWebEngineView装载JupyterLab">
+      <i class="fa fa-chevron-left"></i> 使用QWebEngineView装载JupyterLab
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/13/svi/" rel="next" title="Stochastic Volatility Inspired">
+      Stochastic Volatility Inspired <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A5c%E4%B8%BA%E6%A0%B8%E5%BF%83%E8%AF%AD%E8%A8%80%E7%9A%84%E9%AB%98%E9%A2%91%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E6%98%AF%E5%A6%82%E4%BD%95%E5%81%9A%E5%88%B0%E4%BD%8E%E5%BB%B6%E8%BF%9F%E7%9A%84"><span class="nav-number">1.</span> <span class="nav-text">以C++为核心语言的高频交易系统是如何做到低延迟的？</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">稻草人</p>
+  <div class="site-description" itemprop="description">风物长宜放眼量</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dybeta2021" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dybeta2021" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dybeta2021@163.com" title="E-Mail → mailto:dybeta2021@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">稻草人</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+博客全站共294.4k字
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

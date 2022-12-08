@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dybeta2021.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前端时间做面试官时候准备的题库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面试题库">
+<meta property="og:url" content="https://dybeta2021.github.io/2022/07/12/interview/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="前端时间做面试官时候准备的题库">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-12T01:05:04.000Z">
+<meta property="article:modified_time" content="2022-07-12T01:05:04.000Z">
+<meta property="article:author" content="稻草人">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://dybeta2021.github.io/2022/07/12/interview/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>面试题库 | 子非鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子非鱼</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/dybeta2021" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dybeta2021.github.io/2022/07/12/interview/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="稻草人">
+      <meta itemprop="description" content="风物长宜放眼量">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子非鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          面试题库
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-07-12 09:05:04" itemprop="dateCreated datePublished" datetime="2022-07-12T09:05:04+08:00">2022-07-12</time>
+            </span>
+
+          
+            <div class="post-description">前端时间做面试官时候准备的题库</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <hr />
+<p>考察点广泛而分散是考虑到国内几乎没有相关专业教育，罗列的知识点是当前比较热门的技术点，并且其中相当一部分我们也在使用。由于开源中关于金融衍生品的内容太少，参考价值很小，基本是需要自己研究形成技术路线，然后魔改开源轮子，所以需要一定的研究能力。由于目前招募岗位预期不会转向HFT方向，所以在CS基础和编程技术方面达到通识教育可以灵活的采用技术路线，不需要对某些技术特别精深有丰富的优化经验。在实际工作中，出现技能要求忽高忽低的情况，例如一个项目90%的功能都可以依赖开源，但是10%却需要完全独立研究原创，所以如果面试者有深入研究某些问题的能力或者经验则大概率具有解决这种问题的能力，应该被额外的加分。</p>
+<p>A、有成功的项目经验，了解如何针对目标灵活的选择技术路线，可以承担“项目承包商”的角色。例如，给出一个研究目标可以自主搜集知识并完成模型研发构建。</p>
+<p>B、对技术知识链了解较多，对某些知识技术有过实践和思考。例如，给出一个研究目标并辅助讲解，提供经典资料和模型可以灵活运用并做出一定程度的扩展。</p>
+<p>C、对知识点了解较为深入，有自主搜集、分析知识的能力。例如，给出研究项目的资料自主搜集相关资料进行深入学习。</p>
+<p>D、重点院校硕士学历，数学和英语能力尚可，有很好的学习态度，有一定的编程基础，思想较为成熟，可以观察到有主动学习。</p>
+<hr />
+<h2 id="python基础">Python基础</h2>
+<p>1、谈下Python的GIL以及提高python运行效率的方法？对IO密集如何解决？对计算密集如何解决？</p>
+<p>2、如何在Python中管理内存？Python垃圾回收机制</p>
+<p>3、Python中的元类(metaclass)</p>
+<p>4、python中类@staticmethod和<span class="citation"
+data-cites="classmethod的区别">@classmethod的区别</span>？<code>__new__</code>和<code>__init__</code>的区别</p>
+<p>5、python中类的继承</p>
+<p>6、 Python中单下划线和双下划线的区别</p>
+<p>7、协程的概念，python如何使用协程？</p>
+<p>8、闭包概念</p>
+<p>9、python里深浅拷贝的概念，python函数传入dataframe或者numpy等指针引用</p>
+<p>10、 当退出Python时，是否释放全部内存？</p>
+<p>11、ascii、unicode、utf-8、gbk 区别</p>
+<p>12、字节码和机器码的区别</p>
+<p>13、python中is和==的区别？</p>
+<p>14、用过哪些Python库，根据用的内容问一下</p>
+<h2 id="c-基础">C++ 基础</h2>
+<p>1、C/C++ 动态链接库与静态链接库的区别，相比于GitHub流行的header
+only的优缺点？</p>
+<p>2、解释下封装、继承和多态？</p>
+<p>3、抽象类、接口类、聚合类概念</p>
+<p>4、解释静态函数和静态变量的概念，纯虚函数概念，</p>
+<p>5、delete this 操作合法吗？</p>
+<p>6、explicit 用法</p>
+<p>7、堆和栈的区别？堆和栈的生命周期？堆栈缓存方式区别？堆栈数据结构区别？</p>
+<p>8、什么是内存泄漏（memory
+leak）？面对内存泄漏和指针越界通常采用哪些方法来避免和减少这类错误？</p>
+<p>9、同步IO和异步IO的区别？</p>
+<p>10、常用的排序算法有哪些？简单描述几个排序算法的优缺点？</p>
+<p>11、简述数组与指针的区别</p>
+<p>12、指针和引用的区别？请你介绍一下C++中的智能指针？</p>
+<p>13、函数指针概念，与std::function的区别</p>
+<p>14、C语言的malloc和C++中的new有什么区别？</p>
+<p>15、C++基本的内存分配方式，内存管理和垃圾回收概念机制</p>
+<p>16、什么是右值引用，跟左值又有什么区别？</p>
+<p>17、四种cast转换：static_cast、dynamic_cast、const_cast和reinterpret_cast用法</p>
+<p>18、new/delete与malloc/free的区别是什么？</p>
+<p>19、enum和(enum class)区别？作用域方面</p>
+<p>20、Overload、Overwrite及Override的区别</p>
+<p>21、const在函数名前面和函数后面的区别？<code>const void *a</code> 与
+<code>void *const a</code> 的区别？<code>const char*</code>,
+<code>char const*</code>, <code>char* const</code>使用时的区别?</p>
+<p>22、void * 和 void 在函数返回值中的区别？</p>
+<p>23、如何避免“野指针”？</p>
+<p>24、C++中拷贝赋值函数的形参能否进行值传递？</p>
+<h2 id="c-stl标准模板库">C++ STL标准模板库</h2>
+<p>1、什么情况下用vector，什么情况下用list，什么情况下用deque</p>
+<p>2、vector中的reserve和resize的区别</p>
+<p>3、vector中的size和capacity的区别</p>
+<p>4、正确释放vector的内存(clear(), swap(), shrink_to_fit())</p>
+<p>5、vector 扩容为什么要以1.5倍或者2倍扩容?</p>
+<p>6、vector插入删除和list的区别</p>
+<p>7、unordered_map 与map的区别？使用场景？</p>
+<p>8、为何map和set不能像vector一样有个reserve函数来预分配数据?</p>
+<p>9、STL容器的线程安全性</p>
+<p>10、deque的底层机制</p>
+<p>11、不允许有遍历行为的容器有哪些</p>
+<p>12、hash_map和map的区别，什么时候用hash_map,什么时候用map</p>
+<h2 id="操作系统">操作系统</h2>
+<p>1、进程、线程和协程的概念及区别</p>
+<p>2、线程同步的方式有哪些？ 为什么要使用线程池？</p>
+<p>3、进程的通信方式有哪些？</p>
+<p>4、什么是缓冲区溢出？有什么危害？其原因是什么？</p>
+<p>5、什么是死锁？死锁产生的条件？</p>
+<p>6、进程有哪几种状态？</p>
+<p>7、分页和分段有什么区别？</p>
+<p>8、操作系统中进程调度策略有哪几种？</p>
+<p>9、自旋锁</p>
+<p>10、死锁的条件是什么？如何处理死锁问题</p>
+<p>12、多进程单线程架构的编程经验</p>
+<p>13、文件系统</p>
+<p>14、Win32和Linux进程共享内存的区别</p>
+<p>15、Windows下的内存是如何管理的？</p>
+<p>16、中断和轮询的特点？</p>
+<p>17、说说分段和分页，什么是按需分页</p>
+<p>18、微内核和宏内核的区别</p>
+<p>19、什么是 DMA</p>
+<p>20、调度算法都有哪些</p>
+<p>21、CPU中的缓存和操作系统中的缓存分别是什么？</p>
+<p>22、什么是虚拟内存(Virtual Memory)?</p>
+<h2 id="linux系统">Linux系统</h2>
+<p>1、什么是Shell？Linux中有几种类型的Shell？</p>
+<p>2、Linux的基本组件是什么？</p>
+<p>3、Linux中的文件权限类型？</p>
+<p>4、什么是守护程序？</p>
+<p>5、使用vi编辑器时有哪些不同的模式？如何退出vi编辑器？</p>
+<p>6、什么是umask？</p>
+<p>7、Linux中的网络绑定有哪些不同的模式？</p>
+<p>8、如何检查Linux服务器中正在侦听哪些端口？</p>
+<p>9、如何在Linux中更改默认运行级别？</p>
+<p>10、简述Linux操作系统内存管理机制</p>
+<p>11、Linux系统的开机启动顺序</p>
+<p>12、什么是FTP的主动模式和被动模式</p>
+<p>13、管道和命名管道的区别</p>
+<p>14、什么是虚拟桌面</p>
+<p>15、软安装点和硬安装点有什么区别</p>
+<p>16、Linux 中进程有哪几种状态？在 ps
+显示出来的信息中，分别用什么符号表示的？</p>
+<p>17、如何修改Linux的IP地址、网关和主机名</p>
+<p>18、新安装MYSQL后怎样提升MYSQL的安全级别</p>
+<p>19、如何查询哪个用户执行的计划任务？</p>
+<p>20、Linux磁盘是如何划分的？Linux内存是如何划分的？</p>
+<p>21、Linux中buffer和cache有何区别？</p>
+<p>22、谈谈对fork的理解</p>
+<p>23、什么是自旋锁，如何实现？</p>
+<p>24、Epoll的优势是什么？Epoll底层实现是什么？</p>
+<p>25、水平触发和边缘触发的区别是什么？</p>
+<h2 id="网络编程tcpip">网络编程TCP/IP</h2>
+<p>1、tcp和udp的区别</p>
+<p>2、流量控制和拥塞控制</p>
+<p>3、tcp连接建立的时候3次握手，断开连接的4次握手的具体过程</p>
+<p>4、epoll与select的区别</p>
+<p>5、connect方法会阻塞，请问有什么方法可以避免其长时间阻塞？</p>
+<p>6、网络中，如果客户端突然掉线或者重启，服务器端怎么样才能立刻知道？</p>
+<p>7、TTL是什么？有什么用处，通常那些工具会用到它？（ping? traceroute?
+ifconfig? netstat?）</p>
+<p>8、在网络中有两台主机A和B，并通过路由器和其他交换设备连接起来，已经确认物理连接正确无误，怎么来测试这两台机器是否连通？如果不通，怎么来判断故障点？怎么排除故障？</p>
+<p>9、网络编程中设计并发服务器，使用多进程 与 多线程
+，请问有什么区别？</p>
+<p>10、TCP的重发机制是怎么实现的？</p>
+<p>11、TCP 黏包问题</p>
+<p>12、GET和POST的区别</p>
+<p>13、数字证书是什么，里面都包含那些内容</p>
+<p>14、HTTP与HTTPS的区别</p>
+<p>15、Socket如何唯一标识一个进程？</p>
+<p>16、Socket与WebSocket的区别</p>
+<h2 id="数据库">数据库</h2>
+<p>1、关系型数据库和非关系型之间的区别</p>
+<p>3、简述数据库设计中一对多和多对多的应用场景？</p>
+<p>4、SQL数据库优化的思路</p>
+<p>5、主键和外键的区别？</p>
+<p>6、MySQL有哪些存储引擎？有什么区别？</p>
+<p>7、为什么不建议在 <strong>MySQL</strong> 中使用
+<strong>UTF-8</strong>？</p>
+<p>8、 数据库索引有哪些数据结构？</p>
+<p>9、数据库事务隔离级别？事务隔离级别分别解决什么问题？</p>
+<p>10、数据库锁有哪些类型？如何实现？</p>
+<p>11、分库分表的常见问题以及解决方案？</p>
+<p>12、高并发系统数据层面如何设计？</p>
+<p>13、什么是视图？以及视图的使用场景有哪些？</p>
+<p>14、SQL如果一个表有一列定义为 TIMESTAMP，将发生什么？</p>
+<p>15、MySQL 里记录货币用什么字段类型好</p>
+<p>16、float32数据存储到MySQL、MongoDB和Redis中数据类型是什么</p>
+<p>17、为什么要用 Redis 而不用 map/guava 做缓存?</p>
+<p>18、Redis有哪些数据类型</p>
+<p>19、Redis 的持久化机制是什么？RDB和AOF各自的优缺点？</p>
+<p>20、Redis的过期键的删除策略</p>
+<p>21、MySQL里有2000w数据，redis中只存20w的数据，如何保证redis中的数据都是热点数据</p>
+<p>22、Redis如何做内存优化？</p>
+<p>23、Redis事务保证原子性吗，支持回滚吗</p>
+<p>24、Redis是单线程的，如何提高多核CPU的利用率？</p>
+<p>25、如何解决 Redis 的并发竞争 Key 问题</p>
+<p>26、什么是 RedLock</p>
+<p>27、如何保证缓存与数据库双写时的数据一致性？</p>
+<p>28、Redis回收进程如何工作的？</p>
+<h2 id="计量和线性回归">计量和线性回归</h2>
+<p>1、线性回归中Ordinary Least Squares、Ridge
+Regression和Lasso的区别是什么？</p>
+<p>2、什么是多重共线性？简单谈几种解决方法</p>
+<p>3、什么是相关性？三种相关性系数的区别</p>
+<p>4、T检验、F检验、卡方检验、P值、自由度的概念</p>
+<p>5、置信区间和置信水平</p>
+<p>6、R2的概念</p>
+<p>7、Durbin-Watson 检验</p>
+<p>8、Jarque-Bera检验</p>
+<p>9、正态分布检验方法</p>
+<h2 id="机器学习">机器学习</h2>
+<p>1、什么是偏差（bias）、方差（variable）之间的均衡？</p>
+<p>2、KNN和 k-means 聚类由什么不同？</p>
+<p>3、解释一下ROC曲线的原理？</p>
+<p>4、精度和召回率</p>
+<p>5、监督学习和非监督学习有什么不同？</p>
+<p>6、什么是贝叶斯定理？它在机器学习环境中如何有用?</p>
+<p>7、L1、L2正则之间有什么不同？</p>
+<p>8、第一类误差和第二类误差有什么区别？</p>
+<p>9、概率和似然有什么区别？</p>
+<p>10、交叉检验如何用在时间序列数据上？</p>
+<p>11、生成模型与判别模型有什么区别？</p>
+<p>12、如何对决策树进行剪枝？</p>
+<p>13、什么时候你应该使用分类而不是回归？</p>
+<p>14、如何评估你的机器学习模型的有效性？</p>
+<p>15、你使用哪些数据可视化库？ 你对最佳数据可视化工具有何看法？</p>
+<p>16、降维技术，如PCA</p>
+<p>17、均值，方差，相关性（统计意义上和经验意义上）</p>
+<p>18、采用 EM 算法求解的模型有哪些，为什么不用牛顿法或梯度下降法？</p>
+<p>19、GBDT和RF的区别，如何知道随机森林需要多少棵树？‍</p>
+<p>20、GBDT和XGBoost的区别是什么？xgboost怎么给特征评分？</p>
+<p>21、什么是OOB？随机森林中OOB是如何计算的，它有什么优缺点？</p>
+<p>22、过度拟合产生的原因，如何避免过度拟合</p>
+<p>23、什么是正则化？为什么需要它？有哪些正则化技术？‍什么样的正则化技术适用于线性模型？‍</p>
+<p>24、XGBoost防止过拟合的方法</p>
+<p>25、XGBoost中叶子结点的权重如何计算出来</p>
+<p>26、LightGBM 与 XGboost 的并行策略不同</p>
+<p>27、boosting和bagging的区别</p>
+<h2 id="深度学习">深度学习</h2>
+<p>1、什么是反向传播？它是如何工作的？为什么需要它？‍</p>
+<p>2、什么是Adam？Adam和SGD之间的主要区别是什么，什么时候使用Adam和SGD？‍</p>
+<p>3、什么是卷积层？‍为什么需要卷积？不能使用全连接层吗？‍</p>
+<p>4、CNN中的pooling是什么？为什么需要它？‍</p>
+<p>5、Max pooling如何工作？还有其他池化技术吗？‍</p>
+<p>6、CNN本质和优势</p>
+<p>7、 鞍点的定义和特点？</p>
+<p>8、神经网络数据预处理方法有哪些？</p>
+<p>9、 神经网络怎样进行参数初始化？</p>
+<p>10、DNN、CNN、RNN的区别与联系</p>
+<p>11、 卷积神经网络中空洞卷积的作用是什么？</p>
+<p>12、解释下卷积神经网络中感受野的概念？</p>
+<p>13、梯度爆炸的解决方法？</p>
+<p>14、深度学习模型参数初始化都有哪些方法？</p>
+<p>15、注意力机制在深度学习中的作用是什么？有哪些场景会使用？</p>
+<p>16、卷积神经网络为什么会具有平移不变性？</p>
+<p>17、神经网络参数共享(parameter sharing)是指什么？</p>
+<p>18、强化学习中有value-based 和
+policy-based，这两种的优缺点分别是什么？应用场景分别是什么？</p>
+<p>19、强化学习 DQN，DDQN，AC，DDPG 的区别</p>
+<h2 id="cuda">CUDA</h2>
+<ul>
+<li>GPU中有多少种不同类型的内存？</li>
+<li>什么是合并/未合并？</li>
+<li>可以实现矩阵转置内核吗？</li>
+<li>什么是经线？</li>
+<li>多处理器内可以同时运行多少个经线？</li>
+<li>块和线程有什么区别？</li>
+<li>它们之间可以进行线程通信吗？ 和块？</li>
+<li>您能否描述缓存的工作方式？</li>
+<li>共享内存和寄存器有什么区别？</li>
+<li>哪些算法在GPU上表现更好？ 数据绑定还是cpu绑定？</li>
+<li>什么是障碍？</li>
+<li>什么是流？</li>
+<li>您能描述内核的“占用”吗？</li>
+<li>什么是数组结构与结构数组？</li>
+<li>pytorch中cuda()作用,两个Tensor,一个加了cuda(),一个没加,相加后很怎样?</li>
+<li>SGD,Momentum,Adagard,Adam原理</li>
+<li>L1不可导的时候该怎么办</li>
+<li>CNN与RNN在GPU加速效果相差很大，为什么？</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>稻草人
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://dybeta2021.github.io/2022/07/12/interview/" title="面试题库">https://dybeta2021.github.io/2022/07/12/interview/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/30/myotp-ft/" rel="prev" title="MyOTP-6 Quote-Broker-Agent">
+      <i class="fa fa-chevron-left"></i> MyOTP-6 Quote-Broker-Agent
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/12/ssh/" rel="next" title="SSH笔记整理">
+      SSH笔记整理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#python%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">Python基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-%E5%9F%BA%E7%A1%80"><span class="nav-number">2.</span> <span class="nav-text">C++ 基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-stl%E6%A0%87%E5%87%86%E6%A8%A1%E6%9D%BF%E5%BA%93"><span class="nav-number">3.</span> <span class="nav-text">C++ STL标准模板库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="nav-number">4.</span> <span class="nav-text">操作系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#linux%E7%B3%BB%E7%BB%9F"><span class="nav-number">5.</span> <span class="nav-text">Linux系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8Btcpip"><span class="nav-number">6.</span> <span class="nav-text">网络编程TCP&#x2F;IP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">7.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E9%87%8F%E5%92%8C%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92"><span class="nav-number">8.</span> <span class="nav-text">计量和线性回归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0"><span class="nav-number">9.</span> <span class="nav-text">机器学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"><span class="nav-number">10.</span> <span class="nav-text">深度学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cuda"><span class="nav-number">11.</span> <span class="nav-text">CUDA</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">稻草人</p>
+  <div class="site-description" itemprop="description">风物长宜放眼量</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dybeta2021" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dybeta2021" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dybeta2021@163.com" title="E-Mail → mailto:dybeta2021@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">稻草人</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+博客全站共294.4k字
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

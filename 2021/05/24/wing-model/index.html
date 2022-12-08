@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dybeta2021.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="有点意思，今天从知网上面发现了Wing-Model的论文，虽然我早就知道这个模型但是没想到真有公开发表的引用源。Wing-Model是一个很基础灵活度很高的模型，大部分时候拟合效果不错，虽然动态拟合出来的参数没有什么解释意义。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Wing-Model Volatility Skew Manager">
+<meta property="og:url" content="https://dybeta2021.github.io/2021/05/24/wing-model/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="有点意思，今天从知网上面发现了Wing-Model的论文，虽然我早就知道这个模型但是没想到真有公开发表的引用源。Wing-Model是一个很基础灵活度很高的模型，大部分时候拟合效果不错，虽然动态拟合出来的参数没有什么解释意义。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://dybeta2021.github.io/2021/05/24/wing-model/wing.png">
+<meta property="article:published_time" content="2021-05-24T06:06:12.000Z">
+<meta property="article:modified_time" content="2022-12-07T07:06:24.431Z">
+<meta property="article:author" content="稻草人">
+<meta property="article:tag" content="ivs">
+<meta property="article:tag" content="Volatility-Skew">
+<meta property="article:tag" content="Arbitrage-Free">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://dybeta2021.github.io/2021/05/24/wing-model/wing.png">
+
+<link rel="canonical" href="https://dybeta2021.github.io/2021/05/24/wing-model/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Wing-Model Volatility Skew Manager | 子非鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子非鱼</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/dybeta2021" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dybeta2021.github.io/2021/05/24/wing-model/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="稻草人">
+      <meta itemprop="description" content="风物长宜放眼量">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子非鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Wing-Model Volatility Skew Manager
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-24 14:06:12" itemprop="dateCreated datePublished" datetime="2021-05-24T14:06:12+08:00">2021-05-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-12-07 15:06:24" itemprop="dateModified" datetime="2022-12-07T15:06:24+08:00">2022-12-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Option/" itemprop="url" rel="index"><span itemprop="name">Option</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">有点意思，今天从知网上面发现了Wing-Model的论文，虽然我早就知道这个模型但是没想到真有公开发表的引用源。Wing-Model是一个很基础灵活度很高的模型，大部分时候拟合效果不错，虽然动态拟合出来的参数没有什么解释意义。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="wing-model">Wing-Model</h2>
+<p>期权隐含波动率的Wing-Model模型是由Orc提供给期权做市商的一套管理波动率的模型，本质上是一个分段的一元二次方程和线性扩展。Wing-Model通过四个区间的端点𝑑𝑐(1
++ 𝑑𝑠𝑚)、𝑑𝑐、𝑢𝑐和𝑢𝑐(1 + 𝑢𝑠𝑚)，将波动率微笑曲线分成六部分。</p>
+<p><img src="wing.png" width="100%" height="100%" title="wing" alt="wing"/></p>
+<p>wing-model的抛物线拟合部分为分段的一元二次函数，</p>
+<p><span class="math display">\[\begin{equation}
+\begin{aligned}
+vol(x) &amp;= vc + x \times sc + x^2 \times pc \\
+vol(x) &amp;= vc + x \times sc + x^2 \times cc
+\end{aligned}
+\end{equation}\]</span></p>
+<p>数据分析显示由于A股listed-option的行权价格较少，一般直接使用二段的抛物线方程拟合即可。国内的一些期权做市软件里面GUI界面嵌的是四段的拟合函数，直接使用dynamic
+skew manager的方式拟合平滑曲线，从软件设置里面直接没有构建swimming
+skew这些功能。</p>
+<hr />
+<p>在抛物线(parabola)区间，wing-model的校对函数（方程）为关于<span
+class="math inline">\(\mathrm{sc}, \mathrm{pc} /
+\mathrm{cc}\)</span>的二元一次线性方程，凸函数存在全局最优化解，光滑区间(smoothing
+ranges)同理。</p>
+<p>wing-model本质上是一元二次分段函数，wing-model的符号表达式在数值分界点连续、一阶导数连续、二阶导数不连续，由方程式符号表达式即可确定，所以在数值拟合（凸优化求解）过程不需要考虑连续性约束条件设置。</p>
+<div class="pdfobject-container" data-target="./piecewise_function.pdf" data-height="500px"></div>
+<hr />
+<p>Butterfly Arbitrage</p>
+<p>根据Jim Gatheral在Arbitrage-free SVI volatility
+surfaces提到的无套利观点和算法对wing-model进行公式推导分析</p>
+<p>Absence of this arbitrage corresponds to the existence of a
+risk-neutral martingale measure and the classical definition of no
+static arbitrage, as developed in [12] or [8]. In this section, we
+consider only one slice of the implied volatility surface, i.e. the map
+<span class="math inline">\(k \to \omega (k, t)\)</span> for a given
+fixed maturity <span class="math inline">\(t &gt; 0\)</span>.</p>
+<ul>
+<li><em>A slice is said to be free of butterfly arbitrage if the
+corresponding density is non-negative.</em></li>
+</ul>
+<p>A slice is free of butterfly arbitrage if and only if <span
+class="math inline">\(g(k) \geq 0\)</span> for all <span
+class="math inline">\(k \in \mathbb{R}\)</span> and <span
+class="math inline">\(\lim_{k \to \infty} d_{+}(k) \to \infty\)</span>
+<span class="math display">\[
+g(k):=(1-\frac{k\omega&#39;(k)}{2\omega(k)})^2 -
+\frac{\omega&#39;(k)^2}{4}(\frac{1}{\omega(k)}+\frac{1}{4})+\frac{\omega&#39;&#39;(k)}{2}
+\]</span></p>
+<div class="pdfobject-container" data-target="./butterfly_arbitrage.pdf" data-height="500px"></div>
+<hr />
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="comment"># @Time    : 2020/5/22 11:12 PM</span></span><br><span class="line"><span class="comment"># @Author  : 稻草人</span></span><br><span class="line"><span class="comment"># @contact : dybeta2021@163.com</span></span><br><span class="line"><span class="comment"># @File    : wing_model.py</span></span><br><span class="line"><span class="comment"># @Desc    : orc wing model</span></span><br><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> partial</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> ndarray, array, arange, zeros, ones, argmin, minimum, maximum, clip</span><br><span class="line"><span class="keyword">from</span> numpy.linalg <span class="keyword">import</span> norm</span><br><span class="line"><span class="keyword">from</span> numpy.random <span class="keyword">import</span> normal</span><br><span class="line"><span class="keyword">from</span> scipy.interpolate <span class="keyword">import</span> interp1d</span><br><span class="line"><span class="keyword">from</span> scipy.optimize <span class="keyword">import</span> minimize</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WingModel</span>(<span class="params"><span class="built_in">object</span></span>):</span></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">skew</span>(<span class="params">moneyness: ndarray, vc: <span class="built_in">float</span>, sc: <span class="built_in">float</span>, pc: <span class="built_in">float</span>, cc: <span class="built_in">float</span>, dc: <span class="built_in">float</span>, uc: <span class="built_in">float</span>, dsm: <span class="built_in">float</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">             usm: <span class="built_in">float</span></span>) -&gt; ndarray:</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param moneyness: converted strike, moneyness</span></span><br><span class="line"><span class="string">        :param vc:</span></span><br><span class="line"><span class="string">        :param sc:</span></span><br><span class="line"><span class="string">        :param pc:</span></span><br><span class="line"><span class="string">        :param cc:</span></span><br><span class="line"><span class="string">        :param dc:</span></span><br><span class="line"><span class="string">        :param uc:</span></span><br><span class="line"><span class="string">        :param dsm:</span></span><br><span class="line"><span class="string">        :param usm:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">assert</span> -<span class="number">1</span> &lt; dc &lt; <span class="number">0</span></span><br><span class="line">        <span class="keyword">assert</span> dsm &gt; <span class="number">0</span></span><br><span class="line">        <span class="keyword">assert</span> <span class="number">1</span> &gt; uc &gt; <span class="number">0</span></span><br><span class="line">        <span class="keyword">assert</span> usm &gt; <span class="number">0</span></span><br><span class="line">        <span class="keyword">assert</span> <span class="number">1e-6</span> &lt; vc &lt; <span class="number">10</span>  <span class="comment"># 数值优化过程稳定</span></span><br><span class="line">        <span class="keyword">assert</span> -<span class="number">1e6</span> &lt; sc &lt; <span class="number">1e6</span></span><br><span class="line">        <span class="keyword">assert</span> dc * (<span class="number">1</span> + dsm) &lt;= dc &lt;= <span class="number">0</span> &lt;= uc &lt;= uc * (<span class="number">1</span> + usm)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># volatility at this converted strike, vol(x) is then calculated as follows:</span></span><br><span class="line">        vol_list = []</span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> moneyness:</span><br><span class="line">            <span class="comment"># volatility at this converted strike, vol(x) is then calculated as follows:</span></span><br><span class="line">            <span class="keyword">if</span> x &lt; dc * (<span class="number">1</span> + dsm):</span><br><span class="line">                vol = vc + dc * (<span class="number">2</span> + dsm) * (sc / <span class="number">2</span>) + (<span class="number">1</span> + dsm) * pc * <span class="built_in">pow</span>(dc, <span class="number">2</span>)</span><br><span class="line">            <span class="keyword">elif</span> dc * (<span class="number">1</span> + dsm) &lt; x &lt;= dc:</span><br><span class="line">                vol = vc - (<span class="number">1</span> + <span class="number">1</span> / dsm) * pc * <span class="built_in">pow</span>(dc, <span class="number">2</span>) - sc * dc / (<span class="number">2</span> * dsm) + (<span class="number">1</span> + <span class="number">1</span> / dsm) * (</span><br><span class="line">                        <span class="number">2</span> * pc * dc + sc) * x - (pc / dsm + sc / (<span class="number">2</span> * dc * dsm)) * <span class="built_in">pow</span>(x, <span class="number">2</span>)</span><br><span class="line">            <span class="keyword">elif</span> dc &lt; x &lt;= <span class="number">0</span>:</span><br><span class="line">                vol = vc + sc * x + pc * <span class="built_in">pow</span>(x, <span class="number">2</span>)</span><br><span class="line">            <span class="keyword">elif</span> <span class="number">0</span> &lt; x &lt;= uc:</span><br><span class="line">                vol = vc + sc * x + cc * <span class="built_in">pow</span>(x, <span class="number">2</span>)</span><br><span class="line">            <span class="keyword">elif</span> uc &lt; x &lt;= uc * (<span class="number">1</span> + usm):</span><br><span class="line">                vol = vc - (<span class="number">1</span> + <span class="number">1</span> / usm) * cc * <span class="built_in">pow</span>(uc, <span class="number">2</span>) - sc * uc / (<span class="number">2</span> * usm) + (<span class="number">1</span> + <span class="number">1</span> / usm) * (</span><br><span class="line">                        <span class="number">2</span> * cc * uc + sc) * x - (cc / usm + sc / (<span class="number">2</span> * uc * usm)) * <span class="built_in">pow</span>(x, <span class="number">2</span>)</span><br><span class="line">            <span class="keyword">elif</span> uc * (<span class="number">1</span> + usm) &lt; x:</span><br><span class="line">                vol = vc + uc * (<span class="number">2</span> + usm) * (sc / <span class="number">2</span>) + (<span class="number">1</span> + usm) * cc * <span class="built_in">pow</span>(uc, <span class="number">2</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">raise</span> ValueError(<span class="string">&quot;x value error!&quot;</span>)</span><br><span class="line">            vol_list.append(vol)</span><br><span class="line">        <span class="keyword">return</span> array(vol_list)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">loss_skew</span>(<span class="params">cls, params: [<span class="built_in">float</span>, <span class="built_in">float</span>, <span class="built_in">float</span>], x: ndarray, iv: ndarray, vega: ndarray, vc: <span class="built_in">float</span>, dc: <span class="built_in">float</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                  uc: <span class="built_in">float</span>, dsm: <span class="built_in">float</span>, usm: <span class="built_in">float</span></span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param params: sc, pc, cc</span></span><br><span class="line"><span class="string">        :param x:</span></span><br><span class="line"><span class="string">        :param iv:</span></span><br><span class="line"><span class="string">        :param vega:</span></span><br><span class="line"><span class="string">        :param vc:</span></span><br><span class="line"><span class="string">        :param dc:</span></span><br><span class="line"><span class="string">        :param uc:</span></span><br><span class="line"><span class="string">        :param dsm:</span></span><br><span class="line"><span class="string">        :param usm:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        sc, pc, cc = params</span><br><span class="line">        vega = vega / vega.<span class="built_in">max</span>()</span><br><span class="line">        value = cls.skew(x, vc, sc, pc, cc, dc, uc, dsm, usm)</span><br><span class="line">        <span class="keyword">return</span> norm((value - iv) * vega, <span class="built_in">ord</span>=<span class="number">2</span>, keepdims=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">calibrate_skew</span>(<span class="params">cls, x: ndarray, iv: ndarray, vega: ndarray, dc: <span class="built_in">float</span> = -<span class="number">0.2</span>, uc: <span class="built_in">float</span> = <span class="number">0.2</span>, dsm: <span class="built_in">float</span> = <span class="number">0.5</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                       usm: <span class="built_in">float</span> = <span class="number">0.5</span>, is_bound_limit: <span class="built_in">bool</span> = <span class="literal">False</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                       epsilon: <span class="built_in">float</span> = <span class="number">1e-16</span>, inter: <span class="built_in">str</span> = <span class="string">&quot;cubic&quot;</span></span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param x: moneyness</span></span><br><span class="line"><span class="string">        :param iv:</span></span><br><span class="line"><span class="string">        :param vega:</span></span><br><span class="line"><span class="string">        :param dc:</span></span><br><span class="line"><span class="string">        :param uc:</span></span><br><span class="line"><span class="string">        :param dsm:</span></span><br><span class="line"><span class="string">        :param usm:</span></span><br><span class="line"><span class="string">        :param is_bound_limit:</span></span><br><span class="line"><span class="string">        :param epsilon:</span></span><br><span class="line"><span class="string">        :param inter: cubic inter</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">        vc = interp1d(x, iv, kind=inter, fill_value=<span class="string">&quot;extrapolate&quot;</span>)([<span class="number">0</span>])[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># init guess for sc, pc, cc</span></span><br><span class="line">        <span class="keyword">if</span> is_bound_limit:</span><br><span class="line">            bounds = [(-<span class="number">1e3</span>, <span class="number">1e3</span>), (-<span class="number">1e3</span>, <span class="number">1e3</span>), (-<span class="number">1e3</span>, <span class="number">1e3</span>)]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            bounds = [(<span class="literal">None</span>, <span class="literal">None</span>), (<span class="literal">None</span>, <span class="literal">None</span>), (<span class="literal">None</span>, <span class="literal">None</span>)]</span><br><span class="line">        initial_guess = normal(size=<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">        args = (x, iv, vega, vc, dc, uc, dsm, usm)</span><br><span class="line">        residual = minimize(cls.loss_skew, initial_guess, args=args, bounds=bounds, tol=epsilon, method=<span class="string">&quot;SLSQP&quot;</span>)</span><br><span class="line">        <span class="keyword">assert</span> residual.success</span><br><span class="line">        <span class="keyword">return</span> residual.x, residual.fun</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sc</span>(<span class="params">sr: <span class="built_in">float</span>, scr: <span class="built_in">float</span>, ssr: <span class="built_in">float</span>, ref: <span class="built_in">float</span>, atm: ndarray <span class="keyword">or</span> <span class="built_in">float</span></span>) -&gt; ndarray <span class="keyword">or</span> <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="keyword">return</span> sr - scr * ssr * ((atm - ref) / ref)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">loss_scr</span>(<span class="params">cls, x: <span class="built_in">float</span>, sr: <span class="built_in">float</span>, ssr: <span class="built_in">float</span>, ref: <span class="built_in">float</span>, atm: ndarray, sc: ndarray</span>) -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="keyword">return</span> norm(sc - cls.sc(sr, x, ssr, ref, atm), <span class="built_in">ord</span>=<span class="number">2</span>, keepdims=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit_scr</span>(<span class="params">cls, sr: <span class="built_in">float</span>, ssr: <span class="built_in">float</span>, ref: <span class="built_in">float</span>, atm: ndarray, sc: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                epsilon: <span class="built_in">float</span> = <span class="number">1e-16</span></span>) -&gt; [<span class="built_in">float</span>, <span class="built_in">float</span>]:</span></span><br><span class="line">        init_value = array([<span class="number">0.01</span>])</span><br><span class="line">        residual = minimize(cls.loss_scr, init_value, args=(sr, ssr, ref, atm, sc), tol=epsilon, method=<span class="string">&quot;SLSQP&quot;</span>)</span><br><span class="line">        <span class="keyword">assert</span> residual.success</span><br><span class="line">        <span class="keyword">return</span> residual.x, residual.fun</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">vc</span>(<span class="params">vr: <span class="built_in">float</span>, vcr: <span class="built_in">float</span>, ssr: <span class="built_in">float</span>, ref: <span class="built_in">float</span>, atm: ndarray <span class="keyword">or</span> <span class="built_in">float</span></span>) -&gt; ndarray <span class="keyword">or</span> <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="keyword">return</span> vr - vcr * ssr * ((atm - ref) / ref)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">loss_vc</span>(<span class="params">cls, x: <span class="built_in">float</span>, vr: <span class="built_in">float</span>, ssr: <span class="built_in">float</span>, ref: <span class="built_in">float</span>, atm: ndarray, vc: ndarray</span>) -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="keyword">return</span> norm(vc - cls.vc(vr, x, ssr, ref, atm), <span class="built_in">ord</span>=<span class="number">2</span>, keepdims=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit_vcr</span>(<span class="params">cls, vr: <span class="built_in">float</span>, ssr: <span class="built_in">float</span>, ref: <span class="built_in">float</span>, atm: ndarray, vc: ndarray,</span></span></span><br><span class="line"><span class="params"><span class="function">                epsilon: <span class="built_in">float</span> = <span class="number">1e-16</span></span>) -&gt; [<span class="built_in">float</span>, <span class="built_in">float</span>]:</span></span><br><span class="line">        init_value = array([<span class="number">0.01</span>])</span><br><span class="line">        residual = minimize(cls.loss_vc, init_value, args=(vr, ssr, ref, atm, vc), tol=epsilon, method=<span class="string">&quot;SLSQP&quot;</span>)</span><br><span class="line">        <span class="keyword">assert</span> residual.success</span><br><span class="line">        <span class="keyword">return</span> residual.x, residual.fun</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">wing</span>(<span class="params">cls, x: ndarray, ref: <span class="built_in">float</span>, atm: <span class="built_in">float</span>, vr: <span class="built_in">float</span>, vcr: <span class="built_in">float</span>, sr: <span class="built_in">float</span>, scr: <span class="built_in">float</span>, ssr: <span class="built_in">float</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">             pc: <span class="built_in">float</span>, cc: <span class="built_in">float</span>, dc: <span class="built_in">float</span>, uc: <span class="built_in">float</span>, dsm: <span class="built_in">float</span>, usm: <span class="built_in">float</span></span>) -&gt; ndarray:</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        wing model</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param x:</span></span><br><span class="line"><span class="string">        :param ref:</span></span><br><span class="line"><span class="string">        :param atm:</span></span><br><span class="line"><span class="string">        :param vr:</span></span><br><span class="line"><span class="string">        :param vcr:</span></span><br><span class="line"><span class="string">        :param sr:</span></span><br><span class="line"><span class="string">        :param scr:</span></span><br><span class="line"><span class="string">        :param ssr:</span></span><br><span class="line"><span class="string">        :param pc:</span></span><br><span class="line"><span class="string">        :param cc:</span></span><br><span class="line"><span class="string">        :param dc:</span></span><br><span class="line"><span class="string">        :param uc:</span></span><br><span class="line"><span class="string">        :param dsm:</span></span><br><span class="line"><span class="string">        :param usm:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        vc = cls.vc(vr, vcr, ssr, ref, atm)</span><br><span class="line">        sc = cls.sc(sr, scr, ssr, ref, atm)</span><br><span class="line">        <span class="keyword">return</span> cls.skew(x, vc, sc, pc, cc, dc, uc, dsm, usm)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ArbitrageFreeWingModel</span>(<span class="params">WingModel</span>):</span></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">calibrate</span>(<span class="params">cls, x: ndarray, iv: ndarray, vega: ndarray, dc: <span class="built_in">float</span> = -<span class="number">0.2</span>, uc: <span class="built_in">float</span> = <span class="number">0.2</span>, dsm: <span class="built_in">float</span> = <span class="number">0.5</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                  usm: <span class="built_in">float</span> = <span class="number">0.5</span>, is_bound_limit: <span class="built_in">bool</span> = <span class="literal">False</span>, epsilon: <span class="built_in">float</span> = <span class="number">1e-16</span>, inter: <span class="built_in">str</span> = <span class="string">&quot;cubic&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                  level: <span class="built_in">float</span> = <span class="number">0</span>, method: <span class="built_in">str</span> = <span class="string">&quot;SLSQP&quot;</span>, epochs: <span class="built_in">int</span> = <span class="literal">None</span>, show_error: <span class="built_in">bool</span> = <span class="literal">False</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                  use_constraints: <span class="built_in">bool</span> = <span class="literal">False</span></span>) -&gt; ([<span class="built_in">float</span>, <span class="built_in">float</span>, <span class="built_in">float</span>], <span class="built_in">float</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param x:</span></span><br><span class="line"><span class="string">        :param iv:</span></span><br><span class="line"><span class="string">        :param vega:</span></span><br><span class="line"><span class="string">        :param dc:</span></span><br><span class="line"><span class="string">        :param uc:</span></span><br><span class="line"><span class="string">        :param dsm:</span></span><br><span class="line"><span class="string">        :param usm:</span></span><br><span class="line"><span class="string">        :param is_bound_limit:</span></span><br><span class="line"><span class="string">        :param epsilon:</span></span><br><span class="line"><span class="string">        :param inter:</span></span><br><span class="line"><span class="string">        :param level:</span></span><br><span class="line"><span class="string">        :param method:</span></span><br><span class="line"><span class="string">        :param epochs:</span></span><br><span class="line"><span class="string">        :param show_error:</span></span><br><span class="line"><span class="string">        :param use_constraints:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        vega = clip(vega, <span class="number">1e-6</span>, <span class="number">1e6</span>)</span><br><span class="line">        iv = clip(iv, <span class="number">1e-6</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># init guess for sc, pc, cc</span></span><br><span class="line">        <span class="keyword">if</span> is_bound_limit:</span><br><span class="line">            bounds = [(-<span class="number">1e3</span>, <span class="number">1e3</span>), (-<span class="number">1e3</span>, <span class="number">1e3</span>), (-<span class="number">1e3</span>, <span class="number">1e3</span>)]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            bounds = [(<span class="literal">None</span>, <span class="literal">None</span>), (<span class="literal">None</span>, <span class="literal">None</span>), (<span class="literal">None</span>, <span class="literal">None</span>)]</span><br><span class="line"></span><br><span class="line">        vc = interp1d(x, iv, kind=inter, fill_value=<span class="string">&quot;extrapolate&quot;</span>)([<span class="number">0</span>])[<span class="number">0</span>]</span><br><span class="line">        constraints = <span class="built_in">dict</span>(<span class="built_in">type</span>=<span class="string">&#x27;ineq&#x27;</span>, fun=partial(cls.constraints, args=(x, vc, dc, uc, dsm, usm), level=level))</span><br><span class="line">        args = (x, iv, vega, vc, dc, uc, dsm, usm)</span><br><span class="line">        <span class="keyword">if</span> epochs <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">if</span> use_constraints:</span><br><span class="line">                residual = minimize(cls.loss_skew, normal(size=<span class="number">3</span>), args=args, bounds=bounds, constraints=constraints,</span><br><span class="line">                                    tol=epsilon, method=method)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                residual = minimize(cls.loss_skew, normal(size=<span class="number">3</span>), args=args, bounds=bounds, tol=epsilon, method=method)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> residual.success:</span><br><span class="line">                sc, pc, cc = residual.x</span><br><span class="line">                arbitrage_free = cls.check_butterfly_arbitrage(sc, pc, cc, dc, dsm, uc, usm, x, vc)</span><br><span class="line">                <span class="keyword">return</span> residual.x, residual.fun, arbitrage_free</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                epochs = <span class="number">10</span></span><br><span class="line">                <span class="keyword">if</span> show_error:</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">&quot;calibrate wing-model wrong, use epochs = 10 to find params! params: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(residual.x))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> epochs <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            params = zeros([epochs, <span class="number">3</span>])</span><br><span class="line">            loss = ones([epochs, <span class="number">1</span>])</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(epochs):</span><br><span class="line">                <span class="keyword">if</span> use_constraints:</span><br><span class="line">                    residual = minimize(cls.loss_skew, normal(size=<span class="number">3</span>), args=args, bounds=bounds,</span><br><span class="line">                                        constraints=constraints,</span><br><span class="line">                                        tol=epsilon, method=<span class="string">&quot;SLSQP&quot;</span>)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    residual = minimize(cls.loss_skew, normal(size=<span class="number">3</span>), args=args, bounds=bounds, tol=epsilon,</span><br><span class="line">                                        method=<span class="string">&quot;SLSQP&quot;</span>)</span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> residual.success <span class="keyword">and</span> show_error:</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">&quot;calibrate wing-model wrong, wrong @ &#123;&#125; /10! params: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(i, residual.x))</span><br><span class="line">                params[i] = residual.x</span><br><span class="line">                loss[i] = residual.fun</span><br><span class="line">            min_idx = argmin(loss)</span><br><span class="line">            sc, pc, cc = params[min_idx]</span><br><span class="line">            loss = loss[min_idx][<span class="number">0</span>]</span><br><span class="line">            arbitrage_free = cls.check_butterfly_arbitrage(sc, pc, cc, dc, dsm, uc, usm, x, vc)</span><br><span class="line">            <span class="keyword">return</span> (sc, pc, cc), loss, arbitrage_free</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">constraints</span>(<span class="params">cls, x: [<span class="built_in">float</span>, <span class="built_in">float</span>, <span class="built_in">float</span>], args: [ndarray, <span class="built_in">float</span>, <span class="built_in">float</span>, <span class="built_in">float</span>, <span class="built_in">float</span>, <span class="built_in">float</span>],</span></span></span><br><span class="line"><span class="params"><span class="function">                    level: <span class="built_in">float</span> = <span class="number">0</span></span>) -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;蝶式价差无套利约束</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param x: guess values, sc, pc, cc</span></span><br><span class="line"><span class="string">        :param args:</span></span><br><span class="line"><span class="string">        :param level:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        sc, pc, cc = x</span><br><span class="line">        moneyness, vc, dc, uc, dsm, usm = args</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> level == <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line">        <span class="keyword">elif</span> level == <span class="number">1</span>:</span><br><span class="line">            moneyness = arange(-<span class="number">1</span>, <span class="number">1.01</span>, <span class="number">0.01</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            moneyness = arange(-<span class="number">1</span>, <span class="number">1.001</span>, <span class="number">0.001</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> cls.check_butterfly_arbitrage(sc, pc, cc, dc, dsm, uc, usm, moneyness, vc)</span><br><span class="line"></span><br><span class="line">    <span class="string">&quot;&quot;&quot;蝶式价差无套利约束条件</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">left_parabolic</span>(<span class="params">sc: <span class="built_in">float</span>, pc: <span class="built_in">float</span>, x: <span class="built_in">float</span>, vc: <span class="built_in">float</span></span>) -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param sc:</span></span><br><span class="line"><span class="string">        :param pc:</span></span><br><span class="line"><span class="string">        :param x:</span></span><br><span class="line"><span class="string">        :param vc:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> pc - <span class="number">0.25</span> * (sc + <span class="number">2</span> * pc * x) ** <span class="number">2</span> * (<span class="number">0.25</span> + <span class="number">1</span> / (vc + sc * x + pc * x * x)) + (</span><br><span class="line">                <span class="number">1</span> - <span class="number">0.5</span> * x * (sc + <span class="number">2</span> * pc * x) / (vc + sc * x + pc * x * x)) ** <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">right_parabolic</span>(<span class="params">sc: <span class="built_in">float</span>, cc: <span class="built_in">float</span>, x: <span class="built_in">float</span>, vc: <span class="built_in">float</span></span>) -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param sc:</span></span><br><span class="line"><span class="string">        :param cc:</span></span><br><span class="line"><span class="string">        :param x:</span></span><br><span class="line"><span class="string">        :param vc:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> cc - <span class="number">0.25</span> * (sc + <span class="number">2</span> * cc * x) ** <span class="number">2</span> * (<span class="number">0.25</span> + <span class="number">1</span> / (vc + sc * x + cc * x * x)) + (</span><br><span class="line">                <span class="number">1</span> - <span class="number">0.5</span> * x * (sc + <span class="number">2</span> * cc * x) / (vc + sc * x + cc * x * x)) ** <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">left_smoothing_range</span>(<span class="params">sc: <span class="built_in">float</span>, pc: <span class="built_in">float</span>, dc: <span class="built_in">float</span>, dsm: <span class="built_in">float</span>, x: <span class="built_in">float</span>, vc: <span class="built_in">float</span></span>) -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        a = - pc / dsm - <span class="number">0.5</span> * sc / (dc * dsm)</span><br><span class="line"></span><br><span class="line">        b1 = -<span class="number">0.25</span> * ((<span class="number">1</span> + <span class="number">1</span> / dsm) * (<span class="number">2</span> * dc * pc + sc) - <span class="number">2</span> * (pc / dsm + <span class="number">0.5</span> * sc / (dc * dsm)) * x) ** <span class="number">2</span></span><br><span class="line">        b2 = -dc ** <span class="number">2</span> * (<span class="number">1</span> + <span class="number">1</span> / dsm) * pc - <span class="number">0.5</span> * dc * sc / dsm + vc + (<span class="number">1</span> + <span class="number">1</span> / dsm) * (<span class="number">2</span> * dc * pc + sc) * x - (</span><br><span class="line">                pc / dsm + <span class="number">0.5</span> * sc / (dc * dsm)) * x ** <span class="number">2</span></span><br><span class="line">        b2 = (<span class="number">0.25</span> + <span class="number">1</span> / b2)</span><br><span class="line">        b = b1 * b2</span><br><span class="line"></span><br><span class="line">        c1 = x * ((<span class="number">1</span> + <span class="number">1</span> / dsm) * (<span class="number">2</span> * dc * pc + sc) - <span class="number">2</span> * (pc / dsm + <span class="number">0.5</span> * sc / (dc * dsm)) * x)</span><br><span class="line">        c2 = <span class="number">2</span> * (-dc ** <span class="number">2</span> * (<span class="number">1</span> + <span class="number">1</span> / dsm) * pc - <span class="number">0.5</span> * dc * sc / dsm + vc + (<span class="number">1</span> + <span class="number">1</span> / dsm) * (<span class="number">2</span> * dc * pc + sc) * x - (</span><br><span class="line">                pc / dsm + <span class="number">0.5</span> * sc / (dc * dsm)) * x ** <span class="number">2</span>)</span><br><span class="line">        c = (<span class="number">1</span> - c1 / c2) ** <span class="number">2</span></span><br><span class="line">        <span class="keyword">return</span> a + b + c</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">right_smoothing_range</span>(<span class="params">sc: <span class="built_in">float</span>, cc: <span class="built_in">float</span>, uc: <span class="built_in">float</span>, usm: <span class="built_in">float</span>, x: <span class="built_in">float</span>, vc: <span class="built_in">float</span></span>) -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        a = - cc / usm - <span class="number">0.5</span> * sc / (uc * usm)</span><br><span class="line"></span><br><span class="line">        b1 = -<span class="number">0.25</span> * ((<span class="number">1</span> + <span class="number">1</span> / usm) * (<span class="number">2</span> * uc * cc + sc) - <span class="number">2</span> * (cc / usm + <span class="number">0.5</span> * sc / (uc * usm)) * x) ** <span class="number">2</span></span><br><span class="line">        b2 = -uc ** <span class="number">2</span> * (<span class="number">1</span> + <span class="number">1</span> / usm) * cc - <span class="number">0.5</span> * uc * sc / usm + vc + (<span class="number">1</span> + <span class="number">1</span> / usm) * (<span class="number">2</span> * uc * cc + sc) * x - (</span><br><span class="line">                cc / usm + <span class="number">0.5</span> * sc / (uc * usm)) * x ** <span class="number">2</span></span><br><span class="line">        b2 = (<span class="number">0.25</span> + <span class="number">1</span> / b2)</span><br><span class="line">        b = b1 * b2</span><br><span class="line"></span><br><span class="line">        c1 = x * ((<span class="number">1</span> + <span class="number">1</span> / usm) * (<span class="number">2</span> * uc * cc + sc) - <span class="number">2</span> * (cc / usm + <span class="number">0.5</span> * sc / (uc * usm)) * x)</span><br><span class="line">        c2 = <span class="number">2</span> * (-uc ** <span class="number">2</span> * (<span class="number">1</span> + <span class="number">1</span> / usm) * cc - <span class="number">0.5</span> * uc * sc / usm + vc + (<span class="number">1</span> + <span class="number">1</span> / usm) * (<span class="number">2</span> * uc * cc + sc) * x - (</span><br><span class="line">                cc / usm + <span class="number">0.5</span> * sc / (uc * usm)) * x ** <span class="number">2</span>)</span><br><span class="line">        c = (<span class="number">1</span> - c1 / c2) ** <span class="number">2</span></span><br><span class="line">        <span class="keyword">return</span> a + b + c</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">left_constant_level</span>() -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">right_constant_level</span>() -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_check_butterfly_arbitrage</span>(<span class="params">cls, sc: <span class="built_in">float</span>, pc: <span class="built_in">float</span>, cc: <span class="built_in">float</span>, dc: <span class="built_in">float</span>, dsm: <span class="built_in">float</span>, uc: <span class="built_in">float</span>, usm: <span class="built_in">float</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                                   x: <span class="built_in">float</span>, vc: <span class="built_in">float</span></span>) -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;检查是否存在蝶式价差套利机会，确保拟合time-slice iv-curve 是无套利（无蝶式价差静态套利）曲线</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param sc:</span></span><br><span class="line"><span class="string">        :param pc:</span></span><br><span class="line"><span class="string">        :param cc:</span></span><br><span class="line"><span class="string">        :param dc:</span></span><br><span class="line"><span class="string">        :param dsm:</span></span><br><span class="line"><span class="string">        :param uc:</span></span><br><span class="line"><span class="string">        :param usm:</span></span><br><span class="line"><span class="string">        :param x:</span></span><br><span class="line"><span class="string">        :param vc:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># if x &lt; dc * (1 + dsm):</span></span><br><span class="line">        <span class="comment">#     return cls.left_constant_level()</span></span><br><span class="line">        <span class="comment"># elif dc * (1 + dsm) &lt; x &lt;= dc:</span></span><br><span class="line">        <span class="comment">#     return cls.left_smoothing_range(sc, pc, dc, dsm, x, vc)</span></span><br><span class="line">        <span class="comment"># elif dc &lt; x &lt;= 0:</span></span><br><span class="line">        <span class="comment">#     return cls.left_parabolic(sc, pc, x, vc)</span></span><br><span class="line">        <span class="comment"># elif 0 &lt; x &lt;= uc:</span></span><br><span class="line">        <span class="comment">#     return cls.right_parabolic(sc, cc, x, vc)</span></span><br><span class="line">        <span class="comment"># elif uc &lt; x &lt;= uc * (1 + usm):</span></span><br><span class="line">        <span class="comment">#     return cls.right_smoothing_range(sc, cc, uc, usm, x, vc)</span></span><br><span class="line">        <span class="comment"># elif uc * (1 + usm) &lt; x:</span></span><br><span class="line">        <span class="comment">#     return cls.right_constant_level()</span></span><br><span class="line">        <span class="comment"># else:</span></span><br><span class="line">        <span class="comment">#     raise ValueError(&quot;x value error!&quot;)</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> dc &lt; x &lt;= <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">return</span> cls.left_parabolic(sc, pc, x, vc)</span><br><span class="line">        <span class="keyword">elif</span> <span class="number">0</span> &lt; x &lt;= uc:</span><br><span class="line">            <span class="keyword">return</span> cls.right_parabolic(sc, cc, x, vc)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">check_butterfly_arbitrage</span>(<span class="params">cls, sc: <span class="built_in">float</span>, pc: <span class="built_in">float</span>, cc: <span class="built_in">float</span>, dc: <span class="built_in">float</span>, dsm: <span class="built_in">float</span>, uc: <span class="built_in">float</span>, usm: <span class="built_in">float</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                                  moneyness: ndarray, vc: <span class="built_in">float</span></span>) -&gt; <span class="built_in">float</span>:</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        :param sc:</span></span><br><span class="line"><span class="string">        :param pc:</span></span><br><span class="line"><span class="string">        :param cc:</span></span><br><span class="line"><span class="string">        :param dc:</span></span><br><span class="line"><span class="string">        :param dsm:</span></span><br><span class="line"><span class="string">        :param uc:</span></span><br><span class="line"><span class="string">        :param usm:</span></span><br><span class="line"><span class="string">        :param moneyness:</span></span><br><span class="line"><span class="string">        :param vc:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        con_arr = []</span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> moneyness:</span><br><span class="line">            con_arr.append(cls._check_butterfly_arbitrage(sc, pc, cc, dc, dsm, uc, usm, x, vc))</span><br><span class="line">        con_arr = array(con_arr)</span><br><span class="line">        <span class="keyword">if</span> (con_arr &gt;= <span class="number">0</span>).<span class="built_in">all</span>():</span><br><span class="line">            <span class="keyword">return</span> minimum(con_arr.mean(), <span class="number">1e-7</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> maximum((con_arr[con_arr &lt; <span class="number">0</span>]).mean(), -<span class="number">1e-7</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="http://gb.oversea.cnki.net/KCMS/detail/detailall.aspx?filename=1018782195.nh&amp;dbcode=CMFD&amp;dbname=CMFDREF">上证50ETF期权隐含波动率曲面的构建与参数校准</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1204.0646.pdf">Arbitrage-free SVI
+volatility surfaces</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/406510913">波动率模型（1）Wing
+Model</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>稻草人
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://dybeta2021.github.io/2021/05/24/wing-model/" title="Wing-Model Volatility Skew Manager">https://dybeta2021.github.io/2021/05/24/wing-model/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ivs/" rel="tag"># ivs</a>
+              <a href="/tags/Volatility-Skew/" rel="tag"># Volatility-Skew</a>
+              <a href="/tags/Arbitrage-Free/" rel="tag"># Arbitrage-Free</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/20/tesnor_ridge_regression/" rel="prev" title="Tesnor-Ridge-Regression">
+      <i class="fa fa-chevron-left"></i> Tesnor-Ridge-Regression
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/28/am_option/" rel="next" title="American Closed Form Solution">
+      American Closed Form Solution <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#wing-model"><span class="nav-number">1.</span> <span class="nav-text">Wing-Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">稻草人</p>
+  <div class="site-description" itemprop="description">风物长宜放眼量</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dybeta2021" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dybeta2021" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dybeta2021@163.com" title="E-Mail → mailto:dybeta2021@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">稻草人</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+博客全站共294.4k字
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

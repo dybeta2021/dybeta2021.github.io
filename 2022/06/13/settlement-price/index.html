@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dybeta2021.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="股票期权结算价格确定方法.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="股票期权结算价计算方法">
+<meta property="og:url" content="https://dybeta2021.github.io/2022/06/13/settlement-price/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="股票期权结算价格确定方法.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-06-13T06:21:03.000Z">
+<meta property="article:modified_time" content="2022-06-13T06:21:03.000Z">
+<meta property="article:author" content="稻草人">
+<meta property="article:tag" content="option">
+<meta property="article:tag" content="settlement_price">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://dybeta2021.github.io/2022/06/13/settlement-price/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>股票期权结算价计算方法 | 子非鱼</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">子非鱼</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/dybeta2021" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dybeta2021.github.io/2022/06/13/settlement-price/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="稻草人">
+      <meta itemprop="description" content="风物长宜放眼量">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="子非鱼">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          股票期权结算价计算方法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-13 14:21:03" itemprop="dateCreated datePublished" datetime="2022-06-13T14:21:03+08:00">2022-06-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Option/" itemprop="url" rel="index"><span itemprop="name">Option</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">股票期权结算价格确定方法.</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="中金所股指期货合约结算价">中金所股指期货合约结算价</h2>
+<p>期货合约当日结算价是指集中交易中某一合约某一时段成交价格按照成交量的加权平均价。交易所另有规定的除外。</p>
+<p>该时段发生熔断、集合竞价指令申报或者暂停交易的，扣除熔断、集合竞价指令申报和暂停交易时间后向前取满相应时段。</p>
+<p>合约在该时段无成交的，以前一相应时段成交价格按照成交量的加权平均价作为当日结算价。该相应时段仍无成交的，则再往前推相应时段。以此类推。合约当日最后一笔成交距开盘时间不足相应时段的，则取全天成交量的加权平均价作为当日结算价。</p>
+<p>合约当日无成交的，当日结算价计算公式为：当日结算价＝该合约上一交易日结算价＋基准合约当日结算价－基准合约上一交易日结算价，其中，基准合约为当日有成交的离交割月最近的合约。合约为新上市合约的，取其挂盘基准价为上一交易日结算价。基准合约为当日交割合约的，取其交割结算价为基准合约当日结算价。根据本公式计算出的当日结算价超出合约涨跌停板价格的，取涨跌停板价格作为当日结算价。</p>
+<p>采用上述方法仍无法确定当日结算价或者计算出的结算价明显不合理的，交易所有权决定当日结算价。</p>
+<ul>
+<li><p>期货合约的当日结算价为合约最后一小时成交价格按照成交量的加权平均价。计算结果保留至小数点后一位。</p></li>
+<li><p>期货合约的交割结算价为最后交易日标的指数最后 2
+小时的算术平均价。计算结果保留至小数点后两位。</p></li>
+</ul>
+<h2 id="中金所股指期权合约结算价">中金所股指期权合约结算价</h2>
+<p>股指期权合约除最后交易日外的当日结算价为合约当日收盘集合竞价的成交价格。当日收盘集合竞价未形成成交价格或者成交价格明显不合理的，交易所有权决
+定当日结算价。</p>
+<p>股指期权合约最后交易日的结算价确定方法如下：</p>
+<ul>
+<li>对看涨期权合约，合约交割结算价高于行权价格的，该合约最后交易日的结算价为交割结算价与行权价格的差额，其他情形下最后交易日的结算价为零；</li>
+<li>对看跌期权合约，合约交割结算价低于行权价格的，该合约最后交易日的结算价为行权价格与交割结算价的差额，其他情形下最后交易日的结算价为零。</li>
+<li>股指期权合约交割结算价为最后交易日标的指数最后 2
+小时的算术平均价。计算结果保留至小数点后两位。</li>
+</ul>
+<h2 id="上交所期权结算价">上交所期权结算价</h2>
+<p>　　一、期权合约的结算价格为该合约当日收盘集合竞价的成交价格。</p>
+<p>　　二、期权合约当日收盘集合竞价未形成成交价格，但收盘前8分钟内的连续竞价阶段有成交，且收盘时同时存在最优买价和最优卖价的，以该连续竞价阶段最后成交价作为基准价格，按照以下原则确定期权合约的结算价格：</p>
+<p>　　（一）收盘时最优买价大于或者等于基准价格的，结算价格为该最优买价。</p>
+<p>　　（二）收盘时最优卖价小于或者等于基准价格的，结算价格为该最优卖价。</p>
+<p>　　（三）收盘时基准价格介于最优买价和最优卖价之间的，结算价格为基准价格。</p>
+<p>　　三、期权合约当日收盘集合竞价未形成成交价格，且收盘前8分钟内的连续竞价阶段没有成交，但收盘时同时存在最优买价和最优卖价的，结算价格为该最优买价和最优卖价的中间值。</p>
+<p>　　四、按照本通知第一条、第二条、第三条的规定均未能确定期权合约结算价格的，如果期权合约当日收盘时最优买价为涨停价格的，则结算价格为该涨停价格。</p>
+<p>　　五、按照本通知第一条至第四条的规定均未能确定期权合约结算价格，则按照以下原则确定结算价格：</p>
+<p>　　（一）对于同一合约品种中到期月份、行权价格及合约类型均相同的期权合约，如果标准合约具备结算价格，而非标准合约无结算价格的，则参考标准合约的结算价格，确定非标准合约的结算价格；如果非标准合约具备结算价格，而标准合约无结算价格的，则参考非标准合约的结算价格，确定标准合约的结算价格。</p>
+<p>　　（二）对于同一合约品种中到期月份与合约类型相同的期权合约，如果有一个及以上合约具备结算价格，而其他合约无结算价格的，则参考该一个及以上合约的结算价格对应的隐含波动率，确定其他期权合约的结算价格。</p>
+<p>　　（三）期权合约盘中暂停交易直至收盘的，期权合约结算价格根据合约标的当日收盘价进行调整。</p>
+<p>　　（四）按照本条前述规定仍未能确定结算价格的，由上交所根据市场情况及期权品种交易情况，计算该期权合约的结算价格。</p>
+<p>　　六、对于按照本通知第一条至第五条规定确定的期权合约结算价格，按照以下原则进行合理性检查和修正：</p>
+<p>　　（一）对于同一合约品种中到期月份、行权价格以及合约类型均相同的期权合约，如果标准合约和非标准合约都具备结算价格但结算价格不同的，则取当日交易量较大的标准或者非标准合约的结算价格，作为非标准合约或者标准合约的结算价格；如果二者交易量相等，则取标准合约的结算价格，作为非标准合约的结算价格。</p>
+<p>　　（二）如果按照本通知第一条至第五条规定确定的期权合约结算价格高于该合约当日涨停价格的，则以涨停价格作为该期权合约的结算价格；如果确定的期权合约结算价格低于该合约当日跌停价格的，则以跌停价格作为该期权合约的结算价格。</p>
+<p>　　（三）如果按照本通知第一条至第五条规定确定的期权合约结算价格小于其内在价值，则以其内在价值作为该期权合约的结算价格。</p>
+<p>　　（四）对于同一合约品种中到期月份及合约类型相同的期权合约，按照行权价格序列进行检查和修正，以使认购期权行权价格越高、结算价格越低，认沽期权行权价格越高、结算价格越高。</p>
+<p>　　（五）对于同一合约品种中行权价格及合约类型相同的期权合约，按照到期月份顺序进行检查和修正，以使期权合约到期月份越晚、结算价格越高。</p>
+<p>　　（六）按照上述原则进行合理性检查和修正后形成的结算价格仍明显不合理的，上交所可以根据市场情况进行调整。</p>
+<p>　　七、期权合约最后交易日，按照以下原则确定期权合约的结算价格：</p>
+<p>　　（一）最后交易日为实值的认购合约，其结算价格为合约标的当日收盘价格减去行权价格的差值；最后交易日为实值的认沽合约，其结算价格为行权价格减去合约标的当日收盘价格的差值；</p>
+<p>　　（二）最后交易日为虚值或者平值的期权合约，其结算价格为0。</p>
+<p>　　八、根据本通知计算的结算价格，按照四舍五入原则取期权合约最小价格变动单位的整数倍。</p>
+<p>　　九、上交所及中国结算可以根据市场情况，对结算价格的计算方法进行调整，并向市场公布。</p>
+<p>　　十、本通知下列用语具有以下含义：</p>
+<p>　　（一）标准合约，是指合约条款未因合约标的除权、除息而发生调整的期权合约；</p>
+<p>　　（二）非标准合约，是指合约条款因合约标的除权、除息而发生调整的期权合约。</p>
+<p>　　十一、本通知由上交所、中国结算负责解释，自2016年1月1日起实施。上交所、中国结算于2015年1月28日发布的《关于期权合约结算价格计算方法的通知》（上证发〔2015〕19号）同时废止。</p>
+<h2 id="深交所期权结算价">深交所期权结算价</h2>
+<p>4.5.1
+本所在每个交易日收盘后向市场公布期权合约的结算价格，作为计算期权合约每日日终维持保证金、下一交易日开仓保证金、涨跌停价格等数据的基准。</p>
+<p>4.5.2
+期权合约在最后交易日为实值合约的，本所根据合约标的当日收盘价格和该合约行权价格，确定该合约的结算价格；期权合约在最后交易日为虚值或者平值合约的，结算价格为0。</p>
+<p>4.5.3
+在非最后交易日，期权合约的结算价格为该合约当日收盘集合竞价的成交价格。如当日收盘集合竞价未形成成交价格，结算价格的确定原则为：</p>
+<p>（一）期权合约当日收盘前 8
+分钟内的连续竞价阶段有成交的，以该连续竞价阶段最后成交价作为基准价格。当收盘时有最优买价且大于或者等于基准价格的，结算价格为该最优买价；当收盘时有最优卖价且小于或者等于基准价格的，结算价格为该最优卖价；当收盘时有最优买价和最优卖价，且基准价格介于最优买价和最优卖价之间的，结算价格为基准价格；</p>
+<p>（二）期权合约当日收盘前 8
+分钟内的连续竞价阶段没有成交，但收盘时同时存在最优买价和最优卖价的，结算价格为该最优买价和最优卖价的中间值；</p>
+<p>（三）根据本条第（一）（二）项未能确定期权合约结算价格的，如果期权合约当日收盘时最优买价为涨停价格，则结算价格为该涨停价格；</p>
+<p>（四）根据本条第（一）至（三）项仍未能确定期权合约结算价格的，对于同一合约品种中到期月份、行权价格及合约类型均相同的标准合约和非标准合约，如果有且仅有一个期权合约有结算价格，则以该合约结算价格作为其他合约的结算价格；如果仍未能确定结算价格，采用已确定结算价格的合约的隐含波动率计算其他合约的结算价格；如果仍未能确定结算价格，采用合约收盘价确定该合约结算价格。</p>
+<p>4.5.4 对于第 4.5.3
+条确定的期权合约结算价格，按照以下原则进行最终确定：</p>
+<p>（一）对于同一合约品种中到期月份、行权价格以及合约类型均相同的标准合约和非标准合约，依次优先选取当日交易量最大、标准合约、合约编码最大的合约的结算价格，作为此类合约的结算价格；
+（二）如果期权合约结算价格高（低）于该合约当日涨（跌）停价格的，则以涨（跌）停价格作为该期权合约的结算价格；
+（三）如果期权合约结算价格小于其内在价值，则以其内在价值作为该期权合约的结算价格；
+（四）对于同一合约品种中到期月份及合约类型相同的期权合约，期权合约结算价格须符合认购期权行权价格越高的结算价格越低，认沽期权行权价格越高的结算价格越高；
+（五）对于同一合约品种中行权价格及合约类型相同的期权合约，须符合期权合约到期月份越晚的结算价格越高。</p>
+<p>4.5.5
+期权合约挂牌首日，以本所公布的开盘参考价作为合约前结算价格。合约标的出现除权、除息的，合约前结算价格调整公式适用本规则第
+3.4 条规定。 4.5.6
+本所及中国结算可以根据市场情况，对结算价格的确定方法进行调整。</p>
+<h2 id="链接">链接</h2>
+<ul>
+<li><p><a
+target="_blank" rel="noopener" href="http://www.cffex.com.cn/zgjrqhjyshs300gzqhhyjyxz/">中国金融期货交易所沪深300股指期货合约交易细则</a></p></li>
+<li><p><a
+target="_blank" rel="noopener" href="http://www.cffex.com.cn/zgjrqhjyssz50gzqhhyjyxz/">中国金融期货交易所上证50股指期货合约交易细则</a></p></li>
+<li><p><a
+target="_blank" rel="noopener" href="http://www.cffex.com.cn/zgjrqhjyszz500gzqhhyjyxz/">中国金融期货交易所中证500股指期货合约交易细则</a></p></li>
+<li><p><a
+target="_blank" rel="noopener" href="http://www.cffex.com.cn/zgjrqhjysgzqqhyjyxz/">中国金融期货交易所股指期权合约交易细则</a></p></li>
+<li><p><a
+target="_blank" rel="noopener" href="http://www.cffex.com.cn/zgjrqhjysjsxz/">中国金融期货交易所结算细则</a></p></li>
+<li><p><a
+target="_blank" rel="noopener" href="http://www.cffex.com.cn/hs300wd/20100129/17819.html">沪深300股指期货合约的当日结算价如何确定？</a></p></li>
+<li><p><a
+target="_blank" rel="noopener" href="http://www.sse.com.cn/lawandrules/sselawsrules/option/c/c_20210128_5312066.shtml">关于发布《上海证券交易所股票期权试点交易规则》的通知
+| 上海证券交易所</a></p></li>
+<li><p><a
+target="_blank" rel="noopener" href="http://www.sse.com.cn/lawandrules/sselawsrules/option/c/c_20210128_5312075.shtml">关于优化不活跃期权合约结算价格计算方法的通知
+| 上海证券交易所</a></p></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>稻草人
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://dybeta2021.github.io/2022/06/13/settlement-price/" title="股票期权结算价计算方法">https://dybeta2021.github.io/2022/06/13/settlement-price/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/option/" rel="tag"># option</a>
+              <a href="/tags/settlement-price/" rel="tag"># settlement_price</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/13/vcpkg/" rel="prev" title="Vcpkg C++包管理">
+      <i class="fa fa-chevron-left"></i> Vcpkg C++包管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/15/myotp/" rel="next" title="MyOTP">
+      MyOTP <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E9%87%91%E6%89%80%E8%82%A1%E6%8C%87%E6%9C%9F%E8%B4%A7%E5%90%88%E7%BA%A6%E7%BB%93%E7%AE%97%E4%BB%B7"><span class="nav-number">1.</span> <span class="nav-text">中金所股指期货合约结算价</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E9%87%91%E6%89%80%E8%82%A1%E6%8C%87%E6%9C%9F%E6%9D%83%E5%90%88%E7%BA%A6%E7%BB%93%E7%AE%97%E4%BB%B7"><span class="nav-number">2.</span> <span class="nav-text">中金所股指期权合约结算价</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%BA%A4%E6%89%80%E6%9C%9F%E6%9D%83%E7%BB%93%E7%AE%97%E4%BB%B7"><span class="nav-number">3.</span> <span class="nav-text">上交所期权结算价</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E4%BA%A4%E6%89%80%E6%9C%9F%E6%9D%83%E7%BB%93%E7%AE%97%E4%BB%B7"><span class="nav-number">4.</span> <span class="nav-text">深交所期权结算价</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">稻草人</p>
+  <div class="site-description" itemprop="description">风物长宜放眼量</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dybeta2021" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dybeta2021" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dybeta2021@163.com" title="E-Mail → mailto:dybeta2021@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">稻草人</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+博客全站共294.4k字
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
