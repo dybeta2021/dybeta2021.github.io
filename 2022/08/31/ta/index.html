@@ -37,6 +37,8 @@
 <meta property="og:image" content="https://dybeta2021.github.io/2022/08/31/ta/fig7.png">
 <meta property="og:image" content="https://dybeta2021.github.io/2022/08/31/ta/fig9.png">
 <meta property="og:image" content="https://dybeta2021.github.io/2022/08/31/ta/fig8.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2022/08/31/ta/fig10.png">
+<meta property="og:image" content="https://dybeta2021.github.io/2022/08/31/ta/fig11.png">
 <meta property="article:published_time" content="2022-08-31T07:57:11.000Z">
 <meta property="article:modified_time" content="2022-08-31T07:57:11.000Z">
 <meta property="article:author" content="稻草人">
@@ -329,8 +331,8 @@ target="_blank" rel="noopener" href="https://www.joinquant.com/view/community/de
 (\max({\rm Ret},0))  - {\rm SMA}(\min({\rm Ret},0))}
 \]</span></p>
 <p><span class="math display">\[
-{\rm RSI} =100\frac{\sum_{i=1}^{n} \max({\rm Ret},0)}
-{\sum_{i=1}^{n}{\rm \mid Ret \mid}}
+{\rm RSI} = 100 \frac{ {\rm SMA} (\max ({\rm Ret},0)) }{ {\rm
+SMA}(\mid{\rm Ret}\mid)}
 \]</span></p>
 <h2 id="bollinger-bands-boll">Bollinger Bands (BOLL)</h2>
 <p>该工具结合了移动平均和标准差的概念，其基本的型态是由三条轨道线组成的带状通道（中轨和上、下轨各一条）。“中轨”为股价的平均成本，“上轨”和“下轨”可分别视为股价的压力线和支撑线。</p>
@@ -414,6 +416,14 @@ average</a></p></li>
 <ul>
 <li><a
 target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/De--QW0s8IELhjv4xdleQw">聊点玄的！！！</a></li>
+</ul>
+<h3 id="银行魔咒和趋势线">银行魔咒和趋势线</h3>
+<p><img style="margin: auto;" src="fig10.png" width="100%" height="100%"/></p>
+<p>从今年的指数表现来看，也确实与历史情况相符，比如沪深300虽然也在跌，但仍然牢牢守住了上升趋势线：</p>
+<p><img style="margin: auto;" src="fig11.png" width="100%" height="100%"/></p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RaTQ4hGREDq0GRmkv4o7rw">元旦规律！！！</a></li>
 </ul>
 
     </div>
@@ -516,7 +526,7 @@ target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/De--QW0s8IELhjv4
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
           <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#bull-and-bear-index-bbi"><span class="nav-number">1.</span> <span class="nav-text">Bull And Bear Index (BBI)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#relative-strength-index-rsi"><span class="nav-number">2.</span> <span class="nav-text">Relative Strength Index (RSI)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bollinger-bands-boll"><span class="nav-number">3.</span> <span class="nav-text">Bollinger Bands (BOLL)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#relative-signed-jump-rsj"><span class="nav-number">4.</span> <span class="nav-text">Relative Signed Jump (RSJ)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#moving-average-convergence-divergence-macd"><span class="nav-number">5.</span> <span class="nav-text">Moving Average
-Convergence Divergence (MACD)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E6%80%9D%E7%AD%96%E7%95%A5"><span class="nav-number">6.</span> <span class="nav-text">微思策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E6%B6%A8%E8%B6%8B%E5%8A%BF-%E7%BB%BF%E5%B7%A8%E6%9F%B1"><span class="nav-number">6.1.</span> <span class="nav-text">上涨趋势-绿巨柱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E6%B6%A8%E8%B6%8B%E5%8A%BF-%E4%B8%8B%E8%B7%8C%E7%BC%A9%E9%87%8F"><span class="nav-number">6.2.</span> <span class="nav-text">上涨趋势-下跌缩量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%B7%8C%E8%B6%8B%E5%8A%BF-%E7%BC%A9%E9%87%8F"><span class="nav-number">6.3.</span> <span class="nav-text">下跌趋势-缩量</span></a></li></ol></li></ol></div>
+Convergence Divergence (MACD)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E6%80%9D%E7%AD%96%E7%95%A5"><span class="nav-number">6.</span> <span class="nav-text">微思策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E6%B6%A8%E8%B6%8B%E5%8A%BF-%E7%BB%BF%E5%B7%A8%E6%9F%B1"><span class="nav-number">6.1.</span> <span class="nav-text">上涨趋势-绿巨柱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E6%B6%A8%E8%B6%8B%E5%8A%BF-%E4%B8%8B%E8%B7%8C%E7%BC%A9%E9%87%8F"><span class="nav-number">6.2.</span> <span class="nav-text">上涨趋势-下跌缩量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%B7%8C%E8%B6%8B%E5%8A%BF-%E7%BC%A9%E9%87%8F"><span class="nav-number">6.3.</span> <span class="nav-text">下跌趋势-缩量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%93%B6%E8%A1%8C%E9%AD%94%E5%92%92%E5%92%8C%E8%B6%8B%E5%8A%BF%E7%BA%BF"><span class="nav-number">6.4.</span> <span class="nav-text">银行魔咒和趋势线</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -589,7 +599,7 @@ Convergence Divergence (MACD)</span></a></li><li class="nav-item nav-level-2"><a
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
-博客全站共294.4k字
+博客全站共294.5k字
         
 
 
